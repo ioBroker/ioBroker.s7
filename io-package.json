@@ -1,0 +1,19 @@
+{
+    "common": {
+        "name":                     "S7",
+        "version":                  "0.0.1",
+        "title":                    "Simens S7 Adapter",
+        "desc":                     "Simens S7 over Snap7",
+        "platform":                 "Javascript/Node.js",
+        "mode":                     "daemon",
+        "icon":                     "example.png",
+        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png",
+        "loglevel":                 "info",
+        "nondeletable":             true
+    },
+    "native": {
+    },
+    "objects": [
+
+    ]
+}
