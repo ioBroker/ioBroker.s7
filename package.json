@@ -1,0 +1,74 @@
+{
+  "name": "iobroker.S7",
+  "version": "0.0.1",
+  "description": "Siemens S7 over Snap7",
+  "author": {
+    "name": "smiling_Jack",
+    "email": "smiling_Jack@ioBroker.net"
+  },
+  "contributors": [
+    {
+      "name": "smiling_Jack",
+      "email": "smiling_Jack@ioBroker.net"
+    }
+  ],
+  "homepage": "https://github.com/ioBroker/ioBroker.S/",
+  "license": "MIT",
+  "keywords": [
+    "ioBroker",
+    "PLC",
+    "SPS",
+    "Siemens",
+    "Smart Home",
+    "home automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ioBroker/ioBroker.S7"
+  },
+  "optionalDependencies":{
+    "node-snap7" : "^0.1.3"
+  },
+  "dependencies": {
+    "async": "^0.9.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-replace": "~0.7.6",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-jscs": "~0.6.1",
+    "grunt-http": "~1.4.1",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-compress": "~0.8.0",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-exec": "~0.4.5"
+  },
+  "bugs": {
+    "url": "https://github.com/ioBroker/ioBroker.S7/issues"
+  },
+  "main": "hue.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "gitHead": "1c7ea95fec1178cf1006917af74ccf25b6ae67c6",
+  "_id": "iobroker.hue@0.2.0",
+  "_shasum": "6f72b2bc2fa694d93b803c635ba27d619c235db6",
+  "_from": "iobroker.hue@*",
+  "_npmVersion": "1.4.28",
+  "_npmUser": {
+    "name": "bluefox",
+    "email": "dogafox@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "bluefox",
+      "email": "dogafox@gmail.com"
+    }
+  ],
+  "dist": {
+    "shasum": "6f72b2bc2fa694d93b803c635ba27d619c235db6",
+    "tarball": "http://registry.npmjs.org/iobroker.hue/-/iobroker.hue-0.2.0.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/iobroker.hue/-/iobroker.hue-0.2.0.tgz"
+}

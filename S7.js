@@ -138,8 +138,6 @@ function main() {
     var s7client = new snap7.S7Client();
     var ac = adapter.config;
     var acp = adapter.config.params;
-    var BitArray = require('node-bitarray');
-    var ieee754 = require('ieee754')
     var i;
 
     var inputs = [];
