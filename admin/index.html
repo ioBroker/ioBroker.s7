@@ -9,8 +9,15 @@
 <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
-<script type="text/javascript" src="../../lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js"></script>
 <script type="text/javascript" src="../../lib/js/jqGrid/grid.locale-all.js"></script>
+<script type="text/javascript" src="../../lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js"></script>
+
+<!--<script type="text/javascript" src="../../lib/js/jqGrid/jquery.jqGrid.src.js"></script>-->
+
+
+<link rel="stylesheet" type="text/css" href="./lib/css/jsgrid.min.css"/>
+<link rel="stylesheet" type="text/css" href="./lib/css/jsgrid-theme.min.css"/>
+<script type="text/javascript" src="./lib/js/jsgrid.js"></script>
 
 <!-- optional: use multiselect
 <link rel="stylesheet" type="text/css" href="../../lib/css/jquery.multiselect-1.13.css"/>
@@ -40,6 +47,16 @@
     .ui-jqgrid-titlebar {
         display: none;
     }
+    .ui-jqgrid-bdiv{
+        overflow-x: hidden!important;
+    }
+
+    .s7_tab {
+        overflow: hidden;
+        position: relative;
+        height: calc(100% - 30px);
+        width: 100%;
+    }
 </style>
 
 <!-- you have to define 2 functions in the global scope: -->
@@ -50,11 +67,11 @@
 
 
     // the function loadSettings has to exist ...
-    function load(settings) {
-        $("#adapter-container").tabs();
-        var inputs = settings.inputs|| [];
+    function load(settings, onchange) {
+console.log(settings)
+        var inputs = settings.inputs || [];
         var outputs = settings.outputs || [];
-        var merker = settings.merker || [];
+        var merkers = settings.merkers || [];
         var counter = settings.counter || [];
         var timer = settings.timer || [];
         var dbs = settings.dbs || [];
@@ -62,19 +79,20 @@
                     ip: "192.168.0.1",
                     rack: 0,
                     slot: 2,
-                    pool: 1000,
-               };
-
-
-
+                    poll: 1000,
+                };
+//        onchange(false);
+//        onchange(true);
         setTimeout(function () {
 
-            $.each($(".s7_params"), function(){
-                if($(this).hasClass("check")){
+
+            $("#adapter-container").tabs();
+            $.each($(".s7_params"), function () {
+                if ($(this).hasClass("check")) {
                     if (params[$(this).attr("id").split("_")[1]]) {
                         document.getElementById($(this).attr("id")).checked = params[$(this).attr("id").split("_")[1]]
                     }
-                }else{
+                } else {
                     $(this).val(params[$(this).attr("id").split("_")[1]])
                 }
             });
@@ -82,21 +100,27 @@
             $.each($('.s7_grid'), function () {
                 var lastsel;
                 var _id = $(this).attr("id");
+               var data = eval(_id.split("_")[1])
+                data.push({})
                 $("#" + _id).jqGrid({
                     datatype: "local",
-                    data: eval(_id.split("_")[1]),
+                    data: data,
                     rowNum: -1,
-                    viewrecords: true,
-                    height: "auto",
-//                    pager: "#pager-"+_id,
-                    colNames: ['Name', 'Adress', 'Type', 'Description', 'Pool', 'RW'],
+                    viewrecords: false,
+                    height: "calc(100% - 50px)",
+                    autowidth: true,
+                    shrinkToFit: true,
+                    toolbar:[true,"bottom"],
+//                    loadonce: true,
+//                    pager: $("#pager-"+_id),
+                    colNames: ['Name', 'Adress', 'Type', 'Description', 'poll', 'RW'],
                     colModel: [
                         {name: 'Name', index: 'id', width: 250, editable: true},
                         {name: 'Adress', index: 'Adress', width: 70, editable: true, sorttype:"float"},
-                        {name: 'Type', index: 'Type', width: 70, editable: true},
-                        {name: 'Description', index: 'Description', width: 300, editable: true},
-                        {name: 'Pool', index: 'Pool', width: 40, editable: false, edittype: 'checkbox', align: 'center', formatter: 'checkbox'},
-                        {name: 'RW', index: 'RW', width: 40, editable: false, edittype: 'checkbox', align: 'center', formatter: 'checkbox'},
+                        {name: 'Type', index: 'Type', edittype:'select', editoptions: { value: 'BOOL:BOOL; BYTE:BYTE; WORD:WORD; DWORD:DWORD; INT:INT; DINT:DINT; REAL:REAL' }, width: 100, editable: true},
+                        {name: 'Description', index: 'Description', width: 400,  editable: true},
+                        {name: 'Poll', index: 'poll', width: 40, editable: false, edittype: 'checkbox', align: 'center', formatter: 'checkbox'},
+                        {name: 'RW', index: 'RW', width: 60, editable: false, edittype: 'checkbox', align: 'center', formatter: 'checkbox'},
 
                     ],
                     onSelectRow: function (id) {
@@ -105,107 +129,265 @@
                             $("#" + _id).jqGrid('editRow', id, true);
                             lastsel = id;
                         }
-                    }
+
+                    },
+
                 });
+
+                $("#t_"+_id).append('<button id="add_'+_id+'">Add</button>')
+
+                $("#add_"+_id).button({
+                            icons: {
+                                primary: "ui-icon-plusthick"
+                            },
+                            text: false
+                        }).click(function(){
+                    $("#" + _id).jqGrid('addRow',{
+                        rowID : undefined,
+                        initdata : {},
+                        position :"last",
+                        useDefValues : true,
+                        useFormatter : true,
+                        addRowParams : {extraparam:{}}
+                    });
+                });
+
+                $("#t_"+_id).append('<button id="del_'+_id+'">Add</button>')
+
+                $("#del_"+_id).button({
+                    icons: {
+                        primary: "ui-icon-minusthick"
+                    },
+                    text: false
+                }).click(function(){
+                    var id = $("#" + _id).find(".ui-state-highlight").attr("id");
+                    var nid = $("#" + _id).find(".ui-state-highlight").next().attr("id");
+                    $("#" + _id).jqGrid('delRowData', id);
+                    $("#" + _id).find("#" + nid).trigger("click")
+
+                });
+
+                $(window).resize(function(){
+                    $("#" + _id).setGridWidth($(this).width() - 9)
+                });
+                $(window).trigger('resize');
+
+//                console.log(_id)
+//                editTable({
+//                    tabId: _id,
+//                    cols: [
+//                        {name: 'Name', width: '150px'},
+//                        {name: 'Adress', width: '60px'},
+//                        {name: 'Type', width: '60px'},
+//                        {name: 'Description', width: '250px'},
+//                        {name: 'poll', width: '50px', checkbox: true},
+//                        {name: 'RW', width: '50px', checkbox: true},
+//                    ],
+//                    values: eval(_id.split("_")[1]),
+//                    rooms: undefined,
+//                    top:150,
+//                    onChange: undefined,
+//                    rowNum: -1,
+//                    rowList: [],
+//                    width: 400,
+//                })
+
+
+//                $("#"+_id).jsGrid({
+//                    width: "700",
+//                    height: "50%",
+//
+//                    filtering: false,
+//                    editing: true,
+//                    sorting: true,
+//
+//
+//                    data: eval(_id.split("_")[1]),
+//
+//                    fields: [
+//                        {name: 'Name', width: '150px'},
+//                        {name: 'Adress', width: '60px'},
+//                        {name: 'Type', width: '60px'},
+//                        {name: 'Description', width: '300px'},
+//                        {name: 'poll', width: '50px' },
+//                        {name: 'RW', width: '50px'},
+//                        { type: "control", width: '100px'}
+//                    ]
+//                })
+
             })
         });
     }
 
-        // ... and the function save has to exist.
-        // you have to make sure the callback is called with the settings object as first param!
-        function save(callback) {
-            // example: select elements with class=value and build settings object
-            var obj = {params:{}};
+
+    // ... and the function save has to exist.
+    // you have to make sure the callback is called with the settings object as first param!
+    function save(callback) {
+        // example: select elements with class=value and build settings object
+        var obj = {
+            params: {}
+        };
+
+        $.each($('.s7_grid'), function () {
+            var id = $(this).attr("id");
+            var key = id.split("_")[1];
+            var x=  $("#" + id).jqGrid('getRowData');
+            obj[key] = x;
+//            obj[key] = getTableResult(id, ['Name', 'Adress', 'Type','Description','poll','RW']);
+        });
+        $.each($(".s7_params"), function () {
+            if ($(this).hasClass("check")) {
+
+                obj.params[$(this).attr("id").split("_")[1]] = document.getElementById($(this).attr("id")).checked
+
+            } else {
+                obj.params[$(this).attr("id").split("_")[1]] = $(this).val()
+            }
+        });
+
+        console.log(obj)
+
+
+        callback(obj);
+    }
+
+    function symbol_import(e) {
+        console.log(e)
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            var table;
+            var data = {
+                inputs: [],
+                outputs: [],
+                merkers: [],
+//                counter: [],
+//                timer: [],
+//                dbs: []
+
+            };
+            var text = reader.result;
+            text = text.split("126,");
+            $.each(text, function () {
+                var typ = this.slice(23, 29).replace(/( )/g, "");
+
+                var d = {
+                    'Name': this.slice(0, 23).replace(/( ){2,}/g, ""),
+                    'Adress': this.slice(29, 36).replace(/( )/g, ""),
+                    'Type': this.slice(36, 41).replace(/( )/g, ""),
+                    'Description': this.slice(46, 126).replace(/( ){2,}/, ""),
+                    'poll': false,
+                    'RW': false
+                };
+
+//                    if (typ == "E" || typ == "EB" ||typ == "EW" ||typ == "ED"||typ == "PEB"||typ == "PEW"||typ == "PED")data.inputs.push(d);
+//                    if (typ == "A" || typ == "AB" ||typ == "AW" ||typ == "AD"||typ == "PAB"||typ == "PAW"||typ == "PAD")data.outputs.push(d);
+                if (typ == "E" || typ == "EB" || typ == "EW" || typ == "ED")data.inputs.push(d);
+                if (typ == "A" || typ == "AB" || typ == "AW" || typ == "AD")data.outputs.push(d);
+                if (typ == "M" || typ == "MB" || typ == "MW" || typ == "MD")data.merkers.push(d);
+//                if (typ == "C")data.counter.push(d);
+//                if (typ == "T")data.timer.push(d);
+//                if (typ == "DB")data.dbs.push(d);
+
+
+            });
 
             $.each($('.s7_grid'), function () {
+
                 var id = $(this).attr("id");
-                var key = id.split("_")[1];
-                obj[key] = $("#"+id).jqGrid('getRowData');
+                $("#" + id).jqGrid('setGridParam',
+                        {
+                            datatype: 'local',
+                            data: data[id.split("_")[1]]
+                        })
+                        .trigger("reloadGrid");
             });
-            $.each($(".s7_params"), function(){
-                if($(this).hasClass("check")){
+        };
 
-                    obj.params[$(this).attr("id").split("_")[1]] = document.getElementById($(this).attr("id")).checked
+        reader.readAsText(e[0], "ISO-8859-1");
 
-                }else{
-                    obj.params[$(this).attr("id").split("_")[1]] = $(this).val()
+    }
+
+    function db_import(e) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            var table;
+            var db;
+            var data = {};
+            var _data = [];
+            var text = reader.result;
+            db = text.match(/(DB)[0-9]+\s-\s/g)[0].replace(" - ", "");
+
+            var old_data = $("#s7_dbs").jqGrid('getRowData');
+            var new_data = [];
+
+            $.each(old_data,function(){
+                data[this.Adress] = this
+            });
+
+            var struck = text.split("STRUCT")[1].split("\n");
+
+            $.each(struck,function(){
+                if(this.length > 10){
+
+                    var x = this.split(/\s+/g);
+                    x.shift();
+
+                    _data.push({
+                        Adress : db +" "+ x.shift(),
+                        Name : x.shift(),
+                        Type : x.shift(),
+                        dec : x.shift(),
+                        Description : x.join(" "),
+                        'poll': false,
+                        'RW': false
+                    })
                 }
             });
+            console.log(_data[0])
+            if( _data[0].Adress.indexOf("<input") > -1){
+                _data.shift();
+            }
+//            _data.pop();
 
-            callback(obj);
-        }
+            $.each(_data,function(){
+                data[this.Adress] = this
+            });
 
-        function symbol_import(e) {
-            console.log(e)
-            var reader = new FileReader();
+            $.each(data,function(){
+                new_data.push(this)
+            });
 
-            reader.onload = function (e) {
-                var table;
-                var data = {
-                    inputs: [],
-                    outputs: [],
-                    merker: [],
-                    counter: [],
-                    timer: [],
-                    dbs: []
+            $("#s7_dbs").jqGrid('setGridParam',
+                    {
+                        datatype: 'local',
+                        data: new_data
+                    })
+                    .trigger("reloadGrid");
 
-                };
-                var text = reader.result;
-                text = text.split("126,");
-                $.each(text, function () {
-                    var typ = this.slice(23, 29).replace(/( )/g, "");
+        };
 
-                    var d = {
-                        'Name': this.slice(0, 23).replace(/( ){2,}/g, ""),
-                        'Adress': this.slice(29, 36).replace(/( )/g, ""),
-                        'Type': this.slice(36, 41).replace(/( )/g, ""),
-                        'Description': this.slice(46, 126).replace(/( ){2,}/, ""),
-                        'Pool': false,
-                        'RW': false
-                    };
+        reader.readAsText(e[0], "ISO-8859-1");
 
-                    if (typ == "E" || typ == "EB" ||typ == "EW" ||typ == "ED"||typ == "PEB"||typ == "PEW"||typ == "PED")data.inputs.push(d);
-                    if (typ == "A" || typ == "AB" ||typ == "AW" ||typ == "AD"||typ == "PAB"||typ == "PAW"||typ == "PAD")data.outputs.push(d);
-                    if (typ == "M" || typ == "MB" ||typ == "MW" ||typ == "MD")data.merker.push(d);
-                    if (typ == "C")data.counter.push(d);
-                    if (typ == "T")data.timer.push(d);
-                    if (typ == "DB")data.dbs.push(d);
-
-
-                });
-
-                $.each($('.s7_grid'), function () {
-
-                    var id = $(this).attr("id");
-                    $("#" + id).jqGrid('setGridParam',
-                            {
-                                datatype: 'local',
-                                data: data[id.split("_")[1]]
-                            })
-                            .trigger("reloadGrid");
-                });
-            };
-
-            reader.readAsText(e[0], "ISO-8859-1");
-
-        }
+    }
 </script>
 
 <!-- you have to put your config page in a div with id adapter-container -->
-<div id="adapter-container">
+<div id="adapter-container" style="height: calc(100% - 40px);width: calc(100% - 7px); overflow: hidden">
 
     <ul>
         <li><a href="#s7_tab_g">General</a></li>
         <li><a href="#s7_tab_i">Inputs</a></li>
         <li><a href="#s7_tab_o">Outputs</a></li>
         <li><a href="#s7_tab_m">Merker</a></li>
-        <li><a href="#s7_tab_c">Counter</a></li>
-        <li><a href="#s7_tab_t">Timer</a></li>
+        <!--<li><a href="#s7_tab_c">Counter</a></li>-->
+        <!--<li><a href="#s7_tab_t">Timer</a></li>-->
         <li><a href="#s7_tab_d">DBs</a></li>
     </ul>
-    <div id="s7_tab_g" style="display: inline-block">
+    <div id="s7_tab_g" style="display: inline-block" class="s7_tab">
         <table style="margin-top: 20px; border: 1px solid black; border-collapse: collapse; ">
-            <tr  style="border-bottom: 1px solid black;text-align: center " >
+            <tr style="border-bottom: 1px solid black;text-align: center ">
                 <td colspan="2">PLC Connection:</td>
             </tr>
             <tr>
@@ -221,83 +403,91 @@
                 <td><input class="s7_params" id="s7params_slot"/></td>
             </tr>
             <tr>
-                <td>Pool delay:</td>
-                <td><input class="s7_params" id="s7params_pool"/></td>
+                <td>poll delay:</td>
+                <td><input class="s7_params" id="s7params_poll"/></td>
             </tr>
         </table>
         <table style="margin-top: 20px; border: 1px solid black; border-collapse: collapse; ">
             <tr>
                 <td style="text-align: center" colspan="3">Overwrites</td>
             </tr>
-            <tr  style="border-bottom: 1px solid black" >
+            <tr style="border-bottom: 1px solid black">
                 <td style="width: 200px">Typ</td>
                 <td style="width: 65px">Poll all:</td>
                 <td style="width: 65px">RW all:</td>
             </tr>
             <tr>
                 <td>Inputs</td>
-                <td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_inputs-pool"></td>
-                <td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_inputs-rw"></td>
+                <td style="text-align: center"><input type="checkbox" class="s7_params check" id="s7overw_inputs-poll"></td>
+                <td style="text-align: center"><input type="checkbox" class="s7_params check" id="s7overw_inputs-rw"></td>
             </tr>
             <tr>
                 <td>Outputs</td>
-                <td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_outputs-pool"></td>
-                <td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_outputs-rw"></td>
+                <td style="text-align: center"><input type="checkbox" class="s7_params check" id="s7overw_outputs-poll"></td>
+                <td style="text-align: center"><input type="checkbox" class="s7_params check" id="s7overw_outputs-rw"></td>
             </tr>
             <tr>
                 <td>Merker</td>
-                <td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_merker-pool"></td>
-                <td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_merker-rw"></td>
-            </tr>
-            <tr>
-                <td>Counter</td>
-                <td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_counter-pool"></td>
-                <td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_counter-rw"></td>
-            </tr>
-            <tr>
-                <td>Timer</td>
-                <td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_timer-pool"></td>
-                <td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_timer-rw"></td>
+                <td style="text-align: center"><input type="checkbox" class="s7_params check" id="s7overw_merkers-poll"></td>
+                <td style="text-align: center"><input type="checkbox" class="s7_params check" id="s7overw_merkers-rw"></td>
             </tr>
             <!--<tr>-->
-                <!--<td>DBs</td>-->
-                <!--<td style="text-align: center" ><input type="checkbox" class="s7_params" id="s7overw_dbs-pool"></td>-->
-                <!--<td style="text-align: center" ><input type="checkbox" class="s7_params" id="s7overw_dbs-rw"></td>-->
+            <!--<td>Counter</td>-->
+            <!--<td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_counter-poll"></td>-->
+            <!--<td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_counter-rw"></td>-->
             <!--</tr>-->
+            <!--<tr>-->
+            <!--<td>Timer</td>-->
+            <!--<td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_timer-poll"></td>-->
+            <!--<td style="text-align: center" ><input type="checkbox" class="s7_params check" id="s7overw_timer-rw"></td>-->
+            <!--</tr>-->
+            <tr>
+                <td>DBs</td>
+                <td style="text-align: center"><input type="checkbox" class="s7_params check" id="s7overw_dbs-poll"></td>
+                <td style="text-align: center"><input type="checkbox" class="s7_params check" id="s7overw_dbs-rw"></td>
+            </tr>
         </table>
         <table style="margin-top: 20px; border: 1px solid black; border-collapse: collapse; ">
             <tr>
                 <td>Import Symbol Datei:</td>
-
             </tr>
             <tr>
                 <td><input onchange="symbol_import(this.files)" type="file" accept=".asc" id="symol_import"/></td>
             </tr>
+            <tr>
+                <td><hr></td>
+            </tr>
+            <tr>
+                <td>Import DB Datei:</td>
+            </tr>
+            <tr>
+                <td><input onchange="db_import(this.files)" type="file" accept=".prn" id="db_import"/></td>
+            </tr>
         </table>
     </div>
-    <div id="s7_tab_i" style="overflow: auto">
+    <div id="s7_tab_i" class="s7_tab">
         <table id="s7_inputs" class="s7_grid"></table>
         <div id="pager-s7_inputs"></div>
     </div>
-    <div id="s7_tab_o" style="overflow: auto">
+    <div id="s7_tab_o"  class="s7_tab">
         <table id="s7_outputs" class="s7_grid"></table>
         <div id="pager-s7_outputs"></div>
     </div>
-    <div id="s7_tab_m" style="overflow: auto">
-        <table id="s7_merker" class="s7_grid"></table>
-        <div id="pager-s7_merker"></div>
+    <div id="s7_tab_m" class="s7_tab">
+        <table id="s7_merkers" class="s7_grid"></table>
+        <div id="pager-s7_merkers"></div>
     </div>
-    <div id="s7_tab_c" style="overflow: auto">
-        <table id="s7_counter" class="s7_grid"></table>
-        <div id="pager-s7_counter"></div>
-    </div>
-    <div id="s7_tab_t" style="overflow: auto">
-        <table id="s7_timer" class="s7_grid"></table>
-        <div id="pager-s7_timer"></div>
-    </div>
-    <div id="s7_tab_d" style="overflow: auto">
-        <!--<table id="s7_dbs" class="s7_grid"></table>-->
-        <table id="s7_dbs"></table>
+    <!--<div id="s7_tab_c" style="overflow: auto">-->
+    <!--<table id="s7_counter" class="s7_grid"></table>-->
+    <!--<div id="pager-s7_counter"></div>-->
+    <!--</div>-->
+    <!--<div id="s7_tab_t" style="overflow: auto">-->
+    <!--<table id="s7_timer" class="s7_grid"></table>-->
+    <!--<div id="pager-s7_timer"></div>-->
+    <!--</div>-->
+    <div id="s7_tab_d"  class="s7_tab">
+        <table id="s7_dbs" class="s7_grid"></table>
+        <!--<table id="s7_dbs"></table>-->
         <div id="pager-s7_dbs"></div>
     </div>
 
