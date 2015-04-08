@@ -10,7 +10,12 @@
         "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png",
         "loglevel":                 "info",
         "icon":                     "S7.png",
-        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.S7/master/admin/S7.png"
+        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.S7/master/admin/S7.png",
+      "config": {
+        "width":"100%",
+        "height":"100%",
+        "minHeight":"100%"
+      }
     },
     "native": {
     },

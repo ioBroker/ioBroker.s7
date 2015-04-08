@@ -26,11 +26,12 @@
     "type": "git",
     "url": "https://github.com/ioBroker/ioBroker.S7"
   },
-  "optionalDependencies":{
-    "node-snap7" : "^0.1.3"
+  "optionalDependencies": {
+    "node-snap7": "^0.1.3"
   },
   "dependencies": {
-    "async": "^0.9.0"
+    "async": "^0.9.0",
+    "node-snap7": "^0.1.3"
   },
   "devDependencies": {
     "grunt": "~0.4.4",
@@ -51,9 +52,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "gitHead": "1c7ea95fec1178cf1006917af74ccf25b6ae67c6",
-  "_id": "iobroker.hue@0.2.0",
-  "_shasum": "6f72b2bc2fa694d93b803c635ba27d619c235db6",
-  "_from": "iobroker.hue@*",
+  "_id": "iobroker.S7@0.0.1",
+  "_shasum": "e40e46855248fb026d974fdcc169f85b6faa770c",
+  "_from": "iobroker.S7@",
   "_npmVersion": "1.4.28",
   "_npmUser": {
     "name": "bluefox",
@@ -70,5 +71,7 @@
     "tarball": "http://registry.npmjs.org/iobroker.hue/-/iobroker.hue-0.2.0.tgz"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/iobroker.hue/-/iobroker.hue-0.2.0.tgz"
+  "_resolved": "https://registry.npmjs.org/iobroker.hue/-/iobroker.hue-0.2.0.tgz",
+  "readme": "ERROR: No README data found!",
+  "readmeFilename": "README.md"
 }

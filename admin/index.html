@@ -80,6 +80,7 @@ console.log(settings)
                     rack: 0,
                     slot: 2,
                     poll: 1000,
+                    recon: 60000
                 };
 //        onchange(false);
 //        onchange(true);
@@ -100,8 +101,8 @@ console.log(settings)
             $.each($('.s7_grid'), function () {
                 var lastsel;
                 var _id = $(this).attr("id");
-               var data = eval(_id.split("_")[1])
-                data.push({})
+               var data = eval(_id.split("_")[1]);
+                data.push({});
                 $("#" + _id).jqGrid({
                     datatype: "local",
                     data: data,
@@ -407,7 +408,21 @@ console.log(settings)
                 <td><input class="s7_params" id="s7params_poll"/></td>
             </tr>
         </table>
-        <table style="margin-top: 20px; border: 1px solid black; border-collapse: collapse; ">
+        <table style="margin-top: 20px;border-collapse: collapse; display: inline; border: 1px solid black ">
+            <tr>
+                <td style="text-align: center" colspan="2">Gerneral</td>
+            </tr>
+
+            <tr>
+                <td>Round Real to </td>
+                <td style="text-align: center"><input style="margin-right: 5px;text-align: right" type="text" class="s7_params" id="s7params_round"></td>
+            </tr>
+            <tr>
+                <td>Reconnect time</td>
+                <td style="text-align: center"><input style="margin-right: 5px;text-align: right" type="text" class="s7_params" id="s7params_recon"></td>
+            </tr>
+        </table>
+        <table style="margin-top: 20px; border: 1px solid black; border-collapse: collapse; display: inline ">
             <tr>
                 <td style="text-align: center" colspan="3">Overwrites</td>
             </tr>
@@ -450,17 +465,10 @@ console.log(settings)
         <table style="margin-top: 20px; border: 1px solid black; border-collapse: collapse; ">
             <tr>
                 <td>Import Symbol Datei:</td>
-            </tr>
+                <td>Import DB Datei:</td>
+          </tr>
             <tr>
                 <td><input onchange="symbol_import(this.files)" type="file" accept=".asc" id="symol_import"/></td>
-            </tr>
-            <tr>
-                <td><hr></td>
-            </tr>
-            <tr>
-                <td>Import DB Datei:</td>
-            </tr>
-            <tr>
                 <td><input onchange="db_import(this.files)" type="file" accept=".prn" id="db_import"/></td>
             </tr>
         </table>

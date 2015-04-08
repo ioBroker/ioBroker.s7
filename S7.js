@@ -1,101 +1,96 @@
-/**
- *
- * example adapter
- *
- *
- *  file io-package.json comments:
- *
- *  {
- *      "common": {
- *          "name":         "example",                  // name has to be set and has to be equal to adapters folder name and main file name excluding extension
- *          "version":      "0.0.0",                    // use "Semantic Versioning"! see http://semver.org/
- *          "title":        "Node.js Example Adapter",  // Adapter title shown in User Interfaces
- *          "authors":  [                               // Array of authord
- *              "name <mail@example.com>"
- *          ]
- *          "desc":         "Example adapter",          // Adapter description shown in User Interfaces. Can be a language object {de:"...",ru:"..."} or a string
- *          "platform":     "Javascript/Node.js",       // possible values "javascript", "javascript/Node.js" - more coming
- *          "mode":         "daemon",                   // possible values "daemon", "schedule", "subscribe"
- *          "schedule":     "0 0 * * *"                 // cron-style schedule. Only needed if mode=schedule
- *          "loglevel":     "info"                      // Adapters Log Level
- *      },
- *      "native": {                                     // the native object is available via adapter.config in your adapters code - use it for configuration
- *          "test1": true,
- *          "test2": 42
- *      }
- *  }
- *
- */
-
 /* jshint -W097 */// jshint strict:false
 /*jslint node: true */
 "use strict";
 
-// you have to require the utils module and call adapter function
-var utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 
-// you have to call the adapter function and pass a options object
-// name has to be set and has to be equal to adapters folder name and main file name excluding extension
-// adapter will be restarted automatically every time as the configuration changed, e.g system.adapter.example.0
+var utils = require(__dirname + '/lib/utils');
 var adapter = utils.adapter('S7');
+var snap7 = require('node-snap7');
+var async = require('async');
+
+var s7client = new snap7.S7Client();
+var connected = false;
 
 
-/*// is called when adapter shuts down - callback has to be called under any circumstances!
- adapter.on('unload', function (callback) {
- try {
- adapter.log.info('cleaned everything up...');
- callback();
- } catch (e) {
- callback();
- }
- });
+process.on('SIGINT', function () {
+    adapter.setState("info.connection", "stopped", true);
+});
+// is called if a subscribed state changes
+adapter.on('stateChange', function (id, state) {
+    if (!state.ack) {
 
- // todo
- adapter.on('discover', function (callback) {
+        adapter.getObject(id, function (err, data) {
+            var type = data.native.type;
+            if (data.native.cat == "db") {
 
- });
 
- // todo
- adapter.on('install', function (callback) {
+                if (type == "BOOL") {
+                    //val = bin8(buff[byte_addr]).substring(7 - bit_addr, 7 - bit_addr + 1);
+                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
+                    //    ack_objects[id] = {"val": val};
+                    //    adapter.setState(id, val, true);
+                    //}
+                } else if (type == "BYTE") {
+                    //val = bin8(buff[byte_addr]);
+                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
+                    //    ack_objects[id] = {"val": val};
+                    //    adapter.setState(id, val, true);
+                    //}
+                } else if (type == "WORD") {
+                    //byte1 = bin8(buff[byte_addr]);
+                    //byte0 = bin8(buff[byte_addr + 1]);
+                    //
+                    //val = byte1 + byte0;
+                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
+                    //    ack_objects[id] = {"val": val};
+                    //    adapter.setState(id, val, true);
+                    //}
+                } else if (type == "DWORD") {
+                    //byte3 = bin8(buff[byte_addr]);
+                    //byte2 = bin8(buff[byte_addr + 1]);
+                    //byte1 = bin8(buff[byte_addr + 2]);
+                    //byte0 = bin8(buff[byte_addr + 3]);
+                    //val = byte3 + byte2 + byte1 + byte0;
+                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
+                    //    ack_objects[id] = {"val": val};
+                    //    adapter.setState(id, val, true);
+                    //}
+                } else if (type == "INT") {
+                    //val = buff.readInt16BE(byte_addr);
+                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
+                    //    ack_objects[id] = {"val": val};
+                    //    adapter.setState(id, val, true);
+                    //}
+                } else if (type == "DINT") {
+                    var buf = new Buffer(4);
+                    buf.writeInt32BE(state.val, 0 ,4);
 
- });
+                    s7client.DBWrite(parseInt(data.native.db.replace("DB","")), parseInt(data.native.adress), 4, buf, function(err){
+                        if(err)
+                            adapter.log.error('DB write error. Code #' + err);
+                    });
+                    //val = buff.readInt32BE(byte_addr);
+                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
+                    //    ack_objects[id] = {"val": val};
+                    //    adapter.setState(id, val, true);
+                    //}
+                } else if (type == "REAL") {
+                    var buf = new Buffer(4);
+                    buf.writeFloatBE(state.val, 0);
 
- // todo
- adapter.on('uninstall', function (callback) {
+                    s7client.DBWrite(parseInt(data.native.db.replace("DB","")), parseInt(data.native.adress), 4, buf, function(err){
+                        if(err)
+                            adapter.log.error('DB write error. Code #' + err);
+                    });
+                }
+            }
+        })
+    }
+});
 
- });
 
- // is called if a subscribed object changes
- adapter.on('objectChange', function (id, obj) {
- adapter.log.info('objectChange ' + id + ' ' + JSON.stringify(obj));
- });
-
- // is called if a subscribed state changes
- adapter.on('stateChange', function (id, state) {
- adapter.log.info('stateChange ' + id + ' ' + JSON.stringify(state));
-
- // you can use the ack flag to detect if state is desired or acknowledged
- if (!state.ack) {
- adapter.log.info('ack is not set!');
- }
- });
-
- // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
- adapter.on('message', function (obj) {
- if (typeof obj == "object" && obj.message) {
- if (obj.command == "send") {
- // e.g. send email or pushover or whatever
- console.log("send command");
-
- // Send response in callback if required
- if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
- }
- }
- });*/
-
-// is called when databases are connected and adapter received configuration.
-// start here!
 adapter.on('ready', function () {
+    adapter.setState("info.connection", "starting", true);
     main();
 });
 
@@ -105,41 +100,12 @@ function bin8(n) {
 
 function main() {
 
-    // The adapters config (in the instance object everything under the attribute "native") is accessible via
-    // adapter.config:
-    //adapter.log.info('config test1: ' + adapter.config.test1);
-    //adapter.log.info('config test1: ' + adapter.config.test2);
 
-
-    /**
-     *
-     *      For every state in the system there has to be also an object of type state
-     *
-     *      Here a simple example for a boolean variable named "testVariable"
-     *
-     *      Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
-     *
-     */
-
-    //adapter.setObject('testVariable', {
-    //    type: 'state',
-    //    common: {
-    //        type: 'boolean'
-    //    }
-    //});
-
-    // in this example all states changes inside the adapters namespace are subscribed
-    //adapter.subscribeStates('*');
-
-    //console.log(adapter.config);
-    var snap7 = require('node-snap7');
-    var async = require('async');
-
-    var s7client = new snap7.S7Client();
     var ac = adapter.config;
     var acp = adapter.config.params;
     var i;
 
+    var round = 2;
     var inputs = [];
     var input_lsb;
     var input_msb;
@@ -162,12 +128,17 @@ function main() {
     var old_objects = [];
     var ack_objects = {};
 
-    adapter.getStates("*", function (err, list) {
+    if (parseInt(acp.round) != "NaN") {
+        round = parseInt(acp.round);
+    }
 
+    round = Math.pow(10, round);
+
+    adapter.getStates("*", function (err, list) {
 
         var n = 0;
 
-        function clean(n) {
+        function clean() {
             for (var key in list) {
                 old_objects.push(key)
             }
@@ -229,7 +200,6 @@ function main() {
                 }
             }
 
-
             function SortByAdress(a, b) {
                 var ad = parseFloat(a.Adress);
                 var bd = parseFloat(b.Adress);
@@ -284,47 +254,52 @@ function main() {
                     if (addr > db_size[db].msb) {
                         db_size[db].msb = addr;
                     }
-
                 }
-
             }
 
-            adapter.setObject("Inputs", {
-                type: 'device',
-                common: {
-                    name: "Inputs"
-                },
-                native: {}
-            });
+            if (inputs.length > 0) {
+                adapter.setObject("Inputs", {
+                    type: 'device',
+                    common: {
+                        name: "Inputs"
+                    },
+                    native: {}
+                });
+            }
 
-            adapter.setObject("Outputs", {
-                type: 'device',
-                common: {
-                    name: "Outputs"
-                },
-                native: {}
-            });
+            if (outputs.length > 0) {
+                adapter.setObject("Outputs", {
+                    type: 'device',
+                    common: {
+                        name: "Outputs"
+                    },
+                    native: {}
+                });
+            }
 
-            adapter.setObject("Merkers", {
-                type: 'device',
-                common: {
-                    name: "Merkers"
-                },
-                native: {}
-            });
+            if (merkers.length > 0) {
+                adapter.setObject("Merkers", {
+                    type: 'device',
+                    common: {
+                        name: "Merkers"
+                    },
+                    native: {}
+                });
+            }
 
-            adapter.setObject("DBs", {
-                type: 'device',
-                common: {
-                    name: "DBs"
-                },
-                native: {}
-            });
+            if (dbs.length > 0) {
+                adapter.setObject("DBs", {
+                    type: 'device',
+                    common: {
+                        name: "DBs"
+                    },
+                    native: {}
+                });
+            }
+
 
             for (i = 0; inputs.length > i; i++) {
-
                 var ch = (ac.inputs[i].Adress).split(".")[0];
-                //var bit= (ac.inputs[i].Adress).split(".")[1] || 0;
 
                 adapter.setObject("Inputs." + ch, {
                     type: 'channel',
@@ -342,6 +317,8 @@ function main() {
                         enabled: false
                     },
                     native: {
+                        cat: "input",
+                        type: ac.inputs[i].Type,
                         adress: ac.inputs[i].Adress,
                         rw: ac.inputs[i].Adress
                     }
@@ -367,8 +344,10 @@ function main() {
                         enabled: false
                     },
                     native: {
+                        cat: "output",
+                        type: ac.outputs[i].Type,
                         adress: ac.outputs[i].Adress,
-                        rw: ac.outputs[i].Adress,
+                        rw: ac.outputs[i].Adress
                     }
                 });
             }
@@ -392,8 +371,10 @@ function main() {
                         enabled: false
                     },
                     native: {
+                        cat: "merker",
+                        type: ac.merkers[i].Type,
                         adress: ac.merkers[i].Adress,
-                        rw: ac.merkers[i].Adress,
+                        rw: ac.merkers[i].Adress
                     }
                 });
             }
@@ -418,15 +399,18 @@ function main() {
                         enabled: false
                     },
                     native: {
-                        adress: ac.dbs[i].Adress,
-                        rw: ac.dbs[i].Adress,
+                        cat: "db",
+                        type: ac.dbs[i].Type,
+                        db: ac.dbs[i].Adress.split(" +")[0],
+                        adress: ac.dbs[i].Adress.split(" +")[1],
+                        rw: ac.dbs[i].Adress
                     }
                 });
             }
 
 
             adapter.setObject("info", {
-                type: '',
+                type: 'device',
                 common: {
                     name: "info",
                     enabled: false
@@ -436,44 +420,29 @@ function main() {
             adapter.setObject("info.poll_time", {
                 type: 'state',
                 common: {
-                    name: "info",
-                    role:"",
+                    name: "Poll time",
+                    role: ""
                 },
                 native: {}
             });
+            adapter.setObject("info.connection", {
+                type: 'state',
+                common: {
+                    name: "Connection status",
+                    role: ""
+                },
+                native: {}
+            });
+            adapter.setObject("info.pdu", {
+                type: 'state',
+                common: {
+                    name: "PDU size",
+                    role: ""
+                },
+                native: {}
+            });
+            adapter.setState("info.connection", "not connected", true);
 
-            adapter.setObject("info.input_poll", {
-                type: 'state',
-                common: {
-                    name: "info",
-                    role:"",
-                },
-                native: {}
-            });
-            adapter.setObject("info.output_poll", {
-                type: 'state',
-                common: {
-                    name: "info",
-                    role:"",
-                },
-                native: {}
-            });
-            adapter.setObject("info.merker_poll", {
-                type: 'state',
-                common: {
-                    name: "info",
-                    role:"",
-                },
-                native: {}
-            });
-            adapter.setObject("info.dbs_poll", {
-                type: 'state',
-                common: {
-                    name: "info",
-                    role:"",
-                },
-                native: {}
-            })
 
             var _db_size = [];
 
@@ -487,15 +456,18 @@ function main() {
                 s7client.ConnectTo(acp.ip, parseInt(acp.rack), parseInt(acp.slot), function (err) {
                     var error_count = 0;
                     if (err) {
-                        console.log(' >> Connection failed. Code #' + err + ' - ' + s7client.ErrorText(err));
-                        return setTimeout(start, 10000)
+                        adapter.log.error('Connection failed. Code #' + err);
+                        adapter.setState("info.connection", "connection error trying reconnect", true);
+                        return setTimeout(start, (parseInt(acp.recon) || 60000))
                     }
+
+                    connected = true;
+                    adapter.setState("info.connection", "connected", true);
+                    adapter.setState("info.pdu", s7client.PDULength(), true);
+
 
                     function poll() {
                         var start_t = (new Date).valueOf();
-                        console.log("start poll")
-
-
                         async.parallel({
                                 input: function (callback) {
                                     if (input_lsb && input_msb) {
@@ -508,7 +480,7 @@ function main() {
                                                 for (n = 0; inputs.length > n; n++) {
                                                     var id = "Inputs." + inputs[n].Adress.split(".")[0] + "." + inputs[n].Name.replace(".", "_").replace(" ", "_");
 
-                                                    var addr = inputs[n].Adress
+                                                    var addr = inputs[n].Adress;
                                                     var byte_addr = parseInt(addr.split(".")[0]) - input_lsb;
                                                     var bit_addr = parseInt(addr.split(".")[1]);
 
@@ -567,7 +539,7 @@ function main() {
                                     }
                                 },
                                 dbs: function (callback) {
-                                    var buf = {}
+                                    var buf = {};
 
                                     async.each(_db_size, function (db, callback) {
                                         var _db = parseInt(db.db.replace("DB", ""));
@@ -589,7 +561,7 @@ function main() {
                                         } else {
                                             for (n = 0; dbs.length > n; n++) {
 
-                                                var addr = dbs[n].Adress.split(" +")[1]
+                                                var addr = dbs[n].Adress.split(" +")[1];
                                                 var db = dbs[n].Adress.split(" +")[0];
 
                                                 var id = "DBs." + db + "." + dbs[n].Name.replace(".", "_").replace(" ", "_");
@@ -601,7 +573,6 @@ function main() {
                                             }
                                             callback(null)
                                         }
-
                                     })
 
                                 }
@@ -609,19 +580,29 @@ function main() {
 
                             function (err) {
                                 if (err) {
-                                    console.log(err)
                                     error_count++;
-                                    if (error_count > 6) {
-                                        setTimeout(start, parseInt(acp.poll))
-                                    } else {
+
+                                    adapter.log.warn('Poll error count : ' + error_count + " code: " + err);
+                                    adapter.setState("info.connection", 'Poll error count : ' + error_count, true);
+
+                                    if (error_count < 6 && s7client.Connected()) {
                                         setTimeout(poll, parseInt(acp.poll))
+
+                                    } else {
+                                        connected = false;
+                                        adapter.log.error('try reconnection');
+                                        adapter.setState("info.connection", 'try reconnection', true);
+                                        setTimeout(start, (parseInt(acp.recon) || 60000));
                                     }
 
                                 } else {
 
-                                    console.log("end poll: " + ((new Date).valueOf() - start_t).toString())
-                                    adapter.setState("info.poll_time", (new Date).valueOf() - start_t);
-                                    error_count = 0;
+                                    adapter.setState("info.poll_time", (new Date).valueOf() - start_t, true);
+                                    if (error_count > 0) {
+                                        adapter.setState("info.connection", "connected", true);
+                                        error_count = 0;
+                                    }
+
                                     setTimeout(poll, parseInt(acp.poll))
                                 }
                             }
@@ -630,7 +611,7 @@ function main() {
 
                     poll();
                 });
-            };
+            }
 
             function write(id, buff, type, byte_addr, bit_addr) {
                 var val = 0;
@@ -642,13 +623,13 @@ function main() {
                 if (type == "BOOL") {
                     val = bin8(buff[byte_addr]).substring(7 - bit_addr, 7 - bit_addr + 1);
                     if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                        ack_objects[id] = {"val": val}
+                        ack_objects[id] = {"val": val};
                         adapter.setState(id, val, true);
                     }
                 } else if (type == "BYTE") {
                     val = bin8(buff[byte_addr]);
                     if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                        ack_objects[id] = {"val": val}
+                        ack_objects[id] = {"val": val};
                         adapter.setState(id, val, true);
                     }
                 } else if (type == "WORD") {
@@ -657,7 +638,7 @@ function main() {
 
                     val = byte1 + byte0;
                     if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                        ack_objects[id] = {"val": val}
+                        ack_objects[id] = {"val": val};
                         adapter.setState(id, val, true);
                     }
                 } else if (type == "DWORD") {
@@ -667,62 +648,35 @@ function main() {
                     byte0 = bin8(buff[byte_addr + 3]);
                     val = byte3 + byte2 + byte1 + byte0;
                     if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                        ack_objects[id] = {"val": val}
+                        ack_objects[id] = {"val": val};
                         adapter.setState(id, val, true);
                     }
                 } else if (type == "INT") {
                     val = buff.readInt16BE(byte_addr);
                     if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                        ack_objects[id] = {"val": val}
+                        ack_objects[id] = {"val": val};
                         adapter.setState(id, val, true);
                     }
                 } else if (type == "DINT") {
                     val = buff.readInt32BE(byte_addr);
                     if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                        ack_objects[id] = {"val": val}
+                        ack_objects[id] = {"val": val};
                         adapter.setState(id, val, true);
                     }
                 } else if (type == "REAL") {
                     val = buff.readFloatBE(byte_addr);
-                    if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                        ack_objects[id] = {"val": val}
-                        adapter.setState(id, val, true);
+                    var _val = parseFloat(Math.round(val * round) / round);
+
+                    if (ack_objects[id] == undefined || ack_objects[id].val != _val) {
+
+                        ack_objects[id] = {"val": _val};
+                        adapter.setState(id, _val, true);
                     }
                 }
             }
 
+            adapter.subscribeStates('*');
             start();
-
-            /**
-             *   setState examples
-             *
-             *   you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-             *
-             */
-
-            /*
-             // the variable testVariable is set to true
-             adapter.setState('testVariable', true);
-
-             // same thing, but the value is flagged "ack"
-             // ack should be always set to true if the value is received from or acknowledged from the target system
-             adapter.setState('testVariable', {val: true, ack: true});
-
-             // same thing, but the state is deleted after 30s (getState will return null afterwards)
-             adapter.setState('testVariable', {val: true, ack: true, expire: 30});
-
-
-
-             // examples for the checkPassword/checkGroup functions
-             adapter.checkPassword('admin', 'iobroker', function (res) {
-             console.log('check user admin pw ioboker: ' + res);
-             });
-
-             adapter.checkGroup('admin', 'admin', function (res) {
-             console.log('check group user admin group admin: ' + res);
-             });
-
-             */
-        };
+        }
     });
 }
