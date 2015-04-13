@@ -11,87 +11,182 @@ var async = require('async');
 var s7client = new snap7.S7Client();
 var connected = false;
 
+var next_poll;
+var acp;
+var old_objects = [];
+var ack_objects = {};
+
 
 process.on('SIGINT', function () {
     adapter.setState("info.connection", "stopped", true);
+    adapter.setState("info.pdu", "", true);
+    adapter.setState("info.poll_time", "", true);
+    clearTimeout(next_poll);
 });
-// is called if a subscribed state changes
+
+adapter.on('ready', function () {
+    adapter.setState("info.connection", "starting", true);
+    main();
+});
+
 adapter.on('stateChange', function (id, state) {
     if (!state.ack) {
 
         adapter.getObject(id, function (err, data) {
             var type = data.native.type;
-            if (data.native.cat == "db") {
 
+            var buf;
+
+            if (data.native.rw != "No" || acp[data.native.cat + "s-rw"] == true) {
 
                 if (type == "BOOL") {
-                    //val = bin8(buff[byte_addr]).substring(7 - bit_addr, 7 - bit_addr + 1);
-                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                    //    ack_objects[id] = {"val": val};
-                    //    adapter.setState(id, val, true);
-                    //}
+                    if (state.val == true || state.val == 1) {
+                        buf = new Buffer([0x01])
+                    } else {
+                        buf = new Buffer([0x00])
+                    }
+
                 } else if (type == "BYTE") {
-                    //val = bin8(buff[byte_addr]);
-                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                    //    ack_objects[id] = {"val": val};
-                    //    adapter.setState(id, val, true);
-                    //}
+                    buf = new Buffer(1);
+                    buf[0] = parseInt(state.val, 2);
+
                 } else if (type == "WORD") {
-                    //byte1 = bin8(buff[byte_addr]);
-                    //byte0 = bin8(buff[byte_addr + 1]);
-                    //
-                    //val = byte1 + byte0;
-                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                    //    ack_objects[id] = {"val": val};
-                    //    adapter.setState(id, val, true);
-                    //}
+                    var sdata = (state.val).toString();
+                    buf = new Buffer(2);
+                    buf[0] = parseInt(sdata.substr(0, 8), 2);
+                    buf[1] = parseInt(sdata.substr(8, 16), 2);
+
                 } else if (type == "DWORD") {
-                    //byte3 = bin8(buff[byte_addr]);
-                    //byte2 = bin8(buff[byte_addr + 1]);
-                    //byte1 = bin8(buff[byte_addr + 2]);
-                    //byte0 = bin8(buff[byte_addr + 3]);
-                    //val = byte3 + byte2 + byte1 + byte0;
-                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                    //    ack_objects[id] = {"val": val};
-                    //    adapter.setState(id, val, true);
-                    //}
+                    var sdata = (state.val).toString();
+                    buf = new Buffer(4);
+                    buf[0] = parseInt(sdata.substr(0, 8), 2);
+                    buf[1] = parseInt(sdata.substr(8, 16), 2);
+                    buf[2] = parseInt(sdata.substr(16, 24), 2);
+                    buf[3] = parseInt(sdata.substr(24, 32), 2);
+
                 } else if (type == "INT") {
-                    //val = buff.readInt16BE(byte_addr);
-                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                    //    ack_objects[id] = {"val": val};
-                    //    adapter.setState(id, val, true);
-                    //}
+                    var buf = new Buffer(2);
+                    buf.writeInt16BE(state.val, 0, 2);
+
                 } else if (type == "DINT") {
                     var buf = new Buffer(4);
-                    buf.writeInt32BE(state.val, 0 ,4);
+                    buf.writeInt32BE(state.val, 0, 4);
 
-                    s7client.DBWrite(parseInt(data.native.db.replace("DB","")), parseInt(data.native.adress), 4, buf, function(err){
-                        if(err)
-                            adapter.log.error('DB write error. Code #' + err);
-                    });
-                    //val = buff.readInt32BE(byte_addr);
-                    //if (ack_objects[id] == undefined || ack_objects[id].val != val) {
-                    //    ack_objects[id] = {"val": val};
-                    //    adapter.setState(id, val, true);
-                    //}
                 } else if (type == "REAL") {
                     var buf = new Buffer(4);
                     buf.writeFloatBE(state.val, 0);
 
-                    s7client.DBWrite(parseInt(data.native.db.replace("DB","")), parseInt(data.native.adress), 4, buf, function(err){
-                        if(err)
-                            adapter.log.error('DB write error. Code #' + err);
-                    });
+                }
+
+                if (data.native.cat == "db") {
+
+                    if (type == "BOOL") {
+                        var addr = parseInt(data.native.adress) * 8 + parseInt(data.native.adress.split(".")[1]);
+                        s7client.WriteArea(s7client.S7AreaDB, parseInt(data.native.db.replace("DB", "")), addr, 1, s7client.S7WLBit, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    } else if (type == "BYTE") {
+                        s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.adress), 1, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    } else if (type == "INT" || type == "WORD") {
+                        s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.adress), 2, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
+                        s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.adress), 4, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    }
+                }
+                if (data.native.cat == "input") {
+
+                    if (type == "BOOL") {
+                        var addr = parseInt(data.native.adress) * 8 + parseInt(data.native.adress.split(".")[1]);
+                        s7client.WriteArea(s7client.S7AreaPE, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    } else if (type == "BYTE") {
+                        s7client.EBWrite(parseInt(data.native.adress), parseInt(data.native.adress), 1, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    } else if (type == "INT" || type == "WORD") {
+                        s7client.EBWrite(parseInt(data.native.adress), parseInt(data.native.adress), 2, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
+                        s7client.EBWrite(parseInt(data.native.adress), parseInt(data.native.adress), 4, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    }
+                }
+                if (data.native.cat == "output") {
+
+                    if (type == "BOOL") {
+                        var addr = parseInt(data.native.adress) * 8 + parseInt(data.native.adress.split(".")[1]);
+                        s7client.WriteArea(s7client.S7AreaPA, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    } else if (type == "BYTE") {
+                        s7client.ABWrite(parseInt(data.native.adress), parseInt(data.native.adress), 1, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    } else if (type == "INT" || type == "WORD") {
+                        s7client.ABWrite(parseInt(data.native.adress), parseInt(data.native.adress), 2, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
+                        s7client.ABWrite(parseInt(data.native.adress), parseInt(data.native.adress), 4, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    }
+                }
+                if (data.native.cat == "merker") {
+
+                    if (type == "BOOL") {
+                        var addr = parseInt(data.native.adress) * 8 + parseInt(data.native.adress.split(".")[1]);
+
+                        s7client.WriteArea(s7client.S7AreaMK, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                            console.log("finish")
+                        });
+                    } else if (type == "BYTE") {
+                        s7client.MBWrite(parseInt(data.native.adress), 1, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    } else if (type == "INT" || type == "WORD") {
+                        s7client.MBWrite(parseInt(data.native.adress), 2, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
+                        s7client.MBWrite(parseInt(data.native.adress), 4, buf, function (err) {
+                            if (err)
+                                adapter.log.error('DB write error. Code #' + err);
+                        });
+                    }
                 }
             }
+
+            setTimeout(function(){
+                adapter.setState(id, ack_objects[id.replace(adapter.namespace+".","")].val, true);
+            },(acp.poll*1.5))
         })
     }
-});
-
-
-adapter.on('ready', function () {
-    adapter.setState("info.connection", "starting", true);
-    main();
 });
 
 function bin8(n) {
@@ -102,7 +197,7 @@ function main() {
 
 
     var ac = adapter.config;
-    var acp = adapter.config.params;
+    acp = adapter.config.params;
     var i;
 
     var round = 2;
@@ -125,11 +220,12 @@ function main() {
 
     var db_size = {};
 
-    var old_objects = [];
-    var ack_objects = {};
+
 
     if (parseInt(acp.round) != "NaN") {
         round = parseInt(acp.round);
+    } else {
+        round = 2
     }
 
     round = Math.pow(10, round);
@@ -320,7 +416,7 @@ function main() {
                         cat: "input",
                         type: ac.inputs[i].Type,
                         adress: ac.inputs[i].Adress,
-                        rw: ac.inputs[i].Adress
+                        rw: ac.inputs[i].RW
                     }
                 });
             }
@@ -347,7 +443,7 @@ function main() {
                         cat: "output",
                         type: ac.outputs[i].Type,
                         adress: ac.outputs[i].Adress,
-                        rw: ac.outputs[i].Adress
+                        rw: ac.outputs[i].RW
                     }
                 });
             }
@@ -374,7 +470,7 @@ function main() {
                         cat: "merker",
                         type: ac.merkers[i].Type,
                         adress: ac.merkers[i].Adress,
-                        rw: ac.merkers[i].Adress
+                        rw: ac.merkers[i].RW
                     }
                 });
             }
@@ -403,7 +499,7 @@ function main() {
                         type: ac.dbs[i].Type,
                         db: ac.dbs[i].Adress.split(" +")[0],
                         adress: ac.dbs[i].Adress.split(" +")[1],
-                        rw: ac.dbs[i].Adress
+                        rw: ac.dbs[i].RW
                     }
                 });
             }
@@ -470,8 +566,8 @@ function main() {
                         var start_t = (new Date).valueOf();
                         async.parallel({
                                 input: function (callback) {
-                                    if (input_lsb && input_msb) {
-                                        s7client.EBRead(input_lsb, (input_msb - input_lsb + 1), function (err, res) {
+                                    if (input_msb) {
+                                        s7client.EBRead(input_lsb, (input_msb - input_lsb + 30), function (err, res) {
                                             //s7client.EBRead(input_lsb, 380, function (err, res) {
                                             if (err) {
                                                 callback(err);
@@ -483,8 +579,11 @@ function main() {
                                                     var addr = inputs[n].Adress;
                                                     var byte_addr = parseInt(addr.split(".")[0]) - input_lsb;
                                                     var bit_addr = parseInt(addr.split(".")[1]);
-
-                                                    write(id, res, inputs[n].Type, byte_addr, bit_addr)
+                                                    try {
+                                                        write(id, res, inputs[n].Type, byte_addr, bit_addr)
+                                                    } catch (err) {
+                                                        adapter.log.error('Writing Input. Code #' + err);
+                                                    }
                                                 }
                                                 callback(null);
                                             }
@@ -494,7 +593,7 @@ function main() {
                                     }
                                 },
                                 output: function (callback) {
-                                    if (output_lsb && output_msb) {
+                                    if (output_msb) {
                                         s7client.ABRead(output_lsb, output_msb - output_lsb + 1, function (err, res) {
                                             if (err) {
                                                 callback(err);
@@ -505,8 +604,11 @@ function main() {
                                                     var addr = outputs[n].Adress
                                                     var byte_addr = parseInt(addr.split(".")[0]) - output_lsb;
                                                     var bit_addr = parseInt(addr.split(".")[1]);
-
-                                                    write(id, res, outputs[n].Type, byte_addr, bit_addr)
+                                                    try {
+                                                        write(id, res, outputs[n].Type, byte_addr, bit_addr)
+                                                    } catch (err) {
+                                                        adapter.log.error('Writing Output. Code #' + err);
+                                                    }
                                                 }
                                                 callback(null);
                                             }
@@ -516,19 +618,25 @@ function main() {
                                     }
                                 },
                                 merker: function (callback) {
-                                    if (merker_lsb && merker_msb) {
-                                        s7client.MBRead(merker_lsb, merker_msb - merker_lsb + 1, function (err, res) {
+                                    if (merker_msb) {
+                                        s7client.MBRead(merker_lsb, merker_msb - merker_lsb + 4, function (err, res) {
                                             if (err) {
                                                 callback(err);
                                             } else {
                                                 for (n = 0; merkers.length > n; n++) {
+
                                                     var id = "Merkers." + merkers[n].Adress.split(".")[0] + "." + merkers[n].Name.replace(".", "_").replace(" ", "_");
 
-                                                    var addr = merkers[n].Adress
+                                                    var addr = merkers[n].Adress;
                                                     var byte_addr = parseInt(addr.split(".")[0]) - merker_lsb;
                                                     var bit_addr = parseInt(addr.split(".")[1]);
 
-                                                    write(id, res, merkers[n].Type, byte_addr, bit_addr)
+                                                    try {
+                                                        write(id, res, merkers[n].Type, byte_addr, bit_addr)
+                                                    } catch (err) {
+                                                        adapter.log.error('Writing Merker. Code #' + err);
+                                                    }
+
                                                 }
                                                 callback(null);
                                             }
@@ -568,8 +676,11 @@ function main() {
                                                 var buff = buf[db]
                                                 var byte_addr = parseInt(addr.split(".")[0]);
                                                 var bit_addr = parseInt(addr.split(".")[1]);
-
-                                                write(id, buff, dbs[n].Type, byte_addr, bit_addr)
+                                                try {
+                                                    write(id, buff, dbs[n].Type, byte_addr, bit_addr)
+                                                } catch (err) {
+                                                    adapter.log.error('Writing DB. Code #' + err);
+                                                }
                                             }
                                             callback(null)
                                         }
@@ -603,7 +714,7 @@ function main() {
                                         error_count = 0;
                                     }
 
-                                    setTimeout(poll, parseInt(acp.poll))
+                                    next_poll = setTimeout(poll, parseInt(acp.poll))
                                 }
                             }
                         );
@@ -676,6 +787,7 @@ function main() {
             }
 
             adapter.subscribeStates('*');
+
             start();
         }
     });
