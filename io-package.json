@@ -13,7 +13,6 @@
     "license": "MIT",
     "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
     "type": "hardware",
-
     "config": {
       "width": "800",
       "height": "400",
