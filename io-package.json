@@ -19,6 +19,7 @@
     ],
     "enabled": false,
     "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/S7.png",
+    "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
     "type": "hardware"
   },
   "native": {
