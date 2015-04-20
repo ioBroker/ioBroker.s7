@@ -1,25 +1,26 @@
 {
-    "common": {
-        "name":                     "S7",
-        "version":                  "0.0.2",
-        "title":                    "Siemens S7 Adapter",
-        "desc":                     "Siemens S7 over Snap7",
-        "platform":                 "Javascript/Node.js",
-        "mode":                     "daemon",
-        "icon":                     "example.png",
-        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png",
-        "loglevel":                 "info",
-        "icon":                     "S7.png",
-        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.S7/master/admin/S7.png",
-      "config": {
-        "width":"100%",
-        "height":"100%",
-        "minHeight":"100%"
-      }
-    },
-    "native": {
-    },
-    "objects": [
+  "common": {
+    "name": "s7",
+    "version": "0.0.3",
+    "title": "Siemens S7 Adapter",
+    "desc": "Siemens S7 over Snap7",
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png",
+    "loglevel": "info",
+    "icon": "S7.png",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.S7/master/admin/S7.png",
+    "license": "MIT",
+    "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
+    "type": "hardware",
 
-    ]
+    "config": {
+      "width": "800",
+      "height": "400",
+    }
+  },
+  "native": {
+  },
+  "objects": [
+  ]
 }
