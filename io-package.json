@@ -1,26 +1,26 @@
+
 {
   "common": {
     "name": "s7",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "title": "Siemens S7 Adapter",
     "desc": "Siemens S7 over Snap7",
+    "authors": [
+      "smiling_Jack <steffen.schorling@googlemail.com>"
+    ],
+    "license": "MIT",
     "platform": "Javascript/Node.js",
     "mode": "daemon",
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png",
     "loglevel": "info",
     "icon": "S7.png",
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.S7/master/admin/S7.png",
-    "license": "MIT",
+    "messagebox": true,
+    "keywords": [
+      "S7",
+      "SPS"
+    ],
+    "enabled": false,
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/S7.png",
     "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
-    "type": "hardware",
-
-    "config": {
-      "width": "800",
-      "height": "400",
-    }
-  },
-  "native": {
-  },
-  "objects": [
-  ]
+    "type": "hardware"
+  }
 }
