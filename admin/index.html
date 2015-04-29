@@ -68,7 +68,6 @@
 
     // the function loadSettings has to exist ...
     function load(settings, onchange) {
-console.log(settings)
         var inputs = settings.inputs || [];
         var outputs = settings.outputs || [];
         var merkers = settings.merkers || [];
@@ -117,9 +116,9 @@ console.log(settings)
                     colNames: ['Name', 'Adress', 'Type', 'Description', 'poll', 'RW'],
                     colModel: [
                         {name: 'Name', index: 'id', width: 250, editable: true},
-                        {name: 'Adress', index: 'Adress', width: 70, editable: true, sorttype:"float"},
+                        {name: 'Adress', index: 'Adress', width: 100, editable: true, sorttype:"float"},
                         {name: 'Type', index: 'Type', edittype:'select', editoptions: { value: 'BOOL:BOOL; BYTE:BYTE; WORD:WORD; DWORD:DWORD; INT:INT; DINT:DINT; REAL:REAL' }, width: 100, editable: true},
-                        {name: 'Description', index: 'Description', width: 400,  editable: true},
+                        {name: 'Description', index: 'Description', width: 350,  editable: true},
                         {name: 'Poll', index: 'poll', width: 40, editable: false, edittype: 'checkbox', align: 'center', formatter: 'checkbox'},
                         {name: 'RW', index: 'RW', width: 60, editable: false, edittype: 'checkbox', align: 'center', formatter: 'checkbox'},
 
@@ -253,7 +252,6 @@ console.log(settings)
     }
 
     function symbol_import(e) {
-        console.log(e)
         var reader = new FileReader();
 
         reader.onload = function (e) {

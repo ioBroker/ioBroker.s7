@@ -2,26 +2,35 @@
 /*jslint node: true */
 "use strict";
 
+var snap7;
+//if(process.platform.indexOf("win") != -1){
+//    snap7 = require(__dirname + '/lib/node-snap7')
+//}else{
+    snap7 = require('node-snap7');
+//}
 
 var utils = require(__dirname + '/lib/utils');
 var adapter = utils.adapter('S7');
-var snap7 = require('node-snap7');
 var async = require('async');
 
 var s7client = new snap7.S7Client();
 var connected = false;
 
-var next_poll;
+var nextPoll;
 var acp;
 var old_objects = [];
 var ack_objects = {};
 
 
 process.on('SIGINT', function () {
-    adapter.setState("info.connection", "stopped", true);
-    adapter.setState("info.pdu", "", true);
-    adapter.setState("info.poll_time", "", true);
-    clearTimeout(next_poll);
+    if (adapter && adapter.setState) {
+        adapter.setState("info.connection", "stopped", true);
+        adapter.setState("info.pdu", "", true);
+        adapter.setState("info.poll_time", "", true);
+
+    }
+    if (nextPoll)
+    clearTimeout(nextPoll);
 });
 
 adapter.on('ready', function () {
@@ -182,9 +191,9 @@ adapter.on('stateChange', function (id, state) {
                 }
             }
 
-            setTimeout(function(){
-                adapter.setState(id, ack_objects[id.replace(adapter.namespace+".","")].val, true);
-            },(acp.poll*1.5))
+            setTimeout(function () {
+                adapter.setState(id, ack_objects[id.replace(adapter.namespace + ".", "")].val, true);
+            } , acp.poll * 1.5)
         })
     }
 });
@@ -234,28 +243,28 @@ function main() {
 
         var n = 0;
 
-        function clean() {
-            for (var key in list) {
-                old_objects.push(key)
-            }
-            var n = 0;
-            adapter.delObject(old_objects[n], function () {
-                var nn = n + 1;
-                if (nn > old_objects.length - 1) {
-                    start()
-                } else {
-                    clean(nn)
-                }
-            })
-        }
-
-        if (old_objects.length > 0) {
-            clean(n)
-        } else {
-            start()
-        }
+        //function clean() {
+        //    for (var key in list) {
+        //        old_objects.push(key)
+        //    }
+        //    var n = 0;
+        //    adapter.delObject(old_objects[n], function () {
+        //        var nn = n + 1;
+        //        if (nn > old_objects.length - 1) {
+        //            start()
+        //        } else {
+        //            clean(nn)
+        //        }
+        //    })
+        //}
+        //
+        //if (old_objects.length > 0) {
+        //    clean(n)
+        //} else {
+        //    start()
+        //}
         //clean(n)
-        function start() {
+        //function start() {
             if (acp["inputs-poll"]) {
                 inputs = ac.inputs;
             } else {
@@ -549,179 +558,179 @@ function main() {
 
 
             function start() {
-                s7client.ConnectTo(acp.ip, parseInt(acp.rack), parseInt(acp.slot), function (err) {
-                    var error_count = 0;
-                    if (err) {
-                        adapter.log.error('Connection failed. Code #' + err);
-                        adapter.setState("info.connection", "connection error trying reconnect", true);
-                        return setTimeout(start, (parseInt(acp.recon) || 60000))
-                    }
-
-                    connected = true;
-                    adapter.setState("info.connection", "connected", true);
-                    adapter.setState("info.pdu", s7client.PDULength(), true);
-
-
-                    function poll() {
-                        var start_t = (new Date).valueOf();
-                        async.parallel({
-                                input: function (callback) {
-                                    if (input_msb) {
-                                        s7client.EBRead(input_lsb, (input_msb - input_lsb + 30), function (err, res) {
-                                            //s7client.EBRead(input_lsb, 380, function (err, res) {
-                                            if (err) {
-                                                callback(err);
-                                            } else {
-
-                                                for (n = 0; inputs.length > n; n++) {
-                                                    var id = "Inputs." + inputs[n].Adress.split(".")[0] + "." + inputs[n].Name.replace(".", "_").replace(" ", "_");
-
-                                                    var addr = inputs[n].Adress;
-                                                    var byte_addr = parseInt(addr.split(".")[0]) - input_lsb;
-                                                    var bit_addr = parseInt(addr.split(".")[1]);
-                                                    try {
-                                                        write(id, res, inputs[n].Type, byte_addr, bit_addr)
-                                                    } catch (err) {
-                                                        adapter.log.error('Writing Input. Code #' + err);
-                                                    }
-                                                }
-                                                callback(null);
-                                            }
-                                        });
-                                    } else {
-                                        callback(null, null);
-                                    }
-                                },
-                                output: function (callback) {
-                                    if (output_msb) {
-                                        s7client.ABRead(output_lsb, output_msb - output_lsb + 1, function (err, res) {
-                                            if (err) {
-                                                callback(err);
-                                            } else {
-                                                for (n = 0; outputs.length > n; n++) {
-                                                    var id = "Outputs." + outputs[n].Adress.split(".")[0] + "." + outputs[n].Name.replace(".", "_").replace(" ", "_");
-
-                                                    var addr = outputs[n].Adress
-                                                    var byte_addr = parseInt(addr.split(".")[0]) - output_lsb;
-                                                    var bit_addr = parseInt(addr.split(".")[1]);
-                                                    try {
-                                                        write(id, res, outputs[n].Type, byte_addr, bit_addr)
-                                                    } catch (err) {
-                                                        adapter.log.error('Writing Output. Code #' + err);
-                                                    }
-                                                }
-                                                callback(null);
-                                            }
-                                        });
-                                    } else {
-                                        callback(null);
-                                    }
-                                },
-                                merker: function (callback) {
-                                    if (merker_msb) {
-                                        s7client.MBRead(merker_lsb, merker_msb - merker_lsb + 4, function (err, res) {
-                                            if (err) {
-                                                callback(err);
-                                            } else {
-                                                for (n = 0; merkers.length > n; n++) {
-
-                                                    var id = "Merkers." + merkers[n].Adress.split(".")[0] + "." + merkers[n].Name.replace(".", "_").replace(" ", "_");
-
-                                                    var addr = merkers[n].Adress;
-                                                    var byte_addr = parseInt(addr.split(".")[0]) - merker_lsb;
-                                                    var bit_addr = parseInt(addr.split(".")[1]);
-
-                                                    try {
-                                                        write(id, res, merkers[n].Type, byte_addr, bit_addr)
-                                                    } catch (err) {
-                                                        adapter.log.error('Writing Merker. Code #' + err);
-                                                    }
-
-                                                }
-                                                callback(null);
-                                            }
-                                        });
-
-                                    } else {
-                                        callback(null);
-                                    }
-                                },
-                                dbs: function (callback) {
-                                    var buf = {};
-
-                                    async.each(_db_size, function (db, callback) {
-                                        var _db = parseInt(db.db.replace("DB", ""));
-                                        var msb = db.msb;
-
-                                        s7client.DBRead(_db, 0, msb, function (err, res) {
-                                            if (err) {
-                                                callback(err);
-                                            } else {
-
-                                                buf["DB" + _db] = res;
-                                                callback(null, res);
-                                            }
-                                        });
-                                    }, function (err, res) {
-
-                                        if (err) {
-                                            callback(err)
-                                        } else {
-                                            for (n = 0; dbs.length > n; n++) {
-
-                                                var addr = dbs[n].Adress.split(" +")[1];
-                                                var db = dbs[n].Adress.split(" +")[0];
-
-                                                var id = "DBs." + db + "." + dbs[n].Name.replace(".", "_").replace(" ", "_");
-                                                var buff = buf[db]
-                                                var byte_addr = parseInt(addr.split(".")[0]);
-                                                var bit_addr = parseInt(addr.split(".")[1]);
-                                                try {
-                                                    write(id, buff, dbs[n].Type, byte_addr, bit_addr)
-                                                } catch (err) {
-                                                    adapter.log.error('Writing DB. Code #' + err);
-                                                }
-                                            }
-                                            callback(null)
-                                        }
-                                    })
-
-                                }
-                            },
-
-                            function (err) {
-                                if (err) {
-                                    error_count++;
-
-                                    adapter.log.warn('Poll error count : ' + error_count + " code: " + err);
-                                    adapter.setState("info.connection", 'Poll error count : ' + error_count, true);
-
-                                    if (error_count < 6 && s7client.Connected()) {
-                                        setTimeout(poll, parseInt(acp.poll))
-
-                                    } else {
-                                        connected = false;
-                                        adapter.log.error('try reconnection');
-                                        adapter.setState("info.connection", 'try reconnection', true);
-                                        setTimeout(start, (parseInt(acp.recon) || 60000));
-                                    }
-
-                                } else {
-
-                                    adapter.setState("info.poll_time", (new Date).valueOf() - start_t, true);
-                                    if (error_count > 0) {
-                                        adapter.setState("info.connection", "connected", true);
-                                        error_count = 0;
-                                    }
-
-                                    next_poll = setTimeout(poll, parseInt(acp.poll))
-                                }
-                            }
-                        );
-                    }
-
-                    poll();
-                });
+                //s7client.ConnectTo(acp.ip, parseInt(acp.rack), parseInt(acp.slot), function (err) {
+                //    var error_count = 0;
+                //    if (err) {
+                //        adapter.log.error('Connection failed. Code #' + err);
+                //        adapter.setState("info.connection", "connection error trying reconnect", true);
+                //        return setTimeout(start, (parseInt(acp.recon) || 60000))
+                //    }
+                //
+                //    connected = true;
+                //    adapter.setState("info.connection", "connected", true);
+                //    adapter.setState("info.pdu", s7client.PDULength(), true);
+                //
+                //
+                //    function poll() {
+                //        var start_t = (new Date).valueOf();
+                //        async.parallel({
+                //                input: function (callback) {
+                //                    if (input_msb) {
+                //                        s7client.EBRead(input_lsb, (input_msb - input_lsb + 30), function (err, res) {
+                //                            //s7client.EBRead(input_lsb, 380, function (err, res) {
+                //                            if (err) {
+                //                                callback(err);
+                //                            } else {
+                //
+                //                                for (n = 0; inputs.length > n; n++) {
+                //                                    var id = "Inputs." + inputs[n].Adress.split(".")[0] + "." + inputs[n].Name.replace(".", "_").replace(" ", "_");
+                //
+                //                                    var addr = inputs[n].Adress;
+                //                                    var byte_addr = parseInt(addr.split(".")[0]) - input_lsb;
+                //                                    var bit_addr = parseInt(addr.split(".")[1]);
+                //                                    try {
+                //                                        write(id, res, inputs[n].Type, byte_addr, bit_addr)
+                //                                    } catch (err) {
+                //                                        adapter.log.error('Writing Input. Code #' + err);
+                //                                    }
+                //                                }
+                //                                callback(null);
+                //                            }
+                //                        });
+                //                    } else {
+                //                        callback(null, null);
+                //                    }
+                //                },
+                //                output: function (callback) {
+                //                    if (output_msb) {
+                //                        s7client.ABRead(output_lsb, output_msb - output_lsb + 1, function (err, res) {
+                //                            if (err) {
+                //                                callback(err);
+                //                            } else {
+                //                                for (n = 0; outputs.length > n; n++) {
+                //                                    var id = "Outputs." + outputs[n].Adress.split(".")[0] + "." + outputs[n].Name.replace(".", "_").replace(" ", "_");
+                //
+                //                                    var addr = outputs[n].Adress
+                //                                    var byte_addr = parseInt(addr.split(".")[0]) - output_lsb;
+                //                                    var bit_addr = parseInt(addr.split(".")[1]);
+                //                                    try {
+                //                                        write(id, res, outputs[n].Type, byte_addr, bit_addr)
+                //                                    } catch (err) {
+                //                                        adapter.log.error('Writing Output. Code #' + err);
+                //                                    }
+                //                                }
+                //                                callback(null);
+                //                            }
+                //                        });
+                //                    } else {
+                //                        callback(null);
+                //                    }
+                //                },
+                //                merker: function (callback) {
+                //                    if (merker_msb) {
+                //                        s7client.MBRead(merker_lsb, merker_msb - merker_lsb + 4, function (err, res) {
+                //                            if (err) {
+                //                                callback(err);
+                //                            } else {
+                //                                for (n = 0; merkers.length > n; n++) {
+                //
+                //                                    var id = "Merkers." + merkers[n].Adress.split(".")[0] + "." + merkers[n].Name.replace(".", "_").replace(" ", "_");
+                //
+                //                                    var addr = merkers[n].Adress;
+                //                                    var byte_addr = parseInt(addr.split(".")[0]) - merker_lsb;
+                //                                    var bit_addr = parseInt(addr.split(".")[1]);
+                //
+                //                                    try {
+                //                                        write(id, res, merkers[n].Type, byte_addr, bit_addr)
+                //                                    } catch (err) {
+                //                                        adapter.log.error('Writing Merker. Code #' + err);
+                //                                    }
+                //
+                //                                }
+                //                                callback(null);
+                //                            }
+                //                        });
+                //
+                //                    } else {
+                //                        callback(null);
+                //                    }
+                //                },
+                //                dbs: function (callback) {
+                //                    var buf = {};
+                //
+                //                    async.each(_db_size, function (db, callback) {
+                //                        var _db = parseInt(db.db.replace("DB", ""));
+                //                        var msb = db.msb;
+                //
+                //                        s7client.DBRead(_db, 0, msb, function (err, res) {
+                //                            if (err) {
+                //                                callback(err);
+                //                            } else {
+                //
+                //                                buf["DB" + _db] = res;
+                //                                callback(null, res);
+                //                            }
+                //                        });
+                //                    }, function (err, res) {
+                //
+                //                        if (err) {
+                //                            callback(err)
+                //                        } else {
+                //                            for (n = 0; dbs.length > n; n++) {
+                //
+                //                                var addr = dbs[n].Adress.split(" +")[1];
+                //                                var db = dbs[n].Adress.split(" +")[0];
+                //
+                //                                var id = "DBs." + db + "." + dbs[n].Name.replace(".", "_").replace(" ", "_");
+                //                                var buff = buf[db]
+                //                                var byte_addr = parseInt(addr.split(".")[0]);
+                //                                var bit_addr = parseInt(addr.split(".")[1]);
+                //                                try {
+                //                                    write(id, buff, dbs[n].Type, byte_addr, bit_addr)
+                //                                } catch (err) {
+                //                                    adapter.log.error('Writing DB. Code #' + err);
+                //                                }
+                //                            }
+                //                            callback(null)
+                //                        }
+                //                    })
+                //
+                //                }
+                //            },
+                //
+                //            function (err) {
+                //                if (err) {
+                //                    error_count++;
+                //
+                //                    adapter.log.warn('Poll error count : ' + error_count + " code: " + err);
+                //                    adapter.setState("info.connection", 'Poll error count : ' + error_count, true);
+                //
+                //                    if (error_count < 6 && s7client.Connected()) {
+                //                        setTimeout(poll, parseInt(acp.poll))
+                //
+                //                    } else {
+                //                        connected = false;
+                //                        adapter.log.error('try reconnection');
+                //                        adapter.setState("info.connection", 'try reconnection', true);
+                //                        setTimeout(start, (parseInt(acp.recon) || 60000));
+                //                    }
+                //
+                //                } else {
+                //
+                //                    adapter.setState("info.poll_time", (new Date).valueOf() - start_t, true);
+                //                    if (error_count > 0) {
+                //                        adapter.setState("info.connection", "connected", true);
+                //                        error_count = 0;
+                //                    }
+                //
+                //                    nextPoll = setTimeout(poll, parseInt(acp.poll))
+                //                }
+                //            }
+                //        );
+                //    }
+                //
+                //    poll();
+                //});
             }
 
             function write(id, buff, type, byte_addr, bit_addr) {
@@ -789,6 +798,6 @@ function main() {
             adapter.subscribeStates('*');
 
             start();
-        }
+        //}
     });
 }
