@@ -1,7 +1,6 @@
 {
-  "name": "iobroker.s7",
-  "main": "s7.js",
-  "version": "0.0.6",
+  "name": "s7",
+  "version": "0.0.7",
   "description": "Siemens S7 over Snap7",
   "author": {
     "name": "smiling_Jack",
