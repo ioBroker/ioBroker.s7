@@ -203,7 +203,9 @@
                     rack: 0,
                     slot: 2,
                     poll: 1000,
-                    recon: 60000
+                    recon: 60000,
+                    pulstime:1000,
+                    round:2
                 };
 //        onchange(false);
 //        onchange(true);
@@ -308,9 +310,9 @@
                     'Unit': "",
                     'Rool': "",
                     'Room': "",
-                    'poll': false,
+                    'poll': true,
                     'RW': false,
-                    'WP': true
+                    'WP': false
 
                 };
 
@@ -378,9 +380,9 @@
                         'Unit': "",
                         'Rool': "",
                         'Room': "",
-                        'poll': false,
+                        'poll': true,
                         'RW': false,
-                        'WP': true
+                        'WP': false
                     })
                 }
             });

@@ -1,4 +1,8 @@
 ### iobroker.s7
+
+#0.1.1
+* change inport options
+
 #0.1.0
 * redesign Admin UI
 * add write as Pulse
