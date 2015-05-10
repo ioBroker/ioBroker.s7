@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "s7",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "title": "Siemens S7 Adapter",
     "desc": "Siemens S7 over Snap7",
     "authors": [
@@ -17,7 +17,7 @@
       "S7",
       "SPS"
     ],
-    "enabled": true,
+    "enabled": false,
     "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/S7.png",
     "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
     "type": "hardware",
@@ -27,5 +27,18 @@
     }
   },
   "native": {
+    "params": {
+      "ip": "192.168.0.1",
+      "rack": "0",
+      "slot": "2",
+      "round": "2",
+      "poll": "1000",
+      "recon": "60000",
+      "pulsetime": "1000"
+    },
+    "inputs": [],
+    "outputs": [],
+    "merkers": [],
+    "dbs": []
   }
 }

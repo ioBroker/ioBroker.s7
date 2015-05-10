@@ -491,6 +491,7 @@ function main() {
             new_objects.push(adapter.namespace + ".Merkers." + ch + "." + ac.merkers[i].Name.replace(".", "_").replace(" ", "_"))
         }
 
+        console.log(db_size)
         for (i = 0; db_size.length > i; i++) {
             adapter.setObject("DBs." + db_size[i].db, {
                 type: 'channel',
@@ -503,22 +504,22 @@ function main() {
 
         for (i = 0; dbs.length > i; i++) {
             var db = dbs[i].Adress.split(" ")[0];
-            adapter.setObject("DBs." + db + "." + ac.dbs[i].Name.replace(".", "_").replace(" ", "_"), {
+            adapter.setObject("DBs." + db + "." + dbs[i].Name.replace(".", "_").replace(" ", "_"), {
                 type: 'state',
                 common: {
-                    name: ac.dbs[i].Description,
-                    role: ac.dbs[i].Type,
-                    type: ac.dbs[i].Type,
-                    unit: ac.dbs[i].Unit,
+                    name: dbs[i].Description,
+                    role: dbs[i].Type,
+                    type: dbs[i].Type,
+                    unit: dbs[i].Unit,
                     enabled: false
                 },
                 native: {
                     cat: "db",
-                    type: ac.dbs[i].Type,
-                    db: ac.dbs[i].Adress.split(" +")[0],
-                    adress: ac.dbs[i].Adress.split(" +")[1],
-                    rw: ac.dbs[i].RW,
-                    wp: ac.dbs[i].WP
+                    type:dbs[i].Type,
+                    db: dbs[i].Adress.split(" +")[0],
+                    adress: dbs[i].Adress.split(" +")[1],
+                    rw: dbs[i].RW,
+                    wp: dbs[i].WP
                 }
             });
             new_objects.push(adapter.namespace + ".DBs." + db + "." + ac.dbs[i].Name.replace(".", "_").replace(" ", "_"))

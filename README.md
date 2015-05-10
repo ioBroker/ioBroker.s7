@@ -1,5 +1,9 @@
 ### iobroker.s7
 
+#0.1.2
+* Bugfix startup
+* Bugfix add states
+
 #0.1.1
 * change inport options
 
