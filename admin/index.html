@@ -125,7 +125,35 @@
 <script type="text/javascript">
 
     // Dictionary (systemDictionary is global variable from adapter-settings.js)
-    systemDictionary = {};
+    systemDictionary = {
+        "General":          {"en": "General",           "de": "Allgemein",          "ru": "Основное"},
+        "Inputs":           {"en": "Inputs",            "de": "Eingänge",           "ru": "Входы"},
+        "Outputs":          {"en": "Outputs",           "de": "Ausgänge",           "ru": "Выходы"},
+        "Marker":           {"en": "Marker",            "de": "Merker",             "ru": "Маркеры"},
+        "PLC Connection:":  {"en": "PLC Connection:",   "de": "SPS Verbindung:",    "ru": "PLC соединение:"},
+        "PLC IP Address:":  {"en": "PLC IP Address:",   "de": "SPS IP Addresse:",    "ru": "PLC IP адрес:"},
+        "PLC Rack:":        {"en": "PLC Rack:",         "de": "SPS Rack:",          "ru": "PLC Rack:"},
+        "PLC Slot:":        {"en": "PLC Slot:",         "de": "SPS Slot:",          "ru": "PLC слот:"},
+        "Round Real to:":   {"en": "Round real to:",    "de": "Aufrunden Real auf:", "ru": "Округлять real до:"},
+        "Poll delay:":      {"en": "Poll delay:",       "de": "Poll delay:",        "ru": "Интервал опроса:"},
+        "Reconnect time:":  {"en": "Reconnect time:",   "de": "Reconnectzeit:",     "ru": "Reconnect time:"},
+        "Pulse time:":      {"en": "Pulse time:",       "de": "Pulsetime:",         "ru": "Pulse time:"},
+        "Import symbols file:": {"en": "Import symbols file:", "de": "Symboldatei Importieren:", "ru": "Ипморт символьных файлов:"},
+        "Import DB file:":  {"en": "Import DB file:",   "de": "DB-Datei importieren:", "ru": "Ипморт DB файлов:"},
+        "Load Symbols":     {"en": "Load symbols",      "de": "Lade Symbole",       "ru": "Загруить символы"},
+        "Add DB":           {"en": "Add DB",            "de": "DB einfügen",        "ru": "Добавить DB"},
+        "Toggle poll":      {"en": "Toggle poll",       "de": "Poll umschalten",    "ru": "Изменить poll"},
+        "Toggle RW":        {"en": "Toggle RW",         "de": "RW umschalten",      "ru": "Изменить RW"},
+        "Toggle WP":        {"en": "Toggle WP",         "de": "WP umschalten",      "ru": "Изменить WP"},
+        "Address":          {"en": "Address",           "de": "Addresse",            "ru": "Адрес"},
+        "Name":             {"en": "Name",              "de": "Name",               "ru": "Имя"},
+        "Description":      {"en": "Description",       "de": "Beschreibung",       "ru": "Описание"},
+        "Type":             {"en": "Type",              "de": "Typ",                "ru": "Тип"},
+        "Unit":             {"en": "Unit",              "de": "Einheit",            "ru": "Единицы"},
+        "poll":             {"en": "poll",              "de": "poll",               "ru": "poll"},
+        "RW":               {"en": "RW",                "de": "RW",                 "ru": "RW"},
+        "WP":               {"en": "WP",                "de": "WP",                 "ru": "WP"}
+    };
 
     $(document).ready(function () {
         $("#btn_loadsymbole").button().click(function () {
@@ -192,13 +220,13 @@
 
 
     function load(settings, onchange) {
-        var inputs = settings.inputs || [];
-        var outputs = settings.outputs || [];
-        var merkers = settings.merkers || [];
-        var counter = settings.counter || [];
-        var timer = settings.timer || [];
-        var dbs = settings.dbs || [];
-        var params = settings.params || {
+        var inputs  = settings.inputs   || [];
+        var outputs = settings.outputs  || [];
+        var merkers = settings.merkers  || [];
+        var counter = settings.counter  || [];
+        var timer   = settings.timer    || [];
+        var dbs     = settings.dbs      || [];
+        var params  = settings.params   || {
                     ip: "192.168.0.1",
                     rack: 0,
                     slot: 2,
@@ -235,24 +263,24 @@
 
 
             $("#" + _id).jsGrid({
-                width: "auto",
-                height: "auto",
-                inserting: true,
-                editing: true,
-                sorting: true,
-                heading: true,
-                paging: false,
-                data: eval(_id.split("_")[1]),
+                width:      'auto',
+                height:     'auto',
+                inserting:  true,
+                editing:    true,
+                sorting:    true,
+                heading:    true,
+                paging:     false,
+                data: eval(_id.split('_')[1]),
                 fields: [
-                    {name: 'Adress', type: "text", width: '70px'},
-                    {name: 'Name', type: "text", width: '150px'},
-                    {name: 'Description', type: "text", width: '300px'},
-                    {name: 'Type', type: "select", width: '95px', items: type_items, valueField: "valve", textField: "text"},
-                    {name: 'Unit', type: "text", width: '50px'},
-                    {name: 'poll', type: "checkbox", width: '35px'},
-                    {name: 'RW', type: "checkbox", width: '35px'},
-                    {name: 'WP', type: "checkbox", width: '35px'},
-                    {type: "control", width: '80px'}
+                    {name: _('Address'),       type: 'text',       width: '70px'},
+                    {name: _('Name'),          type: 'text',       width: '150px'},
+                    {name: _('Description'),   type: 'text',       width: '300px'},
+                    {name: _('Type'),          type: 'select',     width: '95px', items: type_items, valueField: 'valve', textField: "text"},
+                    {name: _('Unit'),          type: 'text',       width: '50px'},
+                    {name: _('poll'),          type: 'checkbox',   width: '35px'},
+                    {name: _('RW'),            type: 'checkbox',   width: '35px'},
+                    {name: _('WP'),            type: 'checkbox',   width: '35px'},
+                    {                          type: 'control',    width: '80px'}
                 ]
             })
         });
@@ -291,7 +319,7 @@
             var data = {
                 inputs: [],
                 outputs: [],
-                merkers: [],
+                markers: [],
 //                counter: [],
 //                timer: [],
 //                dbs: []
@@ -303,24 +331,24 @@
                 var typ = this.slice(23, 29).replace(/( )/g, "");
 
                 var d = {
-                    'Name': this.slice(0, 23).replace(/( ){2,}/g, ""),
-                    'Adress': this.slice(29, 36).replace(/( )/g, ""),
-                    'Type': this.slice(36, 41).replace(/( )/g, ""),
-                    'Description': this.slice(46, 126).replace(/( ){2,}/, ""),
-                    'Unit': "",
-                    'Rool': "",
-                    'Room': "",
-                    'poll': true,
-                    'RW': false,
-                    'WP': false
+                    Name:         this.slice(0, 23).replace(/( ){2,}/g, ""),
+                    Address:      this.slice(29, 36).replace(/( )/g, ""),
+                    Type:         this.slice(36, 41).replace(/( )/g, ""),
+                    Description:  this.slice(46, 126).replace(/( ){2,}/, ""),
+                    Unit:         "",
+                    Role:         "",
+                    Room:         "",
+                    poll:         true,
+                    RW:           false,
+                    WP:           false
 
                 };
 
 //                    if (typ == "E" || typ == "EB" ||typ == "EW" ||typ == "ED"||typ == "PEB"||typ == "PEW"||typ == "PED")data.inputs.push(d);
 //                    if (typ == "A" || typ == "AB" ||typ == "AW" ||typ == "AD"||typ == "PAB"||typ == "PAW"||typ == "PAD")data.outputs.push(d);
-                if (typ == "E" || typ == "EB" || typ == "EW" || typ == "ED")data.inputs.push(d);
-                if (typ == "A" || typ == "AB" || typ == "AW" || typ == "AD")data.outputs.push(d);
-                if (typ == "M" || typ == "MB" || typ == "MW" || typ == "MD")data.merkers.push(d);
+                if (typ == "E" || typ == "EB" || typ == "EW" || typ == "ED") data.inputs.push(d);
+                if (typ == "A" || typ == "AB" || typ == "AW" || typ == "AD") data.outputs.push(d);
+                if (typ == "M" || typ == "MB" || typ == "MW" || typ == "MD") data.markers.push(d);
 //                if (typ == "C")data.counter.push(d);
 //                if (typ == "T")data.timer.push(d);
 //                if (typ == "DB")data.dbs.push(d);
@@ -360,9 +388,9 @@
             var new_data = [];
 
             $.each(old_data, function () {
-                data[this.Adress] = this
+                data[this.Address] = this
             });
-            var struck = text.split("STRUCT")[1].split("=")[0].split("\n");
+            var struck = text.split('STRUCT')[1].split("=")[0].split("\n");
 
             $.each(struck, function () {
                 console.log("db")
@@ -372,32 +400,32 @@
                     x.shift();
 
                     _data.push({
-                        Adress: db + " " + x.shift(),
-                        Name: x.shift(),
-                        Type: x.shift(),
-                        dec: x.shift(),
-                        Description: x.join(" "),
-                        'Unit': "",
-                        'Rool': "",
-                        'Room': "",
-                        'poll': true,
-                        'RW': false,
-                        'WP': false
+                        Address:      db + ' ' + x.shift(),
+                        Name:         x.shift(),
+                        Type:         x.shift(),
+                        dec:          x.shift(),
+                        Description:  x.join(' '),
+                        Unit:         '',
+                        Role:         '',
+                        Room:         '',
+                        poll:         true,
+                        RW:           false,
+                        WP:           false
                     })
                 }
             });
 
-//            if( _data[0].Adress.indexOf("<input") > -1){
+//            if( _data[0].Address.indexOf("<input") > -1){
 //                _data.shift();
 //            }
 //            _data.pop();
 
             $.each(_data, function () {
-                data[this.Adress] = this
+                data[this.Address] = this;
             });
 
             $.each(data, function () {
-                new_data.push(this)
+                new_data.push(this);
             });
 
 
@@ -416,10 +444,10 @@
 <div id="adapter-container" style="height: calc(100% - 40px);width: calc(100% - 10px); overflow: hidden;  ">
 
     <ul>
-        <li><a href="#s7_tab_g">General</a></li>
-        <li><a href="#s7_tab_i">Inputs</a></li>
-        <li><a href="#s7_tab_o">Outputs</a></li>
-        <li><a href="#s7_tab_m">Merker</a></li>
+        <li><a href="#s7_tab_g" class="translate">General</a></li>
+        <li><a href="#s7_tab_i" class="translate">Inputs</a></li>
+        <li><a href="#s7_tab_o" class="translate">Outputs</a></li>
+        <li><a href="#s7_tab_m" class="translate">Marker</a></li>
         <!--<li><a href="#s7_tab_c">Counter</a></li>-->
         <!--<li><a href="#s7_tab_t">Timer</a></li>-->
         <li><a href="#s7_tab_d">DBs</a></li>
@@ -430,44 +458,44 @@
 
         <table class="ui-widget-content" style="z-index: 2;margin-top: 60px; border: 1px solid black; border-collapse: collapse; ">
             <tr style="border-bottom: 1px solid black;text-align: center " class="ui-widget-header">
-                <td colspan="2">PLC Connection:</td>
+                <td colspan="2" class="translate">PLC Connection:</td>
             </tr>
             <tr>
-                <td style="width: 200px">PLC IP Adress:</td>
+                <td style="width: 200px" class="translate">PLC IP Address:</td>
                 <td style="width: 200px"><input class="s7_params" id="s7params_ip"/></td>
             </tr>
             <tr>
-                <td>PLC Rack:</td>
+                <td class="translate">PLC Rack:</td>
                 <td><input class="s7_params" id="s7params_rack"/></td>
             </tr>
             <tr>
-                <td>PLC Slot:</td>
+                <td class="translate">PLC Slot:</td>
                 <td><input class="s7_params" id="s7params_slot"/></td>
             </tr>
         </table>
 
         <table class="ui-widget-content" style="z-index: 2;margin-top: 20px;border-collapse: collapse; display: inline; border: 1px solid black;height: 130px;">
             <tr>
-                <td style="text-align: center" colspan="3" class="ui-widget-header">Gerneral</td>
+                <td style="text-align: center" colspan="3" class="ui-widget-header" class="translate">General</td>
             </tr>
 
             <tr>
-                <td style="width: 184px">Round Real to</td>
+                <td style="width: 184px" class="translate">Round Real to:</td>
                 <td style="text-align: center"><input style="margin-right: 5px;text-align: right" type="text" class="s7_params" id="s7params_round"></td>
                 <td></td>
             </tr>
             <tr>
-                <td>Poll delay:</td>
+                <td class="translate">Poll delay:</td>
                 <td  style="text-align: center"><input style="margin-right: 5px;text-align: right" class="s7_params" id="s7params_poll"/></td>
                 <td style="padding-right: 20px">ms</td>
             </tr>
             <tr>
-                <td>Reconnect time</td>
+                <td class="translate">Reconnect time:</td>
                 <td style="text-align: center"><input style="margin-right: 5px;text-align: right" type="text" class="s7_params" id="s7params_recon"></td>
                 <td>ms</td>
             </tr>
             <tr>
-                <td>Pulsetime</td>
+                <td class="translate">Pulse time:</td>
                 <td style="text-align: center"><input style="margin-right: 5px;text-align: right" type="text" class="s7_params" id="s7params_pulsetime"></td>
                 <td>ms</td>
             </tr>
@@ -475,42 +503,42 @@
 
         <table class="ui-widget-content" style="z-index: 2;margin-top: 20px;  margin-bottom: 20px; border: 1px solid black; border-collapse: collapse; ">
             <tr class="ui-widget-header">
-                <td style="width: 200px; text-align: center">Import Symbol Datei:</td>
-                <td style="width: 200px; text-align: center">Import DB Datei:</td>
+                <td style="width: 200px; text-align: center" class="translate">Import symbols file:</td>
+                <td style="width: 200px; text-align: center" class="translate">Import DB file:</td>
             </tr>
             <tr>
                 <td style="padding: 10px;width: 180px; text-align: center">
-                    <button id="btn_loadsymbole">Load Symole</button>
+                    <button id="btn_loadsymbole" class="translateB">Load Symbols</button>
                     <input style="display: none" onchange="symbol_import(this.files)" type="file" accept=".asc" id="symol_import"/></td>
                 <td style="padding: 10px;width: 180px; text-align: center">
-                    <button id="btn_loaddb">Add DB</button>
+                    <button id="btn_loaddb" class="translateB">Add DB</button>
                     <input style="display: none" onchange="db_import(this.files)" type="file" accept=".prn" id="db_import"/></td>
             </tr>
         </table>
     </div>
     <div id="s7_tab_i" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_inputs">
-            <button class="btn_toggle_pool" title="Polling">Toggle poll</button>
-            <button class="btn_toggle_rw" title="Write access">Toggle RW</button>
-            <button class="btn_toggle_wp" title="write as Pulse">Toggle WP</button>
+            <button class="btn_toggle_pool translateB" title="Polling">Toggle poll</button>
+            <button class="btn_toggle_rw translateB"   title="Write access">Toggle RW</button>
+            <button class="btn_toggle_wp translateB"   title="write as Pulse">Toggle WP</button>
         </div>
         <div id="s7_inputs" class="s7_grid"></div>
     </div>
     <div id="s7_tab_o" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_outputs">
-            <button class="btn_toggle_pool" title="Polling">Toggle poll</button>
-            <button class="btn_toggle_rw" title="Write access">Toggle RW</button>
-            <button class="btn_toggle_wp" title="write as Pulse">Toggle WP</button>
+            <button class="btn_toggle_pool translateB" title="Polling">Toggle poll</button>
+            <button class="btn_toggle_rw translateB" title="Write access">Toggle RW</button>
+            <button class="btn_toggle_wp translateB" title="write as Pulse">Toggle WP</button>
         </div>
         <div id="s7_outputs" class="s7_grid"></div>
     </div>
     <div id="s7_tab_m" class="s7_tab">
-        <div class="table_head_btn" data-grid="s7_merkers">
-            <button class="btn_toggle_pool" title="Polling">Toggle poll</button>
-            <button class="btn_toggle_rw" title="Write access">Toggle RW</button>
-            <button class="btn_toggle_wp" title="write as Pulse">Toggle WP</button>
+        <div class="table_head_btn" data-grid="s7_markers">
+            <button class="btn_toggle_pool translateB" title="Polling">Toggle poll</button>
+            <button class="btn_toggle_rw translateB" title="Write access">Toggle RW</button>
+            <button class="btn_toggle_wp translateB" title="write as Pulse">Toggle WP</button>
         </div>
-        <div id="s7_merkers" class="s7_grid"></div>
+        <div id="s7_markers" class="s7_grid"></div>
     </div>
     <!--<div id="s7_tab_c" style="overflow: auto">-->
     <!--<table id="s7_counter" class="s7_grid"></table>-->
@@ -522,9 +550,9 @@
     <!--</div>-->
     <div id="s7_tab_d" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_dbs">
-            <button class="btn_toggle_pool" title="Polling">Toggle poll</button>
-            <button class="btn_toggle_rw" title="Write access">Toggle RW</button>
-            <button class="btn_toggle_wp" title="write as Pulse">Toggle WP</button>
+            <button class="btn_toggle_pool translateB" title="Polling">Toggle poll</button>
+            <button class="btn_toggle_rw translateB"   title="Write access">Toggle RW</button>
+            <button class="btn_toggle_wp translateB"   title="write as Pulse">Toggle WP</button>
         </div>
         <div id="s7_dbs" class="s7_grid"></div>
     </div>

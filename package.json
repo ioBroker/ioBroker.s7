@@ -1,6 +1,6 @@
 {
   "name": "iobroker.s7",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Siemens S7 over Snap7",
   "author": {
     "name": "smiling_Jack",
@@ -12,7 +12,7 @@
       "email": "smiling_Jack@ioBroker.net"
     }
   ],
-  "homepage": "https://github.com/ioBroker/ioBroker.S7",
+  "homepage": "https://github.com/ioBroker/ioBroker.s7",
   "license": "MIT",
   "keywords": [
     "ioBroker",
@@ -46,10 +46,5 @@
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.s7/issues"
   },
-  "readmeFilename": "README.md",
-  "readme": "### iobroker.s7\r\n\r\n\r\n#0.06\r\n* Bugfix start file",
-  "_id": "iobroker.s7@0.0.7",
-  "scripts": {},
-  "_shasum": "521ae362c100d1c9dd3fcd5d95ebdedb04727fa0",
-  "_from": "iobroker.s7@*"
+  "readmeFilename": "README.md"
 }
