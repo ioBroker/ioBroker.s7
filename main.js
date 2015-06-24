@@ -18,7 +18,7 @@ var connected = false;
 
 var nextPoll;
 var acp;
-var ack_objects = {};
+var ackObjects = {};
 
 
 process.on('SIGINT', function () {
@@ -37,7 +37,7 @@ adapter.on('ready', function () {
     main();
 });
 
-var pulse_list = {};
+var pulseList = {};
 adapter.on('stateChange', function (id, state) {
 
     if (!state.ack) {
@@ -51,31 +51,31 @@ adapter.on('stateChange', function (id, state) {
                 if (!data.native.wp) {
                     _write();
                     setTimeout(function () {
-                        adapter.setState(id, ack_objects[id.replace(adapter.namespace + ".", "")].val, true);
+                        adapter.setState(id, ackObjects[id.replace(adapter.namespace + '.', '')].val, true);
                     }, acp.poll * 1.5);
                 } else {
-                    if (pulse_list[id] === undefined || pulse_list[id] != "_reset") {
+                    if (pulseList[id] === undefined/* || pulseList[id] != "_reset"*/) {
 
-                        pulse_list[id] = ack_objects[id.replace(adapter.namespace + ".", "")].val;
+                        pulseList[id] = ackObjects[id.replace(adapter.namespace + '.', '')].val;
 
                         setTimeout(function () {
-
-                            adapter.setState(id, pulse_list[id], false);
-                            pulse_list[id] = "_reset";
+                            adapter.setState(id, pulseList[id], false);
+                            pulseList[id] = "_reset";
                         }, adapter.config.params.pulsetime);
+                        
                         _write();
                     } else {
                         _write();
-                        pulse_list[id] = undefined;
+                        pulseList[id] = undefined;
                         setTimeout(function () {
-                            adapter.setState(id, ack_objects[id.replace(adapter.namespace + ".", "")].val, true);
+                            adapter.setState(id, ackObjects[id.replace(adapter.namespace + '.', '')].val, true);
                         }, acp.poll * 1.5);
                     }
                 }
             }
 
             function _write() {
-                if (type == "BOOL") {
+                if (type == 'BOOL') {
                     if (state.val === true || state.val === 'true' || state.val == 1) {
                         buf = new Buffer([0x01]);
                     } else {
@@ -789,14 +789,14 @@ function main() {
 
             if (type == "BOOL") {
                 val = bin8(buff[byte_addr]).substring(7 - bit_addr, 7 - bit_addr + 1);
-                if (ack_objects[id] === undefined || ack_objects[id].val != val) {
-                    ack_objects[id] = {"val": val};
+                if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                    ackObjects[id] = {"val": val};
                     adapter.setState(id, val, true);
                 }
             } else if (type == "BYTE") {
                 val = bin8(buff[byte_addr]);
-                if (ack_objects[id] === undefined || ack_objects[id].val != val) {
-                    ack_objects[id] = {"val": val};
+                if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                    ackObjects[id] = {"val": val};
                     adapter.setState(id, val, true);
                 }
             } else if (type == "WORD") {
@@ -804,8 +804,8 @@ function main() {
                 byte0 = bin8(buff[byte_addr + 1]);
 
                 val = byte1 + byte0;
-                if (ack_objects[id] === undefined || ack_objects[id].val != val) {
-                    ack_objects[id] = {"val": val};
+                if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                    ackObjects[id] = {"val": val};
                     adapter.setState(id, val, true);
                 }
             } else if (type == "DWORD") {
@@ -814,29 +814,29 @@ function main() {
                 byte1 = bin8(buff[byte_addr + 2]);
                 byte0 = bin8(buff[byte_addr + 3]);
                 val = byte3 + byte2 + byte1 + byte0;
-                if (ack_objects[id] === undefined || ack_objects[id].val != val) {
-                    ack_objects[id] = {"val": val};
+                if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                    ackObjects[id] = {"val": val};
                     adapter.setState(id, val, true);
                 }
             } else if (type == "INT") {
                 val = buff.readInt16BE(byte_addr);
-                if (ack_objects[id] === undefined || ack_objects[id].val != val) {
-                    ack_objects[id] = {"val": val};
+                if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                    ackObjects[id] = {"val": val};
                     adapter.setState(id, val, true);
                 }
             } else if (type == "DINT") {
                 val = buff.readInt32BE(byte_addr);
-                if (ack_objects[id] === undefined || ack_objects[id].val != val) {
-                    ack_objects[id] = {"val": val};
+                if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                    ackObjects[id] = {"val": val};
                     adapter.setState(id, val, true);
                 }
             } else if (type == "REAL") {
                 val = buff.readFloatBE(byte_addr);
                 var _val = parseFloat(Math.round(val * round) / round);
 
-                if (ack_objects[id] === undefined || ack_objects[id].val != _val) {
+                if (ackObjects[id] === undefined || ackObjects[id].val != _val) {
 
-                    ack_objects[id] = {"val": _val};
+                    ackObjects[id] = {"val": _val};
                     adapter.setState(id, _val, true);
                 }
             }
