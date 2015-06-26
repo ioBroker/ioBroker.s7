@@ -729,7 +729,7 @@ function main() {
                                             var id = "DBs." + db + "." + dbs[n].Name.replace(".", "_").replace(" ", "_");
                                             var buff = buf[db];
                                             var byte_addr = parseInt(addr.split(".")[0]);
-                                            var bit_addr = parseInt(addr.split(".")[1]);
+                                            var bit_addr  = parseInt(addr.split(".")[1]);
                                             try {
                                                 write(id, buff, dbs[n].Type, byte_addr, bit_addr);
                                             } catch (err) {
