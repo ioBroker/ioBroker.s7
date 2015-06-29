@@ -1,12 +1,12 @@
-{
+п»ї{
   "common": {
     "name": "s7",
     "version": "0.1.3",
     "title": "Siemens S7 Adapter",
     "desc": {
       "en": "Siemens SIMATIC S7 connection over Snap7",
-      "de": "Siemens SIMATIC S7 Verbindung ?ber Snap7",
-      "ru": "Siemens SIMATIC S7 соединение с помощью Snap7"
+      "de": "Siemens SIMATIC S7 Verbindung Гјber Snap7",
+      "ru": "Siemens SIMATIC S7 СЃРѕРµРґРёРЅРµРЅРёРµ СЃ РїРѕРјРѕС‰СЊСЋ Snap7"
     },
     "authors": [
       "smiling_Jack <steffen.schorling@googlemail.com>"
