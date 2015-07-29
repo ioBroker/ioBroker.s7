@@ -220,6 +220,7 @@
 
 
     function load(settings, onchange) {
+
         var inputs  = settings.inputs   || [];
         var outputs = settings.outputs  || [];
         var markers = settings.markers  || [];
@@ -258,7 +259,8 @@
                 {valve: "DWORD", text: "DWORD"},
                 {valve: "INT", text: "INT"},
                 {valve: "DINT", text: "DINT"},
-                {valve: "REAL", text: "REAL"}
+                {valve: "REAL", text: "REAL"},
+                {valve: "S5TIME", text: "S5TIME"}
             ];
 
 
@@ -272,15 +274,15 @@
                 paging:     false,
                 data: eval(_id.split('_')[1]),
                 fields: [
-                    {name: _('Address'),       type: 'text',       width: '70px'},
-                    {name: _('Name'),          type: 'text',       width: '150px'},
-                    {name: _('Description'),   type: 'text',       width: '300px'},
-                    {name: _('Type'),          type: 'select',     width: '95px', items: type_items, valueField: 'valve', textField: "text"},
-                    {name: _('Unit'),          type: 'text',       width: '50px'},
-                    {name: _('poll'),          type: 'checkbox',   width: '35px'},
-                    {name: _('RW'),            type: 'checkbox',   width: '35px'},
-                    {name: _('WP'),            type: 'checkbox',   width: '35px'},
-                    {                          type: 'control',    width: '80px'}
+                    {name:'Adress'    ,title: _('Address'),        type: 'text',       width: '70px'},
+                    {name:'Name'       ,title: _('Name'),          type: 'text',       width: '150px'},
+                    {name:'Description',title: _('Description'),   type: 'text',       width: '300px'},
+                    {name:'Type'       ,title: _('Type'),          type: 'select',     width: '95px', items: type_items, valueField: 'valve', textField: "text"},
+                    {name:'Unit'       ,title: _('Unit'),          type: 'text',       width: '50px'},
+                    {name:'poll'       ,title: _('poll'),          type: 'checkbox',   width: '35px'},
+                    {name:'RW'         ,title: _('RW'),            type: 'checkbox',   width: '35px'},
+                    {name:'WP'         ,title: _('WP'),            type: 'checkbox',   width: '35px'},
+                    {                                              type: 'control',    width: '80px'}
                 ]
             })
         });

@@ -1,6 +1,6 @@
 {
   "name": "iobroker.s7",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Siemens S7 over Snap7",
   "author": {
     "name": "smiling_Jack",
