@@ -153,20 +153,20 @@ function send(){
     if (data.native.cat == "db") {
 
         if (type == "BOOL") {
-            var addr = parseInt(data.native.adress) * 8 + parseInt(data.native.adress.split(".")[1]);
+            var addr = parseInt(data.native.Address) * 8 + parseInt(data.native.Address.split(".")[1]);
             s7client.WriteArea(s7client.S7AreaDB, parseInt(data.native.db.replace("DB", "")), addr, 1, s7client.S7WLBit, buf, function (err) {
                 next(err)
             });
         } else if (type == "BYTE") {
-            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.adress), 1, buf, function (err) {
+            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.Address), 1, buf, function (err) {
                 next(err)
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.adress), 2, buf, function (err) {
+            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.Address), 2, buf, function (err) {
                 next(err)
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.adress), 4, buf, function (err) {
+            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.Address), 4, buf, function (err) {
                 next(err)
             });
         }
@@ -174,20 +174,20 @@ function send(){
     if (data.native.cat == "input") {
 
         if (type == "BOOL") {
-            var addr = parseInt(data.native.adress) * 8 + parseInt(data.native.adress.split(".")[1]);
+            var addr = parseInt(data.native.Address) * 8 + parseInt(data.native.Address.split(".")[1]);
             s7client.WriteArea(s7client.S7AreaPE, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
                 next(err)
             });
         } else if (type == "BYTE") {
-            s7client.EBWrite(parseInt(data.native.adress), parseInt(data.native.adress), 1, buf, function (err) {
+            s7client.EBWrite(parseInt(data.native.Address), parseInt(data.native.Address), 1, buf, function (err) {
                 next(err)
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.EBWrite(parseInt(data.native.adress), parseInt(data.native.adress), 2, buf, function (err) {
+            s7client.EBWrite(parseInt(data.native.Address), parseInt(data.native.Address), 2, buf, function (err) {
                 next(err)
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.EBWrite(parseInt(data.native.adress), parseInt(data.native.adress), 4, buf, function (err) {
+            s7client.EBWrite(parseInt(data.native.Address), parseInt(data.native.Address), 4, buf, function (err) {
                 next(err)
             });
         }
@@ -195,42 +195,42 @@ function send(){
     if (data.native.cat == "output") {
 
         if (type == "BOOL") {
-            var addr = parseInt(data.native.adress) * 8 + parseInt(data.native.adress.split(".")[1]);
+            var addr = parseInt(data.native.Address) * 8 + parseInt(data.native.Address.split(".")[1]);
             s7client.WriteArea(s7client.S7AreaPA, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
                 next(err)
             });
         } else if (type == "BYTE") {
-            s7client.ABWrite(parseInt(data.native.adress), parseInt(data.native.adress), 1, buf, function (err) {
+            s7client.ABWrite(parseInt(data.native.Address), parseInt(data.native.Address), 1, buf, function (err) {
                 next(err)
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.ABWrite(parseInt(data.native.adress), parseInt(data.native.adress), 2, buf, function (err) {
+            s7client.ABWrite(parseInt(data.native.Address), parseInt(data.native.Address), 2, buf, function (err) {
                 next(err)
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.ABWrite(parseInt(data.native.adress), parseInt(data.native.adress), 4, buf, function (err) {
+            s7client.ABWrite(parseInt(data.native.Address), parseInt(data.native.Address), 4, buf, function (err) {
                 next(err)
             });
         }
     }
-    if (data.native.cat == "merker") {
+    if (data.native.cat == "marker") {
 
         if (type == "BOOL") {
-            var addr = parseInt(data.native.adress) * 8 + parseInt(data.native.adress.split(".")[1]);
+            var addr = parseInt(data.native.Address) * 8 + parseInt(data.native.Address.split(".")[1]);
 
             s7client.WriteArea(s7client.S7AreaMK, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
                 next(err)
             });
         } else if (type == "BYTE") {
-            s7client.MBWrite(parseInt(data.native.adress), 1, buf, function (err) {
+            s7client.MBWrite(parseInt(data.native.Address), 1, buf, function (err) {
                 next(err)
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.MBWrite(parseInt(data.native.adress), 2, buf, function (err) {
+            s7client.MBWrite(parseInt(data.native.Address), 2, buf, function (err) {
                 next(err)
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.MBWrite(parseInt(data.native.adress), 4, buf, function (err) {
+            s7client.MBWrite(parseInt(data.native.Address), 4, buf, function (err) {
                 next(err)
             });
         }
@@ -265,10 +265,10 @@ var main = {
     output_lsb: "",
     output_msb: "",
     output_size: "",
-    merkers: [],
-    merker_lsb: "",
-    merker_msb: "",
-    merker_size: "",
+    markers: [],
+    marker_lsb: "",
+    marker_msb: "",
+    marker_size: "",
     dbs: [],
     db_size: {},
     _db_size:[],
@@ -310,9 +310,9 @@ var main = {
                 }
             }
 
-            for (i = 0; main.ac.merkers.length > i; i++) {
-                if (main.ac.merkers[i].poll == true) {
-                    main.merkers.push(main.ac.merkers[i])
+            for (i = 0; main.ac.markers.length > i; i++) {
+                if (main.ac.markers[i].poll == true) {
+                    main.markers.push(main.ac.markers[i])
                 }
             }
 
@@ -324,40 +324,40 @@ var main = {
             }
 
 
-            main.inputs.sort(SortByAdress);
-            main.outputs.sort(SortByAdress);
-            main.merkers.sort(SortByAdress);
-            main.dbs.sort(SortByAdress);
+            main.inputs.sort(SortByaddress);
+            main.outputs.sort(SortByaddress);
+            main.markers.sort(SortByaddress);
+            main.dbs.sort(SortByaddress);
 
             if (main.inputs.length > 0) {
-                main.input_lsb = parseInt(main.inputs[0].Adress.split(".")[0]);
-                main.input_msb = parseInt(main.inputs[main.inputs.length - 1].Adress.split(".")[0]);
+                main.input_lsb = parseInt(main.inputs[0].Address.split(".")[0]);
+                main.input_msb = parseInt(main.inputs[main.inputs.length - 1].Address.split(".")[0]);
                 main.input_size = main.input_msb - main.input_lsb + 1;
             }
             if (main.outputs.length > 0) {
-                main.output_lsb = parseInt(main.outputs[0].Adress.split(".")[0]);
-                main.output_msb = parseInt(main.outputs[main.outputs.length - 1].Adress.split(".")[0]);
+                main.output_lsb = parseInt(main.outputs[0].Address.split(".")[0]);
+                main.output_msb = parseInt(main.outputs[main.outputs.length - 1].Address.split(".")[0]);
                 main.output_size = main.output_msb - main.output_lsb + 1;
             }
-            if (main.merkers.length > 0) {
-                main.merker_lsb = parseInt(main.merkers[0].Adress.split(".")[0]);
-                main.merker_msb = parseInt(main.merkers[main.merkers.length - 1].Adress.split(".")[0]);
-                main.merker_size = main.merker_msb - main.merker_lsb + 1;
+            if (main.markers.length > 0) {
+                main.marker_lsb = parseInt(main.markers[0].Address.split(".")[0]);
+                main.marker_msb = parseInt(main.markers[main.markers.length - 1].Address.split(".")[0]);
+                main.marker_size = main.marker_msb - main.marker_lsb + 1;
             }
 
             if (main.dbs.length > 0) {
 
                 for (i = 0; main.dbs.length > i; i++) {
-                    main.db_size[main.dbs[i].Adress.split(" ")[0]] = {
+                    main.db_size[main.dbs[i].Address.split(" ")[0]] = {
                         msb: 0,
-                        db: main.dbs[i].Adress.split(" ")[0]
+                        db: main.dbs[i].Address.split(" ")[0]
                     }
 
                 }
 
                 for (i = 0; main.dbs.length > i; i++) {
-                    var db = main.dbs[i].Adress.split(" ")[0];
-                    var addr = parseFloat(main.dbs[i].Adress.split(" ")[1].replace("+", ""));
+                    var db = main.dbs[i].Address.split(" ")[0];
+                    var addr = parseFloat(main.dbs[i].Address.split(" ")[1].replace("+", ""));
 
                     var len = 1;
                     if (main.dbs[i].Type == "WORD" || main.dbs[i].Type == "INT" || main.dbs[i].Type == "S5TIME") {
@@ -395,7 +395,7 @@ var main = {
                 });
             }
 
-            if (main.merkers.length > 0) {
+            if (main.markers.length > 0) {
                 adapter.setObject("Merkers", {
                     type: 'device',
                     common: {
@@ -417,7 +417,7 @@ var main = {
 
 
             for (i = 0; main.inputs.length > i; i++) {
-                var ch = (main.ac.inputs[i].Adress).split(".")[0];
+                var ch = (main.ac.inputs[i].Address).split(".")[0];
                 var id = "Inputs." + ch + "." + main.ac.inputs[i].Name.replace(".", "_").replace(" ", "_");
                 adapter.setObject("Inputs." + ch, {
                     type: 'channel',
@@ -459,7 +459,7 @@ var main = {
                     native: {
                         cat: "input",
                         type: main.ac.inputs[i].Type,
-                        adress: main.ac.inputs[i].Adress,
+                        address: main.ac.inputs[i].Address,
                         rw: main.ac.inputs[i].RW,
                         wp: main.ac.inputs[i].Wp
                     }
@@ -469,9 +469,9 @@ var main = {
             }
 
             for (i = 0; main.outputs.length > i; i++) {
-                var ch = (main.ac.outputs[i].Adress).split(".")[0];
+                var ch = (main.ac.outputs[i].Address).split(".")[0];
                 var id = "Outputs." + ch + "." + main.ac.outputs[i].Name.replace(".", "_").replace(" ", "_");
-                //var bit= (main.ac.outputs[i].Adress).split(".")[1] || 0;
+                //var bit= (main.ac.outputs[i].Address).split(".")[1] || 0;
 
                 adapter.setObject("Outputs." + ch, {
                     type: 'channel',
@@ -513,7 +513,7 @@ var main = {
                     native: {
                         cat: "output",
                         type: main.ac.outputs[i].Type,
-                        adress: main.ac.outputs[i].Adress,
+                        address: main.ac.outputs[i].Address,
                         rw: main.ac.outputs[i].RW,
                         wp: main.ac.outputs[i].WP
                     }
@@ -521,10 +521,10 @@ var main = {
                 main.new_objects.push(adapter.namespace + "." + id)
             }
 
-            for (i = 0; main.merkers.length > i; i++) {
-                var ch = (main.ac.merkers[i].Adress).split(".")[0];
-                var id = "Merkers." + ch + "." + main.ac.merkers[i].Name.replace(".", "_").replace(" ", "_");
-                //var bit= (main.ac.merkers[i].Adress).split(".")[1]  || 0;
+            for (i = 0; main.markers.length > i; i++) {
+                var ch = (main.ac.markers[i].Address).split(".")[0];
+                var id = "Merkers." + ch + "." + main.ac.markers[i].Name.replace(".", "_").replace(" ", "_");
+                //var bit= (main.ac.markers[i].Address).split(".")[1]  || 0;
 
                 adapter.setObject("Merkers." + ch, {
                     type: 'channel',
@@ -556,19 +556,19 @@ var main = {
                 adapter.setObject(id, {
                     type: 'state',
                     common: {
-                        name: main.ac.merkers[i].Description,
-                        role: main.ac.merkers[i].Type,
-                        type: main.ac.merkers[i].Type,
-                        unit: (main.ac.merkers[i].Type == "S5TIME") ? "s" : main.ac.merkers[i].Unit,
+                        name: main.ac.markers[i].Description,
+                        role: main.ac.markers[i].Type,
+                        type: main.ac.markers[i].Type,
+                        unit: (main.ac.markers[i].Type == "S5TIME") ? "s" : main.ac.markers[i].Unit,
                         enabled: false,
                         history: main.history
                     },
                     native: {
-                        cat: "merker",
-                        type: main.ac.merkers[i].Type,
-                        adress: main.ac.merkers[i].Adress,
-                        rw: main.ac.merkers[i].RW,
-                        wp: main.ac.merkers[i].WP
+                        cat: "marker",
+                        type: main.ac.markers[i].Type,
+                        address: main.ac.markers[i].Address,
+                        rw: main.ac.markers[i].RW,
+                        wp: main.ac.markers[i].WP
                     }
                 });
                 main.new_objects.push(adapter.namespace + "." + id);
@@ -586,7 +586,7 @@ var main = {
             }
 
             for (i = 0; main.dbs.length > i; i++) {
-                var db = main.dbs[i].Adress.split(" ")[0];
+                var db = main.dbs[i].Address.split(" ")[0];
                 var id = "DBs." + db + "." + main.dbs[i].Name.replace(".", "_").replace(" ", "_")
                 //console.log(main.old_objects[adapter.namespace +"."+ id])
 
@@ -623,8 +623,8 @@ var main = {
                     native: {
                         cat: "db",
                         type: main.dbs[i].Type,
-                        db: main.dbs[i].Adress.split(" +")[0],
-                        adress: main.dbs[i].Adress.split(" +")[1],
+                        db: main.dbs[i].Address.split(" +")[0],
+                        address: main.dbs[i].Address.split(" +")[1],
                         rw: main.dbs[i].RW,
                         wp: main.dbs[i].WP
                     }
@@ -825,9 +825,9 @@ var main = {
                             } else {
 
                                 for (var n = 0; main.inputs.length > n; n++) {
-                                    var id = "Inputs." + main.inputs[n].Adress.split(".")[0] + "." + main.inputs[n].Name.replace(".", "_").replace(" ", "_");
+                                    var id = "Inputs." + main.inputs[n].Address.split(".")[0] + "." + main.inputs[n].Name.replace(".", "_").replace(" ", "_");
 
-                                    var addr = main.inputs[n].Adress;
+                                    var addr = main.inputs[n].Address;
                                     var byte_addr = parseInt(addr.split(".")[0]) - main.input_lsb;
                                     var bit_addr = parseInt(addr.split(".")[1]);
                                     try {
@@ -850,9 +850,9 @@ var main = {
                                 callback(err);
                             } else {
                                 for (var n = 0; main.outputs.length > n; n++) {
-                                    var id = "Outputs." + main.outputs[n].Adress.split(".")[0] + "." + main.outputs[n].Name.replace(".", "_").replace(" ", "_");
+                                    var id = "Outputs." + main.outputs[n].Address.split(".")[0] + "." + main.outputs[n].Name.replace(".", "_").replace(" ", "_");
 
-                                    var addr = main.outputs[n].Adress
+                                    var addr = main.outputs[n].Address
                                     var byte_addr = parseInt(addr.split(".")[0]) - main.output_lsb;
                                     var bit_addr = parseInt(addr.split(".")[1]);
                                     try {
@@ -868,22 +868,22 @@ var main = {
                         callback(null);
                     }
                 },
-                merker: function (callback) {
-                    if (main.merker_msb) {
-                        s7client.MBRead(main.merker_lsb, main.merker_msb - main.merker_lsb + 4, function (err, res) {
+                marker: function (callback) {
+                    if (main.marker_msb) {
+                        s7client.MBRead(main.marker_lsb, main.marker_msb - main.marker_lsb + 4, function (err, res) {
                             if (err) {
                                 callback(err);
                             } else {
-                                for (var n = 0; main.merkers.length > n; n++) {
+                                for (var n = 0; main.markers.length > n; n++) {
 
-                                    var id = "Merkers." + main.merkers[n].Adress.split(".")[0] + "." + main.merkers[n].Name.replace(".", "_").replace(" ", "_");
+                                    var id = "Merkers." + main.markers[n].Address.split(".")[0] + "." + main.markers[n].Name.replace(".", "_").replace(" ", "_");
 
-                                    var addr = main.merkers[n].Adress;
-                                    var byte_addr = parseInt(addr.split(".")[0]) - main.merker_lsb;
+                                    var addr = main.markers[n].Address;
+                                    var byte_addr = parseInt(addr.split(".")[0]) - main.marker_lsb;
                                     var bit_addr = parseInt(addr.split(".")[1]);
 
                                     try {
-                                        main.write(id, res, main.merkers[n].Type, byte_addr, bit_addr)
+                                        main.write(id, res, main.markers[n].Type, byte_addr, bit_addr)
                                     } catch (err) {
                                         adapter.log.error('Writing Merker. Code #' + err);
                                     }
@@ -920,8 +920,8 @@ var main = {
                         } else {
                             for (var n = 0; main.dbs.length > n; n++) {
 
-                                var addr = main.dbs[n].Adress.split(" +")[1];
-                                var db = main.dbs[n].Adress.split(" +")[0];
+                                var addr = main.dbs[n].Address.split(" +")[1];
+                                var db = main.dbs[n].Address.split(" +")[0];
                                 var id = "DBs." + db + "." + main.dbs[n].Name.replace(".", "_").replace(" ", "_");
                                 var buff = buf[db]
                                 var byte_addr = parseInt(addr.split(".")[0]);
@@ -971,9 +971,9 @@ var main = {
     }
 }
 
-function SortByAdress(a, b) {
-    var ad = parseFloat(a.Adress);
-    var bd = parseFloat(b.Adress);
+function SortByaddress(a, b) {
+    var ad = parseFloat(a.Address);
+    var bd = parseFloat(b.Address);
     return ((ad < bd) ? -1 : ((ad > bd) ? 1 : 0));
 }
 

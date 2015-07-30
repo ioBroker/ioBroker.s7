@@ -274,7 +274,7 @@
                 paging:     false,
                 data: eval(_id.split('_')[1]),
                 fields: [
-                    {name:'Adress'    ,title: _('Address'),        type: 'text',       width: '70px'},
+                    {name:'Address'    ,title: _('Address'),       type: 'text',       width: '70px'},
                     {name:'Name'       ,title: _('Name'),          type: 'text',       width: '150px'},
                     {name:'Description',title: _('Description'),   type: 'text',       width: '300px'},
                     {name:'Type'       ,title: _('Type'),          type: 'select',     width: '95px', items: type_items, valueField: 'valve', textField: "text"},
@@ -282,7 +282,7 @@
                     {name:'poll'       ,title: _('poll'),          type: 'checkbox',   width: '35px'},
                     {name:'RW'         ,title: _('RW'),            type: 'checkbox',   width: '35px'},
                     {name:'WP'         ,title: _('WP'),            type: 'checkbox',   width: '35px'},
-                    {                                              type: 'control',    width: '80px'}
+                    {                          type: 'control',    width: '80px'}
                 ]
             })
         });
