@@ -152,7 +152,9 @@
         "Unit":             {"en": "Unit",              "de": "Einheit",            "ru": "Единицы"},
         "poll":             {"en": "poll",              "de": "poll",               "ru": "poll"},
         "RW":               {"en": "RW",                "de": "RW",                 "ru": "RW"},
-        "WP":               {"en": "WP",                "de": "WP",                 "ru": "WP"}
+        "WP":               {"en": "WP",                "de": "WP",                 "ru": "WP"},
+        "Rool":             {"en": "Rool",              "de": "Rolle",               "ru": "Rool"},  // todo RU
+        "Room":             {"en": "Room",              "de": "Raum",               "ru": "Room"}   // todo RU
     };
 
     $(document).ready(function () {
@@ -276,9 +278,11 @@
                 fields: [
                     {name:'Address'    ,title: _('Address'),       type: 'text',       width: '70px'},
                     {name:'Name'       ,title: _('Name'),          type: 'text',       width: '150px'},
-                    {name:'Description',title: _('Description'),   type: 'text',       width: '300px'},
+                    {name:'Description',title: _('Description'),   type: 'text',       width: '250px'},
                     {name:'Type'       ,title: _('Type'),          type: 'select',     width: '95px', items: type_items, valueField: 'valve', textField: "text"},
                     {name:'Unit'       ,title: _('Unit'),          type: 'text',       width: '50px'},
+                    {name:'Rool'       ,title: _('Rool'),          type: 'text',       width: '100px'},
+                    {name:'Room'       ,title: _('Room'),          type: 'text',       width: '100px'},
                     {name:'poll'       ,title: _('poll'),          type: 'checkbox',   width: '35px'},
                     {name:'RW'         ,title: _('RW'),            type: 'checkbox',   width: '35px'},
                     {name:'WP'         ,title: _('WP'),            type: 'checkbox',   width: '35px'},
@@ -338,12 +342,11 @@
                     Type:         this.slice(36, 41).replace(/( )/g, ""),
                     Description:  this.slice(46, 126).replace(/( ){2,}/, ""),
                     Unit:         "",
-                    Role:         "",
-                    Room:         "",
+//                    Roll:         "",
+//                    Room:         "",
                     poll:         true,
                     RW:           false,
                     WP:           false
-
                 };
 
 //                    if (typ == "E" || typ == "EB" ||typ == "EW" ||typ == "ED"||typ == "PEB"||typ == "PEW"||typ == "PED")data.inputs.push(d);
@@ -395,25 +398,59 @@
             var struck = text.split('STRUCT')[1].split("=")[0].split("\n");
 
             $.each(struck, function () {
-                console.log("db")
                 if (this.length > 10) {
 
                     var x = this.split(/\s+/g);
                     x.shift();
 
-                    _data.push({
+
+                    var data = {
                         Address:      db + ' ' + x.shift(),
                         Name:         x.shift(),
                         Type:         x.shift(),
                         dec:          x.shift(),
                         Description:  x.join(' '),
                         Unit:         '',
-                        Role:         '',
+                        Roll:         '',
                         Room:         '',
                         poll:         true,
                         RW:           false,
                         WP:           false
-                    })
+                    };
+
+                    var _desc = data.Description.split(";");
+
+                    // todo
+//                    var remove =[];
+//
+//                    for(var i= 0;_desc.length > i; i++) {
+//                        var part = _desc[i].split(":");
+//
+//                        if (part[1] != undefined) {
+//                            if ((part[0].indexOf("Unit") != -1 || part[0].indexOf("unit") != -1) && part[1]) {
+//                                data.Unit = part[1]
+//                                remove.push(i)
+//                            }
+//                            if ((part[0].indexOf("Room") != -1 || part[0].indexOf("room") != -1) && part[1]) {
+//                                data.Room = part[1]
+//                                remove.push(i)
+//                            }
+//                            if ((part[0].indexOf("Rool") != -1 || part[0].indexOf("rool") != -1) && part[1]) {
+//                                data.Rool = part[1]
+//                                remove.push(i)
+//                            }
+//                        }
+//                    };
+//
+//                    for(var i= 0;remove.length > i; i++) {
+//
+//                        _desc.splice(remove[i]-i,1)
+//                    }
+//
+//
+//                    data.Description = _desc.join(";")
+                    // todo
+                    _data.push(data)
                 }
             });
 

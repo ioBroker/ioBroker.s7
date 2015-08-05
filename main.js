@@ -36,17 +36,17 @@ adapter.on('ready', function () {
 });
 
 var pulseList = {};
-var sendBuffer ={};
+var sendBuffer = {};
 
 adapter.on('stateChange', function (id, state) {
 
 
-    if (state && !state.ack && id ) {
+    if (state && !state.ack && id) {
 
         adapter.getObject(id, function (err, data) {
-            if(err){
+            if (err) {
                 console.log(err)
-            }else{
+            } else {
 
                 var type = data.native.type;
 
@@ -80,17 +80,16 @@ adapter.on('stateChange', function (id, state) {
             }
 
 
-
             function _write(id) {
 
-                if (id){
-                    sendBuffer[id] ={
+                if (id) {
+                    sendBuffer[id] = {
                         type: type,
                         state: state,
                         native: data.native
                     }
                 }
-                if(Object.keys(sendBuffer).length == 1){
+                if (Object.keys(sendBuffer).length == 1) {
                     send()
                 }
 
@@ -99,15 +98,15 @@ adapter.on('stateChange', function (id, state) {
     }
 });
 
-function send(){
+function send() {
 
     var id = Object.keys(sendBuffer)[0];
 
     var type = sendBuffer[id].type;
     var state = sendBuffer[id].state;
     var data = {
-        "native" : sendBuffer[id].native
-        };
+        "native": sendBuffer[id].native
+    };
 
     var buf;
 
@@ -141,7 +140,7 @@ function send(){
         buf.writeInt16BE(state.val, 0, 2);
 
     } else if (type == "DINT") {
-         buf = new Buffer(4);
+        buf = new Buffer(4);
         buf.writeInt32BE(state.val, 0, 4);
 
     } else if (type == "REAL") {
@@ -153,20 +152,20 @@ function send(){
     if (data.native.cat == "db") {
 
         if (type == "BOOL") {
-            var addr = parseInt(data.native.Address) * 8 + parseInt(data.native.Address.split(".")[1]);
+            var addr = parseInt(data.native.address) * 8 + parseInt(data.native.address.split(".")[1]);
             s7client.WriteArea(s7client.S7AreaDB, parseInt(data.native.db.replace("DB", "")), addr, 1, s7client.S7WLBit, buf, function (err) {
                 next(err)
             });
         } else if (type == "BYTE") {
-            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.Address), 1, buf, function (err) {
+            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.address), 1, buf, function (err) {
                 next(err)
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.Address), 2, buf, function (err) {
+            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.address), 2, buf, function (err) {
                 next(err)
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.Address), 4, buf, function (err) {
+            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.address), 4, buf, function (err) {
                 next(err)
             });
         }
@@ -174,20 +173,20 @@ function send(){
     if (data.native.cat == "input") {
 
         if (type == "BOOL") {
-            var addr = parseInt(data.native.Address) * 8 + parseInt(data.native.Address.split(".")[1]);
+            var addr = parseInt(data.native.address) * 8 + parseInt(data.native.address.split(".")[1]);
             s7client.WriteArea(s7client.S7AreaPE, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
                 next(err)
             });
         } else if (type == "BYTE") {
-            s7client.EBWrite(parseInt(data.native.Address), parseInt(data.native.Address), 1, buf, function (err) {
+            s7client.EBWrite(parseInt(data.native.address), parseInt(data.native.address), 1, buf, function (err) {
                 next(err)
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.EBWrite(parseInt(data.native.Address), parseInt(data.native.Address), 2, buf, function (err) {
+            s7client.EBWrite(parseInt(data.native.address), parseInt(data.native.address), 2, buf, function (err) {
                 next(err)
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.EBWrite(parseInt(data.native.Address), parseInt(data.native.Address), 4, buf, function (err) {
+            s7client.EBWrite(parseInt(data.native.address), parseInt(data.native.address), 4, buf, function (err) {
                 next(err)
             });
         }
@@ -195,20 +194,20 @@ function send(){
     if (data.native.cat == "output") {
 
         if (type == "BOOL") {
-            var addr = parseInt(data.native.Address) * 8 + parseInt(data.native.Address.split(".")[1]);
+            var addr = parseInt(data.native.address) * 8 + parseInt(data.native.address.split(".")[1]);
             s7client.WriteArea(s7client.S7AreaPA, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
                 next(err)
             });
         } else if (type == "BYTE") {
-            s7client.ABWrite(parseInt(data.native.Address), parseInt(data.native.Address), 1, buf, function (err) {
+            s7client.ABWrite(parseInt(data.native.address), parseInt(data.native.address), 1, buf, function (err) {
                 next(err)
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.ABWrite(parseInt(data.native.Address), parseInt(data.native.Address), 2, buf, function (err) {
+            s7client.ABWrite(parseInt(data.native.address), parseInt(data.native.address), 2, buf, function (err) {
                 next(err)
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.ABWrite(parseInt(data.native.Address), parseInt(data.native.Address), 4, buf, function (err) {
+            s7client.ABWrite(parseInt(data.native.address), parseInt(data.native.address), 4, buf, function (err) {
                 next(err)
             });
         }
@@ -216,32 +215,32 @@ function send(){
     if (data.native.cat == "marker") {
 
         if (type == "BOOL") {
-            var addr = parseInt(data.native.Address) * 8 + parseInt(data.native.Address.split(".")[1]);
-
+            var addr = parseInt(data.native.address) * 8 + parseInt(data.native.address.split(".")[1]);
+            console.log(addr)
             s7client.WriteArea(s7client.S7AreaMK, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
                 next(err)
             });
         } else if (type == "BYTE") {
-            s7client.MBWrite(parseInt(data.native.Address), 1, buf, function (err) {
+            s7client.MBWrite(parseInt(data.native.address), 1, buf, function (err) {
                 next(err)
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.MBWrite(parseInt(data.native.Address), 2, buf, function (err) {
+            s7client.MBWrite(parseInt(data.native.address), 2, buf, function (err) {
                 next(err)
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.MBWrite(parseInt(data.native.Address), 4, buf, function (err) {
+            s7client.MBWrite(parseInt(data.native.address), 4, buf, function (err) {
                 next(err)
             });
         }
     }
 
     function next(err) {
-        if (err){
+        if (err) {
             adapter.log.error('DB write error. Code #' + err);
         }
-        delete (sendBuffer[id])
-        if(Object.keys(sendBuffer).length != 0){
+        delete(sendBuffer[id])
+        if (Object.keys(sendBuffer).length != 0) {
             send()
         }
     }
@@ -271,7 +270,7 @@ var main = {
     marker_size: "",
     dbs: [],
     db_size: {},
-    _db_size:[],
+    _db_size: [],
     history: "",
     unit: "",
     error_count: 0,
@@ -279,7 +278,7 @@ var main = {
     main: function () {
 
         main.ac = adapter.config;
-            main.acp = adapter.config.params;
+        main.acp = adapter.config.params;
 
         if (parseInt(main.acp.round) != "NaN" && main.acp.round != "" && main.acp.round != undefined && main.acp.round != null) {
             main.round = parseInt(main.acp.round);
@@ -328,7 +327,7 @@ var main = {
             main.outputs.sort(SortByaddress);
             main.markers.sort(SortByaddress);
             main.dbs.sort(SortByaddress);
-
+console.log(main)
             if (main.inputs.length > 0) {
                 main.input_lsb = parseInt(main.inputs[0].Address.split(".")[0]);
                 main.input_msb = parseInt(main.inputs[main.inputs.length - 1].Address.split(".")[0]);
@@ -688,7 +687,7 @@ var main = {
             var l = main.old_objects.length;
 
             function clear() {
-               for (var id in  main.old_objects) {
+                for (var id in  main.old_objects) {
                     if (main.new_objects.indexOf(id) == -1) {
                         console.log(id)
                         adapter.delObject(id, function () {
@@ -700,31 +699,31 @@ var main = {
                 main.old_objects = [];
                 main.new_objects = [];
                 adapter.subscribeStates('*');
-                start();
+                main.start();
             }
 
             clear();
 
-            function start() {
-                s7client.ConnectTo(main.acp.ip, parseInt(main.acp.rack), parseInt(main.acp.slot), function (err) {
-
-                    if (err) {
-                        adapter.log.error('Connection failed. Code #' + err);
-                        adapter.setState("info.connection", false, true);
-                        return setTimeout(start, (parseInt(main.acp.recon) || 60000))
-                    }
-
-                    connected = true;
-                    adapter.setState("info.connection", true, true);
-                    adapter.setState("info.pdu", s7client.PDULength(), true);
-
-
-                    main.poll();
-                });
-            }
-
 
             //}
+        });
+    },
+
+    start: function () {
+        s7client.ConnectTo(main.acp.ip, parseInt(main.acp.rack), parseInt(main.acp.slot), function (err) {
+
+            if (err) {
+                adapter.log.error('Connection failed. Code #' + err);
+                adapter.setState("info.connection", false, true);
+                return setTimeout(main.start, (parseInt(main.acp.recon) || 60000))
+            }
+
+            connected = true;
+            adapter.setState("info.connection", true, true);
+            adapter.setState("info.pdu", s7client.PDULength(), true);
+
+
+            main.poll();
         });
     },
 
@@ -953,7 +952,7 @@ var main = {
                         connected = false;
                         adapter.log.error('try reconnection');
                         adapter.setState("info.connection", false, true);
-                        setTimeout(start, (parseInt(main.acp.recon) || 60000));
+                        setTimeout(main.start, (parseInt(main.acp.recon) || 60000));
                     }
 
                 } else {
@@ -963,7 +962,6 @@ var main = {
                         adapter.setState("info.connection", true, true);
                         main.error_count = 0;
                     }
-
                     nextPoll = setTimeout(main.poll, parseInt(main.acp.poll))
                 }
             }

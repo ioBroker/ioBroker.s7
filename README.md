@@ -7,6 +7,10 @@ Es ist also notwendig, dass die S7 ?ber eine Ethernet-Schnittstelle verf?gt (in 
 
 Es wird vorausgesetzt, dass der Anwender ?ber die notwendigen Kenntnisse zur TCP/IP-Kommunikation verf?gt und in der Lage ist, die S7 mittels Step7 entsprechend zu konfigurieren und zu programmieren. Der ge?bte Umgang mit PC und verschiedenen Betriebssystem ist ebenfalls Voraussetzung. Diese Anforderungen stellen sicherlich keine Herausforderung f?r jemanden dar, der die Kommunikation zwischen ioBroker und einer S7 in Erw?gung zieht.
 
+#0.1.7 [2015.08.06]
+* (smiling_Jack) Bugfix send to SPS
+* (smiling_Jack) Bugfix reconnect on connection lost
+
 #0.1.6 [2015.07.31]
 * (smiling_Jack) Bugfix typo (Adress, Merkers)
 

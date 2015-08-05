@@ -3,4 +3,4 @@ tasks
 node_modules
 .idea
 .git
-./node_modules
+/node_modules
