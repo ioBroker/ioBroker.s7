@@ -40,12 +40,10 @@ var sendBuffer = {};
 
 adapter.on('stateChange', function (id, state) {
 
-
-    if (state && !state.ack && id) {
+    if (state && !state.ack && id && id.indexOf(".info.") == -1 ) {
 
         adapter.getObject(id, function (err, data) {
             if (err) {
-                console.log(err)
             } else {
 
                 var type = data.native.type;
@@ -216,7 +214,7 @@ function send() {
 
         if (type == "BOOL") {
             var addr = parseInt(data.native.address) * 8 + parseInt(data.native.address.split(".")[1]);
-            console.log(addr)
+
             s7client.WriteArea(s7client.S7AreaMK, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
                 next(err)
             });
@@ -327,7 +325,7 @@ var main = {
             main.outputs.sort(SortByaddress);
             main.markers.sort(SortByaddress);
             main.dbs.sort(SortByaddress);
-console.log(main)
+
             if (main.inputs.length > 0) {
                 main.input_lsb = parseInt(main.inputs[0].Address.split(".")[0]);
                 main.input_msb = parseInt(main.inputs[main.inputs.length - 1].Address.split(".")[0]);
@@ -689,7 +687,6 @@ console.log(main)
             function clear() {
                 for (var id in  main.old_objects) {
                     if (main.new_objects.indexOf(id) == -1) {
-                        console.log(id)
                         adapter.delObject(id, function () {
 
                         })
