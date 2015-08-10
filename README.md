@@ -1,12 +1,24 @@
 ![Logo](admin/S7.png)
 ### iobroker.s7
 
-Der Siemens S7 Adapter basiert auf Snap7, wobei Snap7 bei der Erstinstallation des S7 Adapters mitinstalliert wird und die eigentliche S7-Kommunikation zwischen ioBroker und der S7 ?ber TCP/IP organisiert.
+## Deutsch
+Der Siemens S7 Adapter basiert auf Snap7, wobei Snap7 bei der Erstinstallation des 
+S7 Adapters mitinstalliert wird und die eigentliche S7-Kommunikation zwischen ioBroker und der S7 über TCP/IP organisiert.
 
-Es ist also notwendig, dass die S7 ?ber eine Ethernet-Schnittstelle verf?gt (in der CPU integriert oder als separater CP) und ?ber TCP/IP mit der Hardware kommunizieren kann, auf der ioBroker l?uft.
+Es ist also notwendig, dass die S7 über eine Ethernet-Schnittstelle verfügt 
+(in der CPU integriert oder als separater CP) und über TCP/IP mit der Hardware kommunizieren kann, auf der ioBroker läuft.
 
-Es wird vorausgesetzt, dass der Anwender ?ber die notwendigen Kenntnisse zur TCP/IP-Kommunikation verf?gt und in der Lage ist, die S7 mittels Step7 entsprechend zu konfigurieren und zu programmieren. Der ge?bte Umgang mit PC und verschiedenen Betriebssystem ist ebenfalls Voraussetzung. Diese Anforderungen stellen sicherlich keine Herausforderung f?r jemanden dar, der die Kommunikation zwischen ioBroker und einer S7 in Erw?gung zieht.
+Es wird vorausgesetzt, dass der Anwender über die notwendigen Kenntnisse zur TCP/IP-Kommunikation verfügt 
+und in der Lage ist, die S7 mittels Step7 entsprechend zu konfigurieren und zu programmieren. 
+Der geübte Umgang mit PC und verschiedenen Betriebssystem ist ebenfalls Voraussetzung. 
+Diese Anforderungen stellen sicherlich keine Herausforderung für jemanden dar, 
+der die Kommunikation zwischen ioBroker und einer S7 in Erwägung zieht.
 
+## English
+Format of the addresses for Inputs, Outputs or markers is "X.Y", where X is byte offset and Y is bit offset in byte.
+Format of the addresses for DBs is "DBZ +X.Y", where z is number of DB, like "DB34 +12.0"
+
+# Changelog 
 #0.1.8 [2015.08.10]
 * (smiling_Jack) Bugfix send info states
 * (smiling_Jack) Remove unneeded conole.log
