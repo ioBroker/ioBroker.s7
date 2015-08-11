@@ -855,7 +855,7 @@ var main = {
 
             val = buff.readUInt16BE(offsetByte);
 
-            var factor = val >> 12;
+            var factor = (val >> 12) & 0x3;
             if (factor == 0) {
                 factor = 0.01;
             } else if (factor == 1) {
