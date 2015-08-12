@@ -9,25 +9,25 @@
 
 //}
 
-var utils = require(__dirname + '/lib/utils');
-var adapter = utils.adapter('s7');
-var async = require('async');
-var snap7 = require('node-snap7');
-var s7client = new snap7.S7Client();
+var utils     = require(__dirname + '/lib/utils');
+var adapter   = utils.adapter('s7');
+var async     = require('async');
+var snap7     = require('node-snap7');
+var s7client  = new snap7.S7Client();
 var connected = false;
 
 var nextPoll;
-var acp;
 var ackObjects = {};
 
 process.on('SIGINT', function () {
     if (adapter && adapter.setState) {
         adapter.setState("info.connection", false, true);
-        adapter.setState("info.pdu", "", true);
-        adapter.setState("info.poll_time", "", true);
+        adapter.setState("info.pdu",        "",    true);
+        adapter.setState("info.poll_time",  "",    true);
     }
-    if (nextPoll)
+    if (nextPoll)  {
         clearTimeout(nextPoll);
+    }
 });
 
 adapter.on('ready', function () {
@@ -35,200 +35,195 @@ adapter.on('ready', function () {
     main.main();
 });
 
-var pulseList = {};
+var pulseList  = {};
 var sendBuffer = {};
+var objects    = {};
+var infoRegExp = new RegExp(adapter.namespace.replace('.', '\\.') + '\\.info\\.');
 
 adapter.on('stateChange', function (id, state) {
-
-    if (state && !state.ack && id && id.indexOf(".info.") == -1 ) {
-
-        adapter.getObject(id, function (err, data) {
-            if (err) {
-            } else {
-
-                var type = data.native.type;
-
-                if (data.native.rw != false) {
-
-                    if (data.native.wp == false) {
-                        _write(id);
-                        setTimeout(function () {
-                            adapter.setState(id, ackObjects[id.replace(adapter.namespace + ".", "")].val, true);
-                        }, main.acp.poll * 1.5)
-                    } else {
-                        if (pulseList[id] == undefined && pulseList[id] != "_reset") {
-
-                            pulseList[id] = ackObjects[id.replace(adapter.namespace + ".", "")].val;
-
-                            setTimeout(function () {
-
-                                adapter.setState(id, pulseList[id], false);
-                                pulseList[id] = "_reset";
-                            }, adapter.config.params.pulsetime);
-                            _write(id);
-                        } else {
-                            _write(id);
-                            pulseList[id] = undefined;
-                            setTimeout(function () {
-                                adapter.setState(id, ackObjects[id.replace(adapter.namespace + ".", "")].val, true);
-                            }, main.acp.poll * 1.5)
-                        }
-                    }
+    if (state && !state.ack && id && !infoRegExp.test(id)) {
+        if (objects[id]) {
+            prepareWrite(id, state);
+        } else {
+            adapter.getObject(id, function (err, data) {
+                if (!err) {
+                    objects[id] = data;
+                    prepareWrite(id, state);
                 }
-            }
-
-
-            function _write(id) {
-
-                if (id) {
-                    sendBuffer[id] = {
-                        type: type,
-                        state: state,
-                        native: data.native
-                    }
-                }
-                if (Object.keys(sendBuffer).length == 1) {
-                    send()
-                }
-
-            }
-        })
+            });
+        }
     }
 });
+
+function writeHelper(id, state) {
+    sendBuffer[id] = state.val;
+
+    if (Object.keys(sendBuffer).length == 1) {
+        send();
+    }
+}
+
+function prepareWrite(id, state) {
+    if (objects[id].native.rw) {
+
+        if (!objects[id].native.wp) {
+
+            writeHelper(id, state);
+            setTimeout(function () {
+                adapter.setState(id, ackObjects[id.substring(adapter.namespace.length + 1)].val, true);
+            }, main.acp.poll * 1.5);
+
+        } else {
+            if (pulseList[id] === undefined) {
+
+                pulseList[id] = ackObjects[id.substring(adapter.namespace.length + 1)].val;
+
+                setTimeout(function () {
+                    writeHelper(id, {val: pulseList[id]});
+
+                    setTimeout(function () {
+                        adapter.setState(id, ackObjects[id.substring(adapter.namespace.length + 1)].val, true);
+                    }, main.acp.poll * 1.5);
+
+                }, adapter.config.params.pulsetime);
+
+                writeHelper(id, state);
+            }
+        }
+    } else {
+        setTimeout(function () {
+            adapter.setState(id, ackObjects[id.substring(adapter.namespace.length + 1)].val, true);
+        }, 0);
+    }
+}
 
 function send() {
 
     var id = Object.keys(sendBuffer)[0];
 
-    var type = sendBuffer[id].type;
-    var state = sendBuffer[id].state;
-    var data = {
-        "native": sendBuffer[id].native
-    };
+    var type = objects[id].native.type;
+    var val  = sendBuffer[id];
+    var data = objects[id];
 
     var buf;
+    var sdata;
 
     if (type == "BOOL") {
-        if (state.val == true || state.val == 1) {
-            buf = new Buffer([0x01])
+        if (val === true || val === 1 || val === "true" || val === "1") {
+            buf = new Buffer([1]);
         } else {
-            buf = new Buffer([0x00])
+            buf = new Buffer([0]);
         }
 
     } else if (type == "BYTE") {
         buf = new Buffer(1);
-        buf[0] = parseInt(state.val, 2);
+        buf[0] = val & 0xFF;
 
     } else if (type == "WORD") {
-        var sdata = (state.val).toString();
+        val = parseInt(val, 10);
         buf = new Buffer(2);
-        buf[0] = parseInt(sdata.substr(0, 8), 2);
-        buf[1] = parseInt(sdata.substr(8, 16), 2);
+        buf.writeUInt16BE(parseInt(val, 10), 0, 2);
 
     } else if (type == "DWORD") {
-        var sdata = (state.val).toString();
         buf = new Buffer(4);
-        buf[0] = parseInt(sdata.substr(0, 8), 2);
-        buf[1] = parseInt(sdata.substr(8, 16), 2);
-        buf[2] = parseInt(sdata.substr(16, 24), 2);
-        buf[3] = parseInt(sdata.substr(24, 32), 2);
+        buf.writeUInt32BE(parseInt(val, 10), 0, 4);
 
     } else if (type == "INT") {
         buf = new Buffer(2);
-        buf.writeInt16BE(state.val, 0, 2);
+        buf.writeInt16BE(parseInt(val, 10), 0, 2);
 
     } else if (type == "DINT") {
         buf = new Buffer(4);
-        buf.writeInt32BE(state.val, 0, 4);
+        buf.writeInt32BE(parseInt(val, 10), 0, 4);
 
     } else if (type == "REAL") {
         buf = new Buffer(4);
-        buf.writeFloatBE(state.val, 0);
-
+        buf.writeFloatBE(parseFloat(val), 0);
     }
+
+    var addr;
 
     if (data.native.cat == "db") {
 
         if (type == "BOOL") {
-            var addr = parseInt(data.native.address) * 8 + parseInt(data.native.address.split(".")[1]);
-            s7client.WriteArea(s7client.S7AreaDB, parseInt(data.native.db.replace("DB", "")), addr, 1, s7client.S7WLBit, buf, function (err) {
-                next(err)
+            addr = data.native.address * 8 + data.native.offsetBit;
+            s7client.WriteArea(s7client.S7AreaDB, data.native.dbId, addr, 1, s7client.S7WLBit, buf, function (err) {
+                next(err);
             });
         } else if (type == "BYTE") {
-            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.address), 1, buf, function (err) {
-                next(err)
+            s7client.DBWrite(data.native.dbId, data.native.address, 1, buf, function (err) {
+                next(err);
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.address), 2, buf, function (err) {
-                next(err)
+            s7client.DBWrite(data.native.dbId, data.native.address, 2, buf, function (err) {
+                next(err);
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.DBWrite(parseInt(data.native.db.replace("DB", "")), parseInt(data.native.address), 4, buf, function (err) {
-                next(err)
+            s7client.DBWrite(data.native.dbId, data.native.address, 4, buf, function (err) {
+                next(err);
             });
         }
     }
-    if (data.native.cat == "input") {
 
+    if (data.native.cat == "input") {
         if (type == "BOOL") {
-            var addr = parseInt(data.native.address) * 8 + parseInt(data.native.address.split(".")[1]);
+            addr = data.native.address * 8 + data.native.offsetBit;
             s7client.WriteArea(s7client.S7AreaPE, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
-                next(err)
+                next(err);
             });
         } else if (type == "BYTE") {
-            s7client.EBWrite(parseInt(data.native.address), parseInt(data.native.address), 1, buf, function (err) {
-                next(err)
+            s7client.EBWrite(data.native.address, data.native.address, 1, buf, function (err) {
+                next(err);
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.EBWrite(parseInt(data.native.address), parseInt(data.native.address), 2, buf, function (err) {
-                next(err)
+            s7client.EBWrite(data.native.address, data.native.address, 2, buf, function (err) {
+                next(err);
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.EBWrite(parseInt(data.native.address), parseInt(data.native.address), 4, buf, function (err) {
-                next(err)
+            s7client.EBWrite(data.native.address, data.native.address, 4, buf, function (err) {
+                next(err);
             });
         }
     }
     if (data.native.cat == "output") {
 
         if (type == "BOOL") {
-            var addr = parseInt(data.native.address) * 8 + parseInt(data.native.address.split(".")[1]);
+            addr = data.native.address * 8 + data.native.offsetBit;
             s7client.WriteArea(s7client.S7AreaPA, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
-                next(err)
+                next(err);
             });
         } else if (type == "BYTE") {
-            s7client.ABWrite(parseInt(data.native.address), parseInt(data.native.address), 1, buf, function (err) {
-                next(err)
+            s7client.ABWrite(data.native.address, data.native.address, 1, buf, function (err) {
+                next(err);
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.ABWrite(parseInt(data.native.address), parseInt(data.native.address), 2, buf, function (err) {
-                next(err)
+            s7client.ABWrite(data.native.address, data.native.address, 2, buf, function (err) {
+                next(err);
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.ABWrite(parseInt(data.native.address), parseInt(data.native.address), 4, buf, function (err) {
-                next(err)
+            s7client.ABWrite(data.native.address, data.native.address, 4, buf, function (err) {
+                next(err);
             });
         }
     }
     if (data.native.cat == "marker") {
 
         if (type == "BOOL") {
-            var addr = parseInt(data.native.address) * 8 + parseInt(data.native.address.split(".")[1]);
-
+            addr = data.native.address * 8 + data.native.offsetBit;
             s7client.WriteArea(s7client.S7AreaMK, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
-                next(err)
+                next(err);
             });
         } else if (type == "BYTE") {
-            s7client.MBWrite(parseInt(data.native.address), 1, buf, function (err) {
-                next(err)
+            s7client.MBWrite(data.native.address, 1, buf, function (err) {
+                next(err);
             });
         } else if (type == "INT" || type == "WORD") {
-            s7client.MBWrite(parseInt(data.native.address), 2, buf, function (err) {
-                next(err)
+            s7client.MBWrite(data.native.address, 2, buf, function (err) {
+                next(err);
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
-            s7client.MBWrite(parseInt(data.native.address), 4, buf, function (err) {
-                next(err)
+            s7client.MBWrite(data.native.address, 4, buf, function (err) {
+                next(err);
             });
         }
     }
@@ -237,142 +232,188 @@ function send() {
         if (err) {
             adapter.log.error('DB write error. Code #' + err);
         }
-        delete(sendBuffer[id])
-        if (Object.keys(sendBuffer).length != 0) {
-            send()
+        delete(sendBuffer[id]);
+        if (Object.keys(sendBuffer).length) {
+            send();
         }
     }
-
 }
 
-function bin8(n) {
-    return ("000000000" + n.toString(2)).substr(-8)
-}
 var main = {
-
-
     old_objects: [],
     new_objects: [],
-    round: 2,
-    inputs: [],
-    input_lsb: "",
-    input_msb: "",
-    input_size: "",
-    outputs: [],
-    output_lsb: "",
-    output_msb: "",
+    round:       2,
+
+    inputs:      [],
+    input_lsb:   "",
+    input_msb:   "",
+    input_size:  "",
+
+    outputs:     [],
+    output_lsb:  "",
+    output_msb:  "",
     output_size: "",
-    markers: [],
-    marker_lsb: "",
-    marker_msb: "",
+
+    markers:     [],
+    marker_lsb:  "",
+    marker_msb:  "",
     marker_size: "",
-    dbs: [],
-    db_size: {},
-    _db_size: [],
-    history: "",
-    unit: "",
+
+    dbs:         [],
+    db_size:     {},
+    _db_size:    [],
+
+    history:     "",
+    unit:        "",
     error_count: 0,
 
     main: function () {
 
-        main.ac = adapter.config;
-        main.acp = adapter.config.params;
+        main.ac        = adapter.config;
+        main.acp       = adapter.config.params;
+        main.acp.poll  = parseInt(main.acp.poll,  10) || 1000; // default is 1 second
+        main.acp.rack  = parseInt(main.acp.rack,  10) || 0;
+        main.acp.slot  = parseInt(main.acp.slot,  10) || 2;
+        main.acp.recon = parseInt(main.acp.recon, 10) || 60000;
 
-        if (parseInt(main.acp.round) != "NaN" && main.acp.round != "" && main.acp.round != undefined && main.acp.round != null) {
-            main.round = parseInt(main.acp.round);
+        if (main.acp.round) {
+            main.round = parseInt(main.acp.round) || 2;
         } else {
-            main.round = 2
+            main.round = 2;
         }
 
         main.round = Math.pow(10, main.round);
 
-        adapter.getForeignObjects(adapter.namespace + "*", function (err, list) {
+        adapter.getForeignObjects(adapter.namespace + ".*", function (err, list) {
 
+            main.old_objects = list;
 
-            main.old_objects = list
+            main.ac.inputs.sort(SortByaddress);
+            main.ac.outputs.sort(SortByaddress);
+            main.ac.markers.sort(SortByaddress);
+            main.ac.dbs.sort(SortByaddress);
 
-            //for (var key in list) {
-            //    main.old_objects.push(this)
-            //}
-            for (i = 0; main.ac.inputs.length > i; i++) {
-                if (main.ac.inputs[i].poll == true) {
-                    main.inputs.push(main.ac.inputs[i])
-                }
-            }
+            var parts;
+            var i;
 
+            if (main.ac.inputs.length > 0) {
+                for (i = main.ac.inputs.length - 1; i >= 0; i--) {
+                    parts = main.ac.inputs[i].Address.split(".");
+                    main.ac.inputs[i].offsetByte = parseInt(parts[0], 10);
+                    main.ac.inputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
+                    main.ac.inputs[i].id = "Inputs." + main.ac.inputs[i].offsetByte + "." + (main.ac.inputs[i].Name.replace(".", "_").replace(" ", "_") || main.ac.inputs[i].offsetBit);
 
-            for (i = 0; main.ac.outputs.length > i; i++) {
-                if (main.ac.outputs[i].poll == true) {
-                    main.outputs.push(main.ac.outputs[i])
-                }
-            }
-
-            for (i = 0; main.ac.markers.length > i; i++) {
-                if (main.ac.markers[i].poll == true) {
-                    main.markers.push(main.ac.markers[i])
-                }
-            }
-
-
-            for (i = 0; main.ac.dbs.length > i; i++) {
-                if (main.ac.dbs[i].poll == true) {
-                    main.dbs.push(main.ac.dbs[i])
-                }
-            }
-
-
-            main.inputs.sort(SortByaddress);
-            main.outputs.sort(SortByaddress);
-            main.markers.sort(SortByaddress);
-            main.dbs.sort(SortByaddress);
-
-            if (main.inputs.length > 0) {
-                main.input_lsb = parseInt(main.inputs[0].Address.split(".")[0]);
-                main.input_msb = parseInt(main.inputs[main.inputs.length - 1].Address.split(".")[0]);
-                main.input_size = main.input_msb - main.input_lsb + 1;
-            }
-            if (main.outputs.length > 0) {
-                main.output_lsb = parseInt(main.outputs[0].Address.split(".")[0]);
-                main.output_msb = parseInt(main.outputs[main.outputs.length - 1].Address.split(".")[0]);
-                main.output_size = main.output_msb - main.output_lsb + 1;
-            }
-            if (main.markers.length > 0) {
-                main.marker_lsb = parseInt(main.markers[0].Address.split(".")[0]);
-                main.marker_msb = parseInt(main.markers[main.markers.length - 1].Address.split(".")[0]);
-                main.marker_size = main.marker_msb - main.marker_lsb + 1;
-            }
-
-            if (main.dbs.length > 0) {
-
-                for (i = 0; main.dbs.length > i; i++) {
-                    main.db_size[main.dbs[i].Address.split(" ")[0]] = {
-                        msb: 0,
-                        db: main.dbs[i].Address.split(" ")[0]
+                    main.ac.inputs[i].len = 1;
+                    if (main.ac.inputs[i].Type == "WORD"  || main.ac.inputs[i].Type == "INT"  || main.ac.inputs[i].Type == "S5TIME") {
+                        main.ac.inputs[i].len = 2;
                     }
-
-                }
-
-                for (i = 0; main.dbs.length > i; i++) {
-                    var db = main.dbs[i].Address.split(" ")[0];
-                    var addr = parseFloat(main.dbs[i].Address.split(" ")[1].replace("+", ""));
-
-                    var len = 1;
-                    if (main.dbs[i].Type == "WORD" || main.dbs[i].Type == "INT" || main.dbs[i].Type == "S5TIME") {
-                        len = 2
-                    }
-                    if (main.dbs[i].Type == "DWORD" || main.dbs[i].Type == "DINT" || main.dbs[i].Type == "REAL") {
-                        len = 4
-                    }
-
-                    addr = addr + len;
-
-                    if (addr > main.db_size[db].msb) {
-                        main.db_size[db].msb = addr;
+                    if (main.ac.inputs[i].Type == "DWORD" || main.ac.inputs[i].Type == "DINT" || main.ac.inputs[i].Type == "REAL") {
+                        main.ac.inputs[i].len = 4;
                     }
                 }
+                main.input_lsb  = main.ac.inputs[i].offsetByte;
+                main.input_msb  = main.ac.inputs[main.ac.inputs.length - 1].offsetByte + main.ac.inputs[main.ac.inputs.length - 1].len;
+                main.input_size = main.input_msb - main.input_lsb;
             }
 
-            if (main.inputs.length > 0) {
+            if (main.ac.outputs.length > 0) {
+                for (i = main.ac.outputs.length - 1; i >= 0; i--) {
+                    parts = main.ac.outputs[i].Address.split(".");
+                    main.ac.outputs[i].offsetByte = parseInt(parts[0], 10);
+                    main.ac.outputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
+                    main.ac.outputs[i].id = "Outputs." + main.ac.outputs[i].offsetByte + "." + (main.ac.outputs[i].Name.replace(".", "_").replace(" ", "_") || main.ac.outputs[i].offsetBit);
+
+                    main.ac.outputs[i].len = 1;
+                    if (main.ac.outputs[i].Type == "WORD"  || main.ac.outputs[i].Type == "INT"  || main.ac.outputs[i].Type == "S5TIME") {
+                        main.ac.outputs[i].len = 2;
+                    }
+                    if (main.ac.outputs[i].Type == "DWORD" || main.ac.outputs[i].Type == "DINT" || main.ac.outputs[i].Type == "REAL") {
+                        main.ac.outputs[i].len = 4;
+                    }
+                }
+                main.output_lsb  = main.ac.outputs[0].offsetByte;
+                main.output_msb  = main.ac.outputs[main.ac.outputs.length - 1].offsetByte + main.ac.outputs[main.ac.outputs.length - 1].len;
+                main.output_size = main.output_msb - main.output_lsb;
+            }
+
+            if (main.ac.markers.length > 0) {
+                for (i = main.ac.markers.length - 1; i >= 0; i--) {
+                    parts = main.ac.markers[i].Address.split(".");
+                    main.ac.markers[i].offsetByte = parseInt(parts[0], 10);
+                    main.ac.markers[i].offsetBit  = parseInt(parts[1] || 0, 10);
+                    main.ac.markers[i].id = "Markers." + main.ac.markers[i].offsetByte + "." + (main.ac.markers[i].Name.replace(".", "_").replace(" ", "_") || main.ac.markers[i].offsetBit);
+
+                    main.ac.markers[i].len = 1;
+                    if (main.ac.markers[i].Type == "WORD"  || main.ac.markers[i].Type == "INT"  || main.ac.markers[i].Type == "S5TIME") {
+                        main.ac.markers[i].len = 2;
+                    }
+                    if (main.ac.markers[i].Type == "DWORD" || main.ac.markers[i].Type == "DINT" || main.ac.markers[i].Type == "REAL") {
+                        main.ac.markers[i].len = 4;
+                    }
+                }
+                main.marker_lsb  = main.ac.markers[0].offsetByte;
+                main.marker_msb  = main.ac.markers[main.ac.markers.length - 1].offsetByte + main.ac.markers[main.ac.markers.length - 1].len;
+                main.marker_size = main.marker_msb - main.marker_lsb;
+            }
+
+            if (main.ac.dbs.length > 0) {
+                for (i = main.ac.dbs.length - 1; i >= 0; i--) {
+                    parts = main.ac.dbs[i].Address.split(" ");
+                    if (parts.length != 2) {
+                        adapter.log.error('Invalid format of address: ' + main.ac.dbs[i].Address);
+                        adapter.log.error('Expected format is: "DB2 4" or "DB2 4.1"');
+                        main.ac.dbs.splice(i, 1);
+                        continue;
+                    } else if (!parts[1].match(/^\d+$/) && !parts[1].match(/^\d+\.\d+$/)) {
+                        adapter.log.error('Invalid format of offset: ' + main.ac.dbs[i].Address);
+                        adapter.log.error('Expected format is: "DB2 4" or "DB2 4.1"');
+                        main.ac.dbs.splice(i, 1);
+                        continue;
+                    } else if (!parts[0].match(/^DB/i)) {
+                        adapter.log.error('Invalid format of address: ' + main.ac.dbs[i].Address);
+                        adapter.log.error('Expected format is: "DB2 4" or "DB2 4.1"');
+                        main.ac.dbs.splice(i, 1);
+                        continue;
+                    }
+
+                    main.ac.dbs[i].db     = parts[0].trim().toUpperCase();
+                    main.ac.dbs[i].dbId   = parseInt(main.ac.dbs[i].db.substring(2), 10);
+                    main.ac.dbs[i].offset = parts[1].replace('+', '');
+                    main.ac.dbs[i].id     = "DBs." + main.ac.dbs[i].db + "." + ((main.ac.dbs[i].Name.replace(".", "_").replace(" ", "_")) || main.ac.dbs[i].offset.replace(".", "_"));
+
+                    parts = main.ac.dbs[i].offset.split('.');
+                    main.ac.dbs[i].offsetByte = parseInt(parts[0], 10);
+                    if (main.ac.dbs[i].Type == "BOOL") {
+                        main.ac.dbs[i].offsetBit  = parseInt(parts[1] || 0, 10);
+                    } else {
+                        main.ac.dbs[i].offsetBit = 0;
+                        main.ac.dbs[i].offset    = main.ac.dbs[i].offsetByte;
+                    }
+
+                    if (!main.db_size[main.ac.dbs[i].db]) {
+                        main.db_size[main.ac.dbs[i].db] = {
+                            msb: 0,
+                            db:  main.ac.dbs[i].db
+                        };
+                    }
+
+                    main.ac.dbs[i].len = 1;
+                    if (main.ac.dbs[i].Type == "WORD" || main.ac.dbs[i].Type == "INT" || main.ac.dbs[i].Type == "S5TIME") {
+                        main.ac.dbs[i].len = 2;
+                    }
+                    if (main.ac.dbs[i].Type == "DWORD" || main.ac.dbs[i].Type == "DINT" || main.ac.dbs[i].Type == "REAL") {
+                        main.ac.dbs[i].len = 4;
+                    }
+
+                    // find size of DB
+                    if (main.ac.dbs[i].offsetByte + main.ac.dbs[i].len > main.db_size[main.ac.dbs[i].db].msb) {
+                        main.db_size[main.ac.dbs[i].db].msb = main.ac.dbs[i].offsetByte + main.ac.dbs[i].len;
+                    }
+                }
+            }
+
+            // ------------------ create devices -------------
+            if (main.ac.inputs.length > 0) {
                 adapter.setObject("Inputs", {
                     type: 'device',
                     common: {
@@ -382,7 +423,7 @@ var main = {
                 });
             }
 
-            if (main.outputs.length > 0) {
+            if (main.ac.outputs.length > 0) {
                 adapter.setObject("Outputs", {
                     type: 'device',
                     common: {
@@ -392,17 +433,17 @@ var main = {
                 });
             }
 
-            if (main.markers.length > 0) {
-                adapter.setObject("Merkers", {
+            if (main.ac.markers.length > 0) {
+                adapter.setObject("Markers", {
                     type: 'device',
                     common: {
-                        name: "Merkers"
+                        name: "Markers"
                     },
                     native: {}
                 });
             }
 
-            if (main.dbs.length > 0) {
+            if (main.ac.dbs.length > 0) {
                 adapter.setObject("DBs", {
                     type: 'device',
                     common: {
@@ -412,27 +453,29 @@ var main = {
                 });
             }
 
+            // ------------- create states and objects ----------------------------
+            var channels = [];
+            for (i = 0; main.ac.inputs.length > i; i++) {
+                if (channels.indexOf("Inputs." + main.ac.inputs[i].offsetByte) == -1) {
+                    channels.push("Inputs." + main.ac.inputs[i].offsetByte);
+                    adapter.setObject("Inputs." + main.ac.inputs[i].offsetByte, {
+                        type: 'channel',
+                        common: {
+                            name: main.ac.inputs[i].offsetByte
+                        },
+                        native: {}
+                    });
+                }
 
-            for (i = 0; main.inputs.length > i; i++) {
-                var ch = (main.ac.inputs[i].Address).split(".")[0];
-                var id = "Inputs." + ch + "." + main.ac.inputs[i].Name.replace(".", "_").replace(" ", "_");
-                adapter.setObject("Inputs." + ch, {
-                    type: 'channel',
-                    common: {
-                        name: ch
-                    },
-                    native: {}
-                });
-
-                if (main.old_objects[adapter.namespace + "." + id]) {
-                    main.history = main.old_objects[adapter.namespace + "." + id].common.history || {
-                            "enabled": false,
+                if (main.old_objects[adapter.namespace + "." + main.ac.inputs[i].id]) {
+                    main.history = main.old_objects[adapter.namespace + "." + main.ac.inputs[i].id].common.history || {
+                            "enabled":     false,
                             "changesOnly": true,
-                            "minLength": 480,
-                            "maxLength": 960,
-                            "retention": 604800,
-                            "debounce": 10000
-                        }
+                            "minLength":   480,
+                            "maxLength":   960,
+                            "retention":   604800,
+                            "debounce":    10000
+                        };
                 } else {
                     main.history = {
                         "enabled": false,
@@ -441,134 +484,135 @@ var main = {
                         "maxLength": 960,
                         "retention": 604800,
                         "debounce": 10000
-                    }
+                    };
                 }
-                adapter.setObject(id, {
+
+                adapter.setObject(main.ac.inputs[i].id, {
                     type: 'state',
                     common: {
-                        name: main.ac.inputs[i].Description,
-                        role: main.ac.inputs[i].Type,
-                        type: main.ac.inputs[i].Type,
-                        unit: (main.ac.inputs[i].Type == "S5TIME") ? "s" : main.ac.inputs[i].Unit,
-                        enabled: false,
+                        name:    main.ac.inputs[i].Description,
+                        role:    main.ac.inputs[i].Type,
+                        type:    (main.ac.inputs[i].Type == "BOOL")   ? "boolean" : main.ac.inputs[i].Type,
+                        unit:    (main.ac.inputs[i].Type == "S5TIME") ? "s"       : main.ac.inputs[i].Unit,
                         history: main.history
                     },
                     native: {
-                        cat: "input",
-                        type: main.ac.inputs[i].Type,
-                        address: main.ac.inputs[i].Address,
-                        rw: main.ac.inputs[i].RW,
-                        wp: main.ac.inputs[i].Wp
+                        cat:       "input",
+                        type:      main.ac.inputs[i].Type,
+                        address:   main.ac.inputs[i].offsetByte,
+                        offsetBit: main.ac.inputs[i].offsetBit,
+                        rw:        main.ac.inputs[i].RW,
+                        wp:        main.ac.inputs[i].WP
                     }
                 });
 
-                main.new_objects.push(adapter.namespace + "." + id)
+                main.new_objects.push(adapter.namespace + "." + main.ac.inputs[i].id);
+            }
+            channels = [];
+            for (i = 0; main.ac.outputs.length > i; i++) {
+                if (channels.indexOf("Outputs." + main.ac.inputs[i].offsetByte) == -1) {
+                    channels.push("Outputs." + main.ac.inputs[i].offsetByte);
+                    adapter.setObject("Outputs." + main.ac.outputs[i].offsetByte, {
+                        type: 'channel',
+                        common: {
+                            name: main.ac.outputs[i].offsetByte
+                        },
+                        native: {}
+                    });
+                }
+
+                if (main.old_objects[adapter.namespace + "." + main.ac.outputs[i].id]) {
+                    main.history = main.old_objects[adapter.namespace + "." + main.ac.outputs[i].id].common.history || {
+                            "enabled":     false,
+                            "changesOnly": true,
+                            "minLength":   480,
+                            "maxLength":   960,
+                            "retention":   604800,
+                            "debounce":    10000
+                        };
+                } else {
+                    main.history = {
+                        "enabled":     false,
+                        "changesOnly": true,
+                        "minLength":   480,
+                        "maxLength":   960,
+                        "retention":   604800,
+                        "debounce":    10000
+                    };
+                }
+                adapter.setObject(main.ac.outputs[i].id, {
+                    type: 'state',
+                    common: {
+                        name:    main.ac.outputs[i].Description,
+                        role:    main.ac.outputs[i].Type, //todo
+                        type:    (main.ac.outputs[i].Type == "BOOL") ? "boolean" : main.ac.outputs[i].Type,
+                        unit:    (main.ac.outputs[i].Type == "S5TIME") ? "s" : main.ac.outputs[i].Unit,
+                        history: main.history
+                    },
+                    native: {
+                        cat:       "output",
+                        type:      main.ac.outputs[i].Type,
+                        address:   main.ac.outputs[i].offsetByte,
+                        offsetBit: main.ac.outputs[i].offsetBit,
+                        rw:        main.ac.outputs[i].RW,
+                        wp:        main.ac.outputs[i].WP
+                    }
+                });
+                main.new_objects.push(adapter.namespace + "." + main.ac.outputs[i].id);
             }
 
-            for (i = 0; main.outputs.length > i; i++) {
-                var ch = (main.ac.outputs[i].Address).split(".")[0];
-                var id = "Outputs." + ch + "." + main.ac.outputs[i].Name.replace(".", "_").replace(" ", "_");
-                //var bit= (main.ac.outputs[i].Address).split(".")[1] || 0;
+            channels = [];
+            for (i = 0; main.ac.markers.length > i; i++) {
+                if (channels.indexOf("Markers." + main.ac.inputs[i].offsetByte) == -1) {
+                    channels.push("Markers." + main.ac.inputs[i].offsetByte);
 
-                adapter.setObject("Outputs." + ch, {
-                    type: 'channel',
-                    common: {
-                        name: ch
-                    },
-                    native: {}
-                });
+                    adapter.setObject("Markers." + main.ac.markers[i].offsetByte, {
+                        type: 'channel',
+                        common: {
+                            name: main.ac.markers[i].offsetByte
+                        },
+                        native: {}
+                    });
+                }
 
-                if (main.old_objects[adapter.namespace + "." + id]) {
-                    main.history = main.old_objects[adapter.namespace + "." + id].common.history || {
-                            "enabled": false,
+                if (main.old_objects[adapter.namespace + "." + main.ac.markers[i].id]) {
+                    main.history = main.old_objects[adapter.namespace + "." + main.ac.markers[i].id].common.history || {
+                            "enabled":     false,
                             "changesOnly": true,
-                            "minLength": 480,
-                            "maxLength": 960,
-                            "retention": 604800,
-                            "debounce": 10000
-                        }
+                            "minLength":   480,
+                            "maxLength":   960,
+                            "retention":   604800,
+                            "debounce":    10000
+                        };
                 } else {
                     main.history = {
-                        "enabled": false,
+                        "enabled":     false,
                         "changesOnly": true,
-                        "minLength": 480,
-                        "maxLength": 960,
-                        "retention": 604800,
-                        "debounce": 10000
-                    }
+                        "minLength":   480,
+                        "maxLength":   960,
+                        "retention":   604800,
+                        "debounce":    10000
+                    };
                 }
-                adapter.setObject(id, {
+                adapter.setObject(main.ac.markers[i].id, {
                     type: 'state',
                     common: {
-                        name: main.ac.outputs[i].Description,
-                        role: main.ac.outputs[i].Type,
-                        type: main.ac.outputs[i].Type,
-                        unit: (main.ac.outputs[i].Type == "S5TIME") ? "s" : main.ac.outputs[i].Unit,
-                        enabled: false,
+                        name:    main.ac.markers[i].Description,
+                        role:    main.ac.markers[i].Type,//todo
+                        type:    (main.ac.markers[i].Type == "BOOL")   ? "boolean" : main.ac.markers[i].Type,
+                        unit:    (main.ac.markers[i].Type == "S5TIME") ? "s" : main.ac.markers[i].Unit,
                         history: main.history
                     },
                     native: {
-                        cat: "output",
-                        type: main.ac.outputs[i].Type,
-                        address: main.ac.outputs[i].Address,
-                        rw: main.ac.outputs[i].RW,
-                        wp: main.ac.outputs[i].WP
+                        cat:       "marker",
+                        type:      main.ac.markers[i].Type,
+                        address:   main.ac.markers[i].offsetByte,
+                        offsetBit: main.ac.markers[i].offsetBit,
+                        rw:        main.ac.markers[i].RW,
+                        wp:        main.ac.markers[i].WP
                     }
                 });
-                main.new_objects.push(adapter.namespace + "." + id)
-            }
-
-            for (i = 0; main.markers.length > i; i++) {
-                var ch = (main.ac.markers[i].Address).split(".")[0];
-                var id = "Merkers." + ch + "." + main.ac.markers[i].Name.replace(".", "_").replace(" ", "_");
-                //var bit= (main.ac.markers[i].Address).split(".")[1]  || 0;
-
-                adapter.setObject("Merkers." + ch, {
-                    type: 'channel',
-                    common: {
-                        name: ch
-                    },
-                    native: {}
-                });
-
-                if (main.old_objects[adapter.namespace + "." + id]) {
-                    main.history = main.old_objects[adapter.namespace + "." + id].common.history || {
-                            "enabled": false,
-                            "changesOnly": true,
-                            "minLength": 480,
-                            "maxLength": 960,
-                            "retention": 604800,
-                            "debounce": 10000
-                        }
-                } else {
-                    main.history = {
-                        "enabled": false,
-                        "changesOnly": true,
-                        "minLength": 480,
-                        "maxLength": 960,
-                        "retention": 604800,
-                        "debounce": 10000
-                    }
-                }
-                adapter.setObject(id, {
-                    type: 'state',
-                    common: {
-                        name: main.ac.markers[i].Description,
-                        role: main.ac.markers[i].Type,
-                        type: main.ac.markers[i].Type,
-                        unit: (main.ac.markers[i].Type == "S5TIME") ? "s" : main.ac.markers[i].Unit,
-                        enabled: false,
-                        history: main.history
-                    },
-                    native: {
-                        cat: "marker",
-                        type: main.ac.markers[i].Type,
-                        address: main.ac.markers[i].Address,
-                        rw: main.ac.markers[i].RW,
-                        wp: main.ac.markers[i].WP
-                    }
-                });
-                main.new_objects.push(adapter.namespace + "." + id);
+                main.new_objects.push(adapter.namespace + "." + main.ac.markers[i].id);
             }
 
 
@@ -582,53 +626,76 @@ var main = {
                 });
             }
 
-            for (i = 0; main.dbs.length > i; i++) {
-                var db = main.dbs[i].Address.split(" ")[0];
-                var id = "DBs." + db + "." + main.dbs[i].Name.replace(".", "_").replace(" ", "_")
-                //console.log(main.old_objects[adapter.namespace +"."+ id])
-
-                if (main.old_objects[adapter.namespace + "." + id]) {
-                    main.history = main.old_objects[adapter.namespace + "." + id].common.history || {
-                            "enabled": false,
+            for (i = 0; main.ac.dbs.length > i; i++) {
+                if (main.old_objects[adapter.namespace + "." + main.ac.dbs[i].id]) {
+                    main.history = main.old_objects[adapter.namespace + "." + main.ac.dbs[i].id].common.history || {
+                            "enabled":     false,
                             "changesOnly": true,
-                            "minLength": 480,
-                            "maxLength": 960,
-                            "retention": 604800,
-                            "debounce": 10000
-                        }
+                            "minLength":   480,
+                            "maxLength":   960,
+                            "retention":   604800,
+                            "debounce":    10000
+                        };
                 } else {
                     main.history = {
-                        "enabled": false,
+                        "enabled":     false,
                         "changesOnly": true,
-                        "minLength": 480,
-                        "maxLength": 960,
-                        "retention": 604800,
-                        "debounce": 10000
-                    }
+                        "minLength":   480,
+                        "maxLength":   960,
+                        "retention":   604800,
+                        "debounce":    10000
+                    };
                 }
 
-                adapter.setObject("DBs." + db + "." + main.dbs[i].Name.replace(".", "_").replace(" ", "_"), {
+                adapter.setObject(main.ac.dbs[i].id, {
                     type: 'state',
                     common: {
-                        name: main.dbs[i].Description,
-                        role: main.dbs[i].Type,
-                        type: main.dbs[i].Type,
-                        unit: (main.dbs[i].Type == "S5TIME") ? "s" : main.dbs[i].Unit,
-                        enabled: false,
+                        name:    main.ac.dbs[i].Description,
+                        role:    main.ac.dbs[i].Type,//todo
+                        type:    (main.ac.dbs[i].Type == "BOOL")   ? "boolean" : main.ac.dbs[i].Type,
+                        unit:    (main.ac.dbs[i].Type == "S5TIME") ? "s"       : main.ac.dbs[i].Unit,
                         history: main.history
                     },
                     native: {
-                        cat: "db",
-                        type: main.dbs[i].Type,
-                        db: main.dbs[i].Address.split(" +")[0],
-                        address: main.dbs[i].Address.split(" +")[1],
-                        rw: main.dbs[i].RW,
-                        wp: main.dbs[i].WP
+                        cat:       "db",
+                        type:      main.ac.dbs[i].Type,
+                        db:        main.ac.dbs[i].db,
+                        dbId:      main.ac.dbs[i].dbId,
+                        address:   main.ac.dbs[i].offsetByte,
+                        offsetBit: main.ac.dbs[i].offsetBit,
+                        rw:        main.ac.dbs[i].RW,
+                        wp:        main.ac.dbs[i].WP
                     }
                 });
-                main.new_objects.push(adapter.namespace + "." + id)
+                main.new_objects.push(adapter.namespace + "." + main.ac.dbs[i].id);
             }
 
+
+            // ----------- remember poll values --------------------------
+            for (i = 0; main.ac.inputs.length > i; i++) {
+                if (main.ac.inputs[i].poll) {
+                    main.inputs.push(main.ac.inputs[i]);
+                }
+            }
+
+            for (i = 0; main.ac.outputs.length > i; i++) {
+                if (main.ac.outputs[i].poll) {
+                    main.outputs.push(main.ac.outputs[i]);
+                }
+            }
+
+            for (i = 0; main.ac.markers.length > i; i++) {
+                if (main.ac.markers[i].poll) {
+                    main.markers.push(main.ac.markers[i]);
+                }
+            }
+
+
+            for (i = 0; main.ac.dbs.length > i; i++) {
+                if (main.ac.dbs[i].poll) {
+                    main.dbs.push(main.ac.dbs[i]);
+                }
+            }
 
             adapter.setObject("info", {
                 type: 'device',
@@ -639,6 +706,7 @@ var main = {
                 },
                 native: {}
             });
+
             adapter.setObject("info.poll_time", {
                 type: 'state',
                 common: {
@@ -650,6 +718,7 @@ var main = {
                 native: {}
             });
             main.new_objects.push(adapter.namespace + ".info.poll_time");
+
             adapter.setObject("info.connection", {
                 type: 'state',
                 common: {
@@ -660,6 +729,7 @@ var main = {
                 native: {}
             });
             main.new_objects.push(adapter.namespace + ".info.connection");
+
             adapter.setObject("info.pdu", {
                 type: 'state',
                 common: {
@@ -670,26 +740,22 @@ var main = {
                 native: {}
             });
             main.new_objects.push(adapter.namespace + ".info.pdu");
+
             adapter.setState("info.connection", false, true);
 
-
-            var db_size = [];
-
-
             for (var key in main.db_size) {
-                main._db_size.push(main.db_size[key])
+                main._db_size.push(main.db_size[key]);
             }
 
             //clear unused states
-            var i = 0;
             var l = main.old_objects.length;
 
             function clear() {
-                for (var id in  main.old_objects) {
+                for (var id in main.old_objects) {
                     if (main.new_objects.indexOf(id) == -1) {
                         adapter.delObject(id, function () {
 
-                        })
+                        });
                     }
                 }
 
@@ -700,134 +766,135 @@ var main = {
             }
 
             clear();
-
-
-            //}
         });
     },
 
     start: function () {
-        s7client.ConnectTo(main.acp.ip, parseInt(main.acp.rack), parseInt(main.acp.slot), function (err) {
+        s7client.ConnectTo(main.acp.ip, main.acp.rack, main.acp.slot, function (err) {
 
             if (err) {
                 adapter.log.error('Connection failed. Code #' + err);
                 adapter.setState("info.connection", false, true);
-                return setTimeout(main.start, (parseInt(main.acp.recon) || 60000))
+                return setTimeout(main.start, main.acp.recon);
             }
 
             connected = true;
             adapter.setState("info.connection", true, true);
             adapter.setState("info.pdu", s7client.PDULength(), true);
 
-
             main.poll();
         });
     },
 
-    write: function (id, buff, type, byte_addr, bit_addr) {
-        var val = 0;
+    write: function (id, buff, type, offsetByte, offsetBit) {
+        var val   = 0;
         var byte0 = "";
         var byte1 = "";
         var byte2 = "";
         var byte3 = "";
 
         if (type == "BOOL") {
-            val = bin8(buff[byte_addr]).substring(7 - bit_addr, 7 - bit_addr + 1);
-            if (ackObjects[id] == undefined || ackObjects[id].val != val) {
-                ackObjects[id] = {"val": val};
+            val = ((buff[offsetByte] >> (7 - offsetBit)) & 1) ? true : false;
+
+            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type == "BYTE") {
-            val = bin8(buff[byte_addr]);
-            if (ackObjects[id] == undefined || ackObjects[id].val != val) {
-                ackObjects[id] = {"val": val};
+            val = buff[offsetByte];
+            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type == "WORD") {
-            byte1 = bin8(buff[byte_addr]);
-            byte0 = bin8(buff[byte_addr + 1]);
-
-            val = byte1 + byte0;
-            if (ackObjects[id] == undefined || ackObjects[id].val != val) {
-                ackObjects[id] = {"val": val};
+            val = buff.readUInt16BE(offsetByte);
+            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type == "DWORD") {
-            byte3 = bin8(buff[byte_addr]);
-            byte2 = bin8(buff[byte_addr + 1]);
-            byte1 = bin8(buff[byte_addr + 2]);
-            byte0 = bin8(buff[byte_addr + 3]);
-            val = byte3 + byte2 + byte1 + byte0;
-            if (ackObjects[id] == undefined || ackObjects[id].val != val) {
-                ackObjects[id] = {"val": val};
+            val = buff.readUInt32BE(offsetByte);
+            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type == "INT") {
-            val = buff.readInt16BE(byte_addr);
-            if (ackObjects[id] == undefined || ackObjects[id].val != val) {
-                ackObjects[id] = {"val": val};
+            val = buff.readInt16BE(offsetByte);
+            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type == "DINT") {
-            val = buff.readInt32BE(byte_addr);
-            if (ackObjects[id] == undefined || ackObjects[id].val != val) {
-                ackObjects[id] = {"val": val};
+            val = buff.readInt32BE(offsetByte);
+            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type == "REAL") {
-            val = buff.readFloatBE(byte_addr);
+            val = buff.readFloatBE(offsetByte);
             var _val = parseFloat(Math.round(val * main.round) / main.round);
 
-            if (ackObjects[id] == undefined || ackObjects[id].val != _val) {
-
-                ackObjects[id] = {"val": _val};
+            if (ackObjects[id] === undefined || ackObjects[id].val != _val) {
+                ackObjects[id] = {val: _val};
                 adapter.setState(id, _val, true);
             }
-        }
-        else if (type == "S5TIME") {
+        } else if (type == "S5TIME") {
+            // Bin : xxxx 3333 | 2222 1111
 
-            byte3 = bin8(buff[byte_addr]);
-            byte2 = bin8(buff[byte_addr + 1]);
-            val = byte3 + byte2;
+            // xxxx = Faktor 0 = 10 ms 1 = 100 ms 2 = 1s 3 = 10s
 
-            var factor = val.substr(2, 2)
-            if (factor == "00") {
-                factor = 0.01
-            } else if (factor == "01") {
-                factor = 0.1
-            } else if (factor == "10") {
-                factor = 1
-            } else if (factor == "11") {
-                factor = 10
+            // 3333 3 Stelle vom BCD Code ( 0 - 9 )
+            // 2222 2 Stelle vom BCD Code ( 0 - 9 )
+            // 1111 1 Stelle vom BCD Code ( 0 - 9 )
+
+            // Factor
+            // 00 = 10   ms
+            // 01 = 100  ms
+            // 10 = 1000 ms = 1 s
+            // 11 = 10   s
+
+            val = buff.readUInt16BE(offsetByte);
+
+            var factor = (val >> 12) & 0x3;
+            if (factor == 0) {
+                factor = 0.01;
+            } else if (factor == 1) {
+                factor = 0.1;
+            } else if (factor == 2) {
+                factor = 1;
+            } else if (factor == 3) {
+                factor = 10;
             }
 
-            var num1 = parseInt(val.substr(4, 4), 2).toString()
-            var num2 = parseInt(val.substr(8, 4), 2).toString()
-            var num3 = parseInt(val.substr(12, 4), 2).toString()
+            val = ((val >> 8) & 0xF) * 100 + ((val >> 4) & 0xF) * 10 + (val & 0xF);
 
-            adapter.setState(id, parseInt(num1 + num2 + num3) * factor, true);
+            adapter.setState(id, val * factor, true);
+        } else if (type == "S7TIME") {
+            // 0x15100822 0x42301231 = 2015.10.08 22:42:30.123 Monday
+            // todo
+
+            adapter.setState(id, 0, true);
         }
     },
 
     poll: function () {
-        var start_t = (new Date).valueOf();
+        var start_t = (new Date()).valueOf();
         async.parallel({
                 input: function (callback) {
                     if (main.input_msb) {
-                        s7client.EBRead(main.input_lsb, (main.input_msb - main.input_lsb + 30), function (err, res) {
-                            //s7client.EBRead(input_lsb, 380, function (err, res) {
+                        s7client.EBRead(main.input_lsb, main.input_msb - main.input_lsb, function (err, res) {
                             if (err) {
                                 callback(err);
                             } else {
-
                                 for (var n = 0; main.inputs.length > n; n++) {
-                                    var id = "Inputs." + main.inputs[n].Address.split(".")[0] + "." + main.inputs[n].Name.replace(".", "_").replace(" ", "_");
-
-                                    var addr = main.inputs[n].Address;
-                                    var byte_addr = parseInt(addr.split(".")[0]) - main.input_lsb;
-                                    var bit_addr = parseInt(addr.split(".")[1]);
                                     try {
-                                        main.write(id, res, main.inputs[n].Type, byte_addr, bit_addr)
+                                        main.write(
+                                            main.inputs[n].id,       // ID of the object
+                                            res,                     // buffer
+                                            main.inputs[n].Type,     // type
+                                            main.inputs[n].offsetByte - main.input_lsb,  // offset in the buffer
+                                            main.inputs[n].offsetBit // bit offset
+                                        );
                                     } catch (err) {
                                         adapter.log.error('Writing Input. Code #' + err);
                                     }
@@ -841,18 +908,17 @@ var main = {
                 },
                 output: function (callback) {
                     if (main.output_msb) {
-                        s7client.ABRead(main.output_lsb, main.output_msb - main.output_lsb + 1, function (err, res) {
+                        s7client.ABRead(main.output_lsb, main.output_msb - main.output_lsb, function (err, res) {
                             if (err) {
                                 callback(err);
                             } else {
                                 for (var n = 0; main.outputs.length > n; n++) {
-                                    var id = "Outputs." + main.outputs[n].Address.split(".")[0] + "." + main.outputs[n].Name.replace(".", "_").replace(" ", "_");
-
-                                    var addr = main.outputs[n].Address
-                                    var byte_addr = parseInt(addr.split(".")[0]) - main.output_lsb;
-                                    var bit_addr = parseInt(addr.split(".")[1]);
                                     try {
-                                        main.write(id, res, main.outputs[n].Type, byte_addr, bit_addr)
+                                        main.write(
+                                            main.outputs[n].id,
+                                            res,
+                                            main.outputs[n].Type,
+                                            main.outputs[n].offsetByte - main.output_lsb,  main.outputs[n].offsetBit);
                                     } catch (err) {
                                         adapter.log.error('Writing Output. Code #' + err);
                                     }
@@ -866,24 +932,22 @@ var main = {
                 },
                 marker: function (callback) {
                     if (main.marker_msb) {
-                        s7client.MBRead(main.marker_lsb, main.marker_msb - main.marker_lsb + 4, function (err, res) {
+                        s7client.MBRead(main.marker_lsb, main.marker_msb - main.marker_lsb, function (err, res) {
                             if (err) {
                                 callback(err);
                             } else {
                                 for (var n = 0; main.markers.length > n; n++) {
-
-                                    var id = "Merkers." + main.markers[n].Address.split(".")[0] + "." + main.markers[n].Name.replace(".", "_").replace(" ", "_");
-
-                                    var addr = main.markers[n].Address;
-                                    var byte_addr = parseInt(addr.split(".")[0]) - main.marker_lsb;
-                                    var bit_addr = parseInt(addr.split(".")[1]);
-
                                     try {
-                                        main.write(id, res, main.markers[n].Type, byte_addr, bit_addr)
+                                        main.write(
+                                            main.markers[n].id,
+                                            res,
+                                            main.markers[n].Type,
+                                            main.markers[n].offsetByte - main.marker_lsb,
+                                            main.markers[n].offsetBit
+                                        );
                                     } catch (err) {
                                         adapter.log.error('Writing Merker. Code #' + err);
                                     }
-
                                 }
                                 callback(null);
                             }
@@ -897,40 +961,36 @@ var main = {
                     var buf = {};
 
                     async.each(main._db_size, function (db, callback) {
-                        var _db = parseInt(db.db.replace("DB", ""));
-                        var msb = db.msb;
-
-                        s7client.DBRead(_db, 0, msb, function (err, res) {
+                        // Why not db.lsb ?
+                        s7client.DBRead(db.dbId, 0, db.msb, function (err, res) {
                             if (err) {
                                 callback(err);
                             } else {
-
-                                buf["DB" + _db] = res;
+                                buf[db.db] = res;
                                 callback(null, res);
                             }
                         });
                     }, function (err, res) {
 
                         if (err) {
-                            callback(err)
+                            callback(err);
                         } else {
                             for (var n = 0; main.dbs.length > n; n++) {
-
-                                var addr = main.dbs[n].Address.split(" +")[1];
-                                var db = main.dbs[n].Address.split(" +")[0];
-                                var id = "DBs." + db + "." + main.dbs[n].Name.replace(".", "_").replace(" ", "_");
-                                var buff = buf[db]
-                                var byte_addr = parseInt(addr.split(".")[0]);
-                                var bit_addr = parseInt(addr.split(".")[1]);
                                 try {
-                                    main.write(id, buff, main.dbs[n].Type, byte_addr, bit_addr)
+                                    main.write(
+                                        main.dbs[n].id,
+                                        buf[main.dbs[n].db],
+                                        main.dbs[n].Type,
+                                        main.dbs[n].offsetByte,
+                                        main.dbs[n].offsetBit
+                                    );
                                 } catch (err) {
                                     adapter.log.error('Writing DB. Code #' + err);
                                 }
                             }
-                            callback(null)
+                            callback(null);
                         }
-                    })
+                    });
 
                 }
             },
@@ -943,28 +1003,28 @@ var main = {
                     adapter.setState("info.connection", false, true);
 
                     if (main.error_count < 6 && s7client.Connected()) {
-                        setTimeout(poll, parseInt(main.acp.poll))
+                        setTimeout(main.poll, main.acp.poll);
 
                     } else {
                         connected = false;
                         adapter.log.error('try reconnection');
                         adapter.setState("info.connection", false, true);
-                        setTimeout(main.start, (parseInt(main.acp.recon) || 60000));
+                        setTimeout(main.start, main.acp.recon);
                     }
 
                 } else {
 
-                    adapter.setState("info.poll_time", (new Date).valueOf() - start_t, true);
+                    adapter.setState("info.poll_time", (new Date()).valueOf() - start_t, true);
                     if (main.error_count > 0) {
                         adapter.setState("info.connection", true, true);
                         main.error_count = 0;
                     }
-                    nextPoll = setTimeout(main.poll, parseInt(main.acp.poll))
+                    nextPoll = setTimeout(main.poll, main.acp.poll);
                 }
             }
         );
     }
-}
+};
 
 function SortByaddress(a, b) {
     var ad = parseFloat(a.Address);

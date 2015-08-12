@@ -131,7 +131,7 @@
         "Outputs":          {"en": "Outputs",           "de": "Ausgänge",           "ru": "Выходы"},
         "Marker":           {"en": "Marker",            "de": "Merker",             "ru": "Маркеры"},
         "PLC Connection:":  {"en": "PLC Connection:",   "de": "SPS Verbindung:",    "ru": "PLC соединение:"},
-        "PLC IP Address:":  {"en": "PLC IP Address:",   "de": "SPS IP Addresse:",    "ru": "PLC IP адрес:"},
+        "PLC IP Address:":  {"en": "PLC IP Address:",   "de": "SPS IP Addresse:",   "ru": "PLC IP адрес:"},
         "PLC Rack:":        {"en": "PLC Rack:",         "de": "SPS Rack:",          "ru": "PLC Rack:"},
         "PLC Slot:":        {"en": "PLC Slot:",         "de": "SPS Slot:",          "ru": "PLC слот:"},
         "Round Real to:":   {"en": "Round real to:",    "de": "Aufrunden Real auf:", "ru": "Округлять real до:"},
@@ -140,12 +140,12 @@
         "Pulse time:":      {"en": "Pulse time:",       "de": "Pulsetime:",         "ru": "Pulse time:"},
         "Import symbols file:": {"en": "Import symbols file:", "de": "Symboldatei Importieren:", "ru": "Ипморт символьных файлов:"},
         "Import DB file:":  {"en": "Import DB file:",   "de": "DB-Datei importieren:", "ru": "Ипморт DB файлов:"},
-        "Load Symbols":     {"en": "Load symbols",      "de": "Lade Symbole",       "ru": "Загруить символы"},
+        "Load Symbols":     {"en": "Load symbols",      "de": "Lade Symbole",       "ru": "Загрзуить символы"},
         "Add DB":           {"en": "Add DB",            "de": "DB einfügen",        "ru": "Добавить DB"},
         "Toggle poll":      {"en": "Toggle poll",       "de": "Poll umschalten",    "ru": "Изменить poll"},
         "Toggle RW":        {"en": "Toggle RW",         "de": "RW umschalten",      "ru": "Изменить RW"},
         "Toggle WP":        {"en": "Toggle WP",         "de": "WP umschalten",      "ru": "Изменить WP"},
-        "Address":          {"en": "Address",           "de": "Addresse",            "ru": "Адрес"},
+        "Address":          {"en": "Address",           "de": "Adresse",            "ru": "Адрес"},
         "Name":             {"en": "Name",              "de": "Name",               "ru": "Имя"},
         "Description":      {"en": "Description",       "de": "Beschreibung",       "ru": "Описание"},
         "Type":             {"en": "Type",              "de": "Typ",                "ru": "Тип"},
@@ -153,8 +153,8 @@
         "poll":             {"en": "poll",              "de": "poll",               "ru": "poll"},
         "RW":               {"en": "RW",                "de": "RW",                 "ru": "RW"},
         "WP":               {"en": "WP",                "de": "WP",                 "ru": "WP"},
-        "Rool":             {"en": "Rool",              "de": "Rolle",               "ru": "Rool"},  // todo RU
-        "Room":             {"en": "Room",              "de": "Raum",               "ru": "Room"}   // todo RU
+        "Role":             {"en": "Role",              "de": "Rolle",              "ru": "Роль"},
+        "Room":             {"en": "Room",              "de": "Raum",               "ru": "Комната"}
     };
 
     $(document).ready(function () {
@@ -173,9 +173,9 @@
             $.each(data, function () {
 
                 if (this.poll == true) {
-                    this.poll = false
+                    this.poll = false;
                 } else {
-                    this.poll = true
+                    this.poll = true;
                 }
             });
 
@@ -189,9 +189,9 @@
             $.each(data, function () {
 
                 if (this.RW == true) {
-                    this.RW = false
+                    this.RW = false;
                 } else {
-                    this.RW = true
+                    this.RW = true;
                 }
             });
 
@@ -206,9 +206,9 @@
             $.each(data, function () {
 
                 if (this.WP == true) {
-                    this.WP = false
+                    this.WP = false;
                 } else {
-                    this.WP = true
+                    this.WP = true;
                 }
             });
 
@@ -231,23 +231,23 @@
         var dbs     = settings.dbs      || [];
         var params  = settings.params   || {
                     ip: "192.168.0.1",
-                    rack: 0,
-                    slot: 2,
-                    poll: 1000,
-                    recon: 60000,
-                    pulstime:1000,
-                    round:2
+                    rack:     0,
+                    slot:     2,
+                    poll:     1000,
+                    recon:    60000,
+                    pulstime: 1000,
+                    round:    2
                 };
-//        onchange(false);
+        //onchange(false);
 //        onchange(true);
 
         $.each($(".s7_params"), function () {
             if ($(this).hasClass("check")) {
                 if (params[$(this).attr("id").split("_")[1]]) {
-                    document.getElementById($(this).attr("id")).checked = params[$(this).attr("id").split("_")[1]]
+                    document.getElementById($(this).attr("id")).checked = params[$(this).attr("id").split("_")[1]];
                 }
             } else {
-                $(this).val(params[$(this).attr("id").split("_")[1]])
+                $(this).val(params[$(this).attr("id").split("_")[1]]);
             }
         });
 
@@ -255,13 +255,13 @@
             var _id = $(this).attr("id");
 
             type_items = [
-                {valve: "BOOL", text: "BOOL"},
-                {valve: "BYTE", text: "BYTE"},
-                {valve: "WORD", text: "WORD"},
-                {valve: "DWORD", text: "DWORD"},
-                {valve: "INT", text: "INT"},
-                {valve: "DINT", text: "DINT"},
-                {valve: "REAL", text: "REAL"},
+                {valve: "BOOL",   text: "BOOL"},
+                {valve: "BYTE",   text: "BYTE"},
+                {valve: "WORD",   text: "WORD"},
+                {valve: "DWORD",  text: "DWORD"},
+                {valve: "INT",    text: "INT"},
+                {valve: "DINT",   text: "DINT"},
+                {valve: "REAL",   text: "REAL"},
                 {valve: "S5TIME", text: "S5TIME"}
             ];
 
@@ -281,12 +281,12 @@
                     {name:'Description',title: _('Description'),   type: 'text',       width: '250px'},
                     {name:'Type'       ,title: _('Type'),          type: 'select',     width: '95px', items: type_items, valueField: 'valve', textField: "text"},
                     {name:'Unit'       ,title: _('Unit'),          type: 'text',       width: '50px'},
-                    {name:'Rool'       ,title: _('Rool'),          type: 'text',       width: '100px'},
+                    {name:'Role'       ,title: _('Role'),          type: 'text',       width: '100px'},
                     {name:'Room'       ,title: _('Room'),          type: 'text',       width: '100px'},
                     {name:'poll'       ,title: _('poll'),          type: 'checkbox',   width: '35px'},
                     {name:'RW'         ,title: _('RW'),            type: 'checkbox',   width: '35px'},
                     {name:'WP'         ,title: _('WP'),            type: 'checkbox',   width: '35px'},
-                    {                          type: 'control',    width: '80px'}
+                    {                                              type: 'control',    width: '80px'}
                 ]
             })
         });
@@ -307,10 +307,10 @@
         $.each($(".s7_params"), function () {
             if ($(this).hasClass("check")) {
 
-                obj.params[$(this).attr("id").split("_")[1]] = document.getElementById($(this).attr("id")).checked
+                obj.params[$(this).attr("id").split("_")[1]] = document.getElementById($(this).attr("id")).checked;
 
             } else {
-                obj.params[$(this).attr("id").split("_")[1]] = $(this).val()
+                obj.params[$(this).attr("id").split("_")[1]] = $(this).val();
             }
         });
         callback(obj);
@@ -323,9 +323,9 @@
         reader.onload = function (e) {
             var table;
             var data = {
-                inputs: [],
+                inputs:  [],
                 outputs: [],
-                markers: [],
+                markers: []
 //                counter: [],
 //                timer: [],
 //                dbs: []
@@ -364,7 +364,7 @@
 
                 if ($(this).attr("id") != "s7_dbs") {
                     var id = $(this).attr("id");
-                    $("#" + id).jsGrid("option", "data", data[id.split("_")[1]])
+                    $("#" + id).jsGrid("option", "data", data[id.split("_")[1]]);
                 }
             });
 
@@ -382,11 +382,10 @@
         var reader = new FileReader();
 
         reader.onload = function (e) {
-            var table;
             var db;
-            var data = {};
+            var data  = {};
             var _data = [];
-            var text = reader.result;
+            var text  = reader.result;
             db = text.match(/(DB)[0-9]+\s-\s/g)[0].replace(" - ", "");
 
             var old_data = $("#s7_dbs").jsGrid("option", "data");
@@ -435,8 +434,8 @@
 //                                data.Room = part[1]
 //                                remove.push(i)
 //                            }
-//                            if ((part[0].indexOf("Rool") != -1 || part[0].indexOf("rool") != -1) && part[1]) {
-//                                data.Rool = part[1]
+//                            if ((part[0].indexOf("Role") != -1 || part[0].indexOf("rool") != -1) && part[1]) {
+//                                data.Role = part[1]
 //                                remove.push(i)
 //                            }
 //                        }
