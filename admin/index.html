@@ -12,6 +12,8 @@
 <link rel="stylesheet" type="text/css" href="./lib/css/jsgrid.css"/>
 <link rel="stylesheet" type="text/css" href="./lib/css/jsgrid-theme.css"/>
 <script type="text/javascript" src="./lib/js/jsgrid.js"></script>
+<script type="text/javascript" src="./lib/js/grid.locale-de.js"></script>
+<script type="text/javascript" src="./lib/js/grid.locale-ru.js"></script>
 
 
 <!-- these two file always have to be included -->
@@ -157,6 +159,7 @@
         "Room":             {"en": "Room",              "de": "Raum",               "ru": "Комната"}
     };
 
+
     $(document).ready(function () {
         $("#btn_loadsymbole").button().click(function () {
             $("#symol_import").trigger("click")
@@ -222,6 +225,8 @@
 
 
     function load(settings, onchange) {
+        if (systemLang == 'de') translate_de();
+        if (systemLang == 'ru') translate_ru();
 
         var inputs  = settings.inputs   || [];
         var outputs = settings.outputs  || [];
