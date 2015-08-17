@@ -184,7 +184,7 @@
 
             var data = $("#" + grid).jsGrid("option", "data");
             $.each(data, function () {
-                this.RW != this.RW;
+                this.RW = !this.RW;
             });
 
             $("#" + grid).jsGrid("option", "data", data);
@@ -196,7 +196,7 @@
             var data = $("#" + grid).jsGrid("option", "data");
 
             $.each(data, function () {
-                this.WP != this.WP;
+                this.WP = !this.WP;
             });
 
             $("#" + grid).jsGrid("option", "data", data);
