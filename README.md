@@ -19,6 +19,9 @@ Format of the addresses for Inputs, Outputs or markers is "X.Y", where X is byte
 Format of the addresses for DBs is "DBZ +X.Y", where z is number of DB, like "DB34 +12.0"
 
 # Changelog 
+#0.2.0 [2015.08.15]
+* (bluefox) improve performance and enable DB2 3.9 addresses.
+
 #0.1.8 [2015.08.10]
 * (smiling_Jack) Bugfix send info states
 * (smiling_Jack) Remove unneeded conole.log

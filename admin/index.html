@@ -12,6 +12,8 @@
 <link rel="stylesheet" type="text/css" href="./lib/css/jsgrid.css"/>
 <link rel="stylesheet" type="text/css" href="./lib/css/jsgrid-theme.css"/>
 <script type="text/javascript" src="./lib/js/jsgrid.js"></script>
+<script type="text/javascript" src="./lib/js/grid.locale-de.js"></script>
+<script type="text/javascript" src="./lib/js/grid.locale-ru.js"></script>
 
 
 <!-- these two file always have to be included -->
@@ -157,6 +159,7 @@
         "Room":             {"en": "Room",              "de": "Raum",               "ru": "Комната"}
     };
 
+
     $(document).ready(function () {
         $("#btn_loadsymbole").button().click(function () {
             $("#symol_import").trigger("click")
@@ -165,63 +168,47 @@
             $("#db_import").trigger("click")
         });
 
-
         $(".btn_toggle_pool").button().click(function (e, ui) {
             var grid = $(this).parent().data("grid");
 
             var data = $("#" + grid).jsGrid("option", "data");
             $.each(data, function () {
-
-                if (this.poll == true) {
-                    this.poll = false;
-                } else {
-                    this.poll = true;
-                }
+                this.poll = !this.poll;
             });
 
             $("#" + grid).jsGrid("option", "data", data);
-
         });
+
         $(".btn_toggle_rw").button().click(function () {
             var grid = $(this).parent().data("grid");
 
             var data = $("#" + grid).jsGrid("option", "data");
             $.each(data, function () {
-
-                if (this.RW == true) {
-                    this.RW = false;
-                } else {
-                    this.RW = true;
-                }
+                this.RW = !this.RW;
             });
 
             $("#" + grid).jsGrid("option", "data", data);
-
         });
+
         $(".btn_toggle_wp").button().click(function () {
             var grid = $(this).parent().data("grid");
 
             var data = $("#" + grid).jsGrid("option", "data");
-            console.log(data)
-            $.each(data, function () {
 
-                if (this.WP == true) {
-                    this.WP = false;
-                } else {
-                    this.WP = true;
-                }
+            $.each(data, function () {
+                this.WP = !this.WP;
             });
 
             $("#" + grid).jsGrid("option", "data", data);
-
         });
-
 
         $("#adapter-container").tabs();
     });
 
 
     function load(settings, onchange) {
+        if (systemLang == 'de') translate_de();
+        if (systemLang == 'ru') translate_ru();
 
         var inputs  = settings.inputs   || [];
         var outputs = settings.outputs  || [];
@@ -254,7 +241,7 @@
         $.each($('.s7_grid'), function () {
             var _id = $(this).attr("id");
 
-            type_items = [
+            var type_items = [
                 {valve: "BOOL",   text: "BOOL"},
                 {valve: "BYTE",   text: "BYTE"},
                 {valve: "WORD",   text: "WORD"},
@@ -287,8 +274,16 @@
                     {name:'RW'         ,title: _('RW'),            type: 'checkbox',   width: '35px'},
                     {name:'WP'         ,title: _('WP'),            type: 'checkbox',   width: '35px'},
                     {                                              type: 'control',    width: '80px'}
-                ]
-            })
+                ],
+                onItemUpdated: function (obj) {
+                    /* grid, row, item, itemIndex, previuosItem */
+                    //console.log('bbb' + JSON.stringify(obj));
+                    if ((obj.item.RW || obj.item.WP) && !obj.item.poll) {
+                        obj.item.poll = true;
+                        this.render();//$("#" + _id).jsGrid("render");
+                    }
+                }
+            });
         });
     }
 
@@ -304,6 +299,7 @@
 
             obj[key] = $(this).jsGrid("option", "data");
         });
+
         $.each($(".s7_params"), function () {
             if ($(this).hasClass("check")) {
 
@@ -321,7 +317,6 @@
         var reader = new FileReader();
 
         reader.onload = function (e) {
-            var table;
             var data = {
                 inputs:  [],
                 outputs: [],
@@ -417,7 +412,7 @@
                         WP:           false
                     };
 
-                    var _desc = data.Description.split(";");
+                    //var _desc = data.Description.split(";");
 
                     // todo
 //                    var remove =[];
