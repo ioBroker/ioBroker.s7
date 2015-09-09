@@ -13,7 +13,7 @@ var utils     = require(__dirname + '/lib/utils');
 var adapter   = utils.adapter('s7');
 var async     = require('async');
 var snap7     = require('node-snap7');
-var s7client  = new snap7.S7Client();
+var s7client  = snap7 ? new snap7.S7Client() : null;
 var connected = false;
 
 var nextPoll;
@@ -117,7 +117,7 @@ function send() {
 
     } else if (type == "BYTE") {
         buf = new Buffer(1);
-        buf[0] = val & 0xFF;
+        buf[0] = parseInt(val, 10) & 0xFF;
 
     } else if (type == "WORD") {
         val = parseInt(val, 10);
@@ -298,7 +298,8 @@ var main = {
 
             if (main.ac.inputs.length > 0) {
                 for (i = main.ac.inputs.length - 1; i >= 0; i--) {
-                    parts = main.ac.inputs[i].Address.split(".");
+                    main.ac.inputs[i].Address = main.ac.inputs[i].Address.replace('+', '');
+                    parts = main.ac.inputs[i].Address.split('.');
                     main.ac.inputs[i].offsetByte = parseInt(parts[0], 10);
                     main.ac.inputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     main.ac.inputs[i].id = "Inputs." + main.ac.inputs[i].offsetByte + "." + (main.ac.inputs[i].Name.replace(".", "_").replace(" ", "_") || main.ac.inputs[i].offsetBit);
@@ -318,7 +319,8 @@ var main = {
 
             if (main.ac.outputs.length > 0) {
                 for (i = main.ac.outputs.length - 1; i >= 0; i--) {
-                    parts = main.ac.outputs[i].Address.split(".");
+                    main.ac.outputs[i].Address = main.ac.outputs[i].Address.replace('+', '');
+                    parts = main.ac.outputs[i].Address.split('.');
                     main.ac.outputs[i].offsetByte = parseInt(parts[0], 10);
                     main.ac.outputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     main.ac.outputs[i].id = "Outputs." + main.ac.outputs[i].offsetByte + "." + (main.ac.outputs[i].Name.replace(".", "_").replace(" ", "_") || main.ac.outputs[i].offsetBit);
@@ -338,7 +340,8 @@ var main = {
 
             if (main.ac.markers.length > 0) {
                 for (i = main.ac.markers.length - 1; i >= 0; i--) {
-                    parts = main.ac.markers[i].Address.split(".");
+                    main.ac.markers[i].Address = main.ac.markers[i].Address.replace('+', '');
+                    parts = main.ac.markers[i].Address.split('.');
                     main.ac.markers[i].offsetByte = parseInt(parts[0], 10);
                     main.ac.markers[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     main.ac.markers[i].id = "Markers." + main.ac.markers[i].offsetByte + "." + (main.ac.markers[i].Name.replace(".", "_").replace(" ", "_") || main.ac.markers[i].offsetBit);
@@ -358,13 +361,13 @@ var main = {
 
             if (main.ac.dbs.length > 0) {
                 for (i = main.ac.dbs.length - 1; i >= 0; i--) {
-                    parts = main.ac.dbs[i].Address.split(" ");
+                    parts = main.ac.dbs[i].Address.split(' ');
                     if (parts.length != 2) {
                         adapter.log.error('Invalid format of address: ' + main.ac.dbs[i].Address);
                         adapter.log.error('Expected format is: "DB2 4" or "DB2 4.1"');
                         main.ac.dbs.splice(i, 1);
                         continue;
-                    } else if (!parts[1].match(/^\d+$/) && !parts[1].match(/^\d+\.\d+$/)) {
+                    } else if (!parts[1].match(/^\+?\d+$/) && !parts[1].match(/^\+?\d+\.\d+$/)) {
                         adapter.log.error('Invalid format of offset: ' + main.ac.dbs[i].Address);
                         adapter.log.error('Expected format is: "DB2 4" or "DB2 4.1"');
                         main.ac.dbs.splice(i, 1);
@@ -770,6 +773,9 @@ var main = {
     },
 
     start: function () {
+
+        if (!s7client) return;
+
         s7client.ConnectTo(main.acp.ip, main.acp.rack, main.acp.slot, function (err) {
 
             if (err) {
