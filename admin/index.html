@@ -77,6 +77,9 @@
         display: none;
     }
 
+    /*.jsgrid-edit-row input {
+        padding: 0;
+    }*/
     .jsgrid-table td {
         padding: 0.2em 0.2em !important;
     }
@@ -184,7 +187,7 @@
 
             var data = $("#" + grid).jsGrid("option", "data");
             $.each(data, function () {
-                this.RW = !this.RW;
+                this.RW != this.RW;
             });
 
             $("#" + grid).jsGrid("option", "data", data);
@@ -196,7 +199,7 @@
             var data = $("#" + grid).jsGrid("option", "data");
 
             $.each(data, function () {
-                this.WP = !this.WP;
+                this.WP != this.WP;
             });
 
             $("#" + grid).jsGrid("option", "data", data);
@@ -263,7 +266,7 @@
                 paging:     false,
                 data: eval(_id.split('_')[1]),
                 fields: [
-                    {name:'Address'    ,title: _('Address'),       type: 'text',       width: '70px'},
+                    {name:'Address'    ,title: _('Address'),       type: 'text',       width: '110px'},
                     {name:'Name'       ,title: _('Name'),          type: 'text',       width: '150px'},
                     {name:'Description',title: _('Description'),   type: 'text',       width: '250px'},
                     {name:'Type'       ,title: _('Type'),          type: 'select',     width: '95px', items: type_items, valueField: 'valve', textField: "text"},
