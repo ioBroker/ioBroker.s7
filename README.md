@@ -14,9 +14,30 @@ Der geübte Umgang mit PC und verschiedenen Betriebssystem ist ebenfalls Vorauss
 Diese Anforderungen stellen sicherlich keine Herausforderung für jemanden dar, 
 der die Kommunikation zwischen ioBroker und einer S7 in Erwägung zieht.
 
+### Installation
+Unter Linux braucht man "make" Umgebung um die binries zu bauen. Das kann man mit folgenden Kommando installieren:
+
+```
+sudo apt-get update
+sudo apt-get install build-essential
+```
+
+Unter windows braucht man Visual Studio 2013 (Community Edition ist genug) oder später.
+
 ## English
 Format of the addresses for Inputs, Outputs or markers is "X.Y", where X is byte offset and Y is bit offset in byte.
 Format of the addresses for DBs is "DBZ +X.Y", where z is number of DB, like "DB34 +12.0"
+
+### Install
+On some Linux systems the build essentials must be installed to get this adapter work. You can install it with:
+
+```
+sudo apt-get update
+sudo apt-get install build-essential
+```
+
+Under windows is Visual Studio 2013 (Community Edition is enough) or later is required to get it run.
+
 
 # Changelog 
 #0.2.1 [2015.09.09]

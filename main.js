@@ -386,8 +386,9 @@ var main = {
 
                     parts = main.ac.dbs[i].offset.split('.');
                     main.ac.dbs[i].offsetByte = parseInt(parts[0], 10);
-                    if (main.ac.dbs[i].Type == "BOOL") {
-                        main.ac.dbs[i].offsetBit  = parseInt(parts[1] || 0, 10);
+
+                    if (main.ac.dbs[i].Type == 'BOOL') {
+                        main.ac.dbs[i].offsetBit = parseInt(parts[1] || 0, 10);
                     } else {
                         main.ac.dbs[i].offsetBit = 0;
                         main.ac.dbs[i].offset    = main.ac.dbs[i].offsetByte;
@@ -395,15 +396,16 @@ var main = {
 
                     if (!main.db_size[main.ac.dbs[i].db]) {
                         main.db_size[main.ac.dbs[i].db] = {
-                            msb: 0,
-                            db:  main.ac.dbs[i].db
+                            msb:  0,
+                            db:   main.ac.dbs[i].db,
+                            dbId: main.ac.dbs[i].dbId
                         };
                     }
 
                     main.ac.dbs[i].len = 1;
                     if (main.ac.dbs[i].Type == "WORD" || main.ac.dbs[i].Type == "INT" || main.ac.dbs[i].Type == "S5TIME") {
                         main.ac.dbs[i].len = 2;
-                    }
+                    } else
                     if (main.ac.dbs[i].Type == "DWORD" || main.ac.dbs[i].Type == "DINT" || main.ac.dbs[i].Type == "REAL") {
                         main.ac.dbs[i].len = 4;
                     }
