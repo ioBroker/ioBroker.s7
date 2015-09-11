@@ -6,7 +6,7 @@
 var utils     = require(__dirname + '/lib/utils');
 var adapter   = utils.adapter('s7');
 var async     = require('async');
-var snap7     = require('node-snap7');
+var snap7     = null;//require('node-snap7');
 var s7client  = snap7 ? new snap7.S7Client() : null;
 var connected = false;
 
@@ -32,6 +32,7 @@ adapter.on('ready', function () {
 var pulseList  = {};
 var sendBuffer = {};
 var objects    = {};
+var enums      = {};
 var infoRegExp = new RegExp(adapter.namespace.replace('.', '\\.') + '\\.info\\.');
 
 adapter.on('stateChange', function (id, state) {
@@ -229,6 +230,68 @@ function send() {
         if (Object.keys(sendBuffer).length) {
             send();
         }
+    }
+}
+
+function addToEnum(enumName, id, callback) {
+    adapter.getForeignObject(enumName, function (err, obj) {
+        if (!err && obj) {
+            var pos = obj.common.members.indexOf(id);
+            if (pos == -1) {
+                obj.common.members.push(id);
+                adapter.setForeignObject(obj._id, obj, function (err) {
+                    if (callback) callback(err);
+                });
+            } else {
+                if (callback) callback(err);
+            }
+        } else {
+            if (callback) callback(err);
+        }
+    });
+}
+
+function removeFromEnum(enumName, id, callback) {
+    adapter.getForeignObject(enumName, function (err, obj) {
+        if (!err && obj) {
+            var pos = obj.common.members.indexOf(id);
+            if (pos != -1) {
+                obj.common.members.splice(pos, 1);
+                adapter.setForeignObject(obj._id, obj, function (err) {
+                    if (callback) callback(err);
+                });
+            } else {
+                if (callback) callback(err);
+            }
+        } else {
+            if (callback) callback(err);
+        }
+    });
+}
+
+function syncEnums(enumGroup, id, newEnumName, callback) {
+    if (!enums[enumGroup]) {
+        adapter.getEnum(enumGroup, function (err, _enums) {
+            enums[enumGroup] = _enums;
+            syncEnums(enumGroup, id, newEnumName, callback);
+        });
+        return;
+    }
+    // try to find this id in enums
+    var found = false;
+    for (var e in enums[enumGroup]) {
+        if (enums[enumGroup][e].common &&
+            enums[enumGroup][e].common.members &&
+            enums[enumGroup][e].common.members.indexOf(id) != -1) {
+            if (enums[enumGroup][e]._id != newEnumName) {
+                removeFromEnum(enums[enumGroup][e]._id, id);
+            } else {
+                found = true;
+            }
+        }
+    }
+    if (!found && newEnumName) {
+        addToEnum(newEnumName, id);
     }
 }
 
@@ -469,9 +532,9 @@ var main = {
             // ------------- create states and objects ----------------------------
             var channels = [];
             for (i = 0; main.ac.inputs.length > i; i++) {
-                if (channels.indexOf("Inputs." + main.ac.inputs[i].offsetByte) == -1) {
-                    channels.push("Inputs." + main.ac.inputs[i].offsetByte);
-                    adapter.setObject("Inputs." + main.ac.inputs[i].offsetByte, {
+                if (channels.indexOf('Inputs.' + main.ac.inputs[i].offsetByte) == -1) {
+                    channels.push('Inputs.' + main.ac.inputs[i].offsetByte);
+                    adapter.setObject('Inputs.' + main.ac.inputs[i].offsetByte, {
                         type: 'channel',
                         common: {
                             name: main.ac.inputs[i].offsetByte
@@ -482,21 +545,21 @@ var main = {
 
                 if (main.old_objects[adapter.namespace + "." + main.ac.inputs[i].id]) {
                     main.history = main.old_objects[adapter.namespace + "." + main.ac.inputs[i].id].common.history || {
-                            "enabled":     false,
-                            "changesOnly": true,
-                            "minLength":   480,
-                            "maxLength":   960,
-                            "retention":   604800,
-                            "debounce":    10000
+                            enabled:     false,
+                            changesOnly: true,
+                            minLength:   480,
+                            maxLength:   960,
+                            retention:   604800,
+                            debounce:    10000
                         };
                 } else {
                     main.history = {
-                        "enabled": false,
-                        "changesOnly": true,
-                        "minLength": 480,
-                        "maxLength": 960,
-                        "retention": 604800,
-                        "debounce": 10000
+                        enabled:      false,
+                        changesOnly:  true,
+                        minLength:    480,
+                        maxLength:    960,
+                        retention:    604800,
+                        debounc:      10000
                     };
                 }
 
@@ -504,9 +567,9 @@ var main = {
                     type: 'state',
                     common: {
                         name:    main.ac.inputs[i].Description,
-                        role:    main.ac.inputs[i].Type,
-                        type:    (main.ac.inputs[i].Type == "BOOL")   ? "boolean" : main.ac.inputs[i].Type,
-                        unit:    (main.ac.inputs[i].Type == "S5TIME") ? "s"       : main.ac.inputs[i].Unit,
+                        role:    main.ac.inputs[i].Role,
+                        type:    (main.ac.inputs[i].Type == "BOOL")   ? 'boolean' : 'number',
+                        unit:    main.ac.inputs[i].Unit || ((main.ac.inputs[i].Type == "S5TIME") ? "s" : main.ac.inputs[i].Unit),
                         history: main.history
                     },
                     native: {
@@ -518,6 +581,8 @@ var main = {
                         wp:        main.ac.inputs[i].WP
                     }
                 });
+
+                syncEnums('rooms', adapter.namespace + "." + main.ac.inputs[i].id, main.ac.inputs[i].Room);
 
                 main.new_objects.push(adapter.namespace + "." + main.ac.inputs[i].id);
             }
@@ -557,13 +622,13 @@ var main = {
                     type: 'state',
                     common: {
                         name:    main.ac.outputs[i].Description,
-                        role:    main.ac.outputs[i].Type, //todo
-                        type:    (main.ac.outputs[i].Type == "BOOL") ? "boolean" : main.ac.outputs[i].Type,
-                        unit:    (main.ac.outputs[i].Type == "S5TIME") ? "s" : main.ac.outputs[i].Unit,
+                        role:    main.ac.outputs[i].Role,
+                        type:    (main.ac.outputs[i].Type == "BOOL")   ? 'boolean' : 'number',
+                        unit:    main.ac.outputs[i].Unit || ((main.ac.outputs[i].Type == "S5TIME") ? "s" : main.ac.outputs[i].Unit),
                         history: main.history
                     },
                     native: {
-                        cat:       "output",
+                        cat:       'output',
                         type:      main.ac.outputs[i].Type,
                         address:   main.ac.outputs[i].offsetByte,
                         offsetBit: main.ac.outputs[i].offsetBit,
@@ -571,6 +636,7 @@ var main = {
                         wp:        main.ac.outputs[i].WP
                     }
                 });
+                syncEnums('rooms', adapter.namespace + "." + main.ac.outputs[i].id, main.ac.outputs[i].Room);
                 main.new_objects.push(adapter.namespace + "." + main.ac.outputs[i].id);
             }
 
@@ -590,30 +656,30 @@ var main = {
 
                 if (main.old_objects[adapter.namespace + "." + main.ac.markers[i].id]) {
                     main.history = main.old_objects[adapter.namespace + "." + main.ac.markers[i].id].common.history || {
-                            "enabled":     false,
-                            "changesOnly": true,
-                            "minLength":   480,
-                            "maxLength":   960,
-                            "retention":   604800,
-                            "debounce":    10000
+                            enabled:     false,
+                            changesOnly: true,
+                            minLength:   480,
+                            maxLength:   960,
+                            retention:   604800,
+                            debounce:    10000
                         };
                 } else {
                     main.history = {
-                        "enabled":     false,
-                        "changesOnly": true,
-                        "minLength":   480,
-                        "maxLength":   960,
-                        "retention":   604800,
-                        "debounce":    10000
+                        enabled:     false,
+                        changesOnly: true,
+                        minLength:   480,
+                        maxLength:   960,
+                        retention:   604800,
+                        debounce:    10000
                     };
                 }
                 adapter.setObject(main.ac.markers[i].id, {
                     type: 'state',
                     common: {
                         name:    main.ac.markers[i].Description,
-                        role:    main.ac.markers[i].Type,//todo
-                        type:    (main.ac.markers[i].Type == "BOOL")   ? "boolean" : main.ac.markers[i].Type,
-                        unit:    (main.ac.markers[i].Type == "S5TIME") ? "s" : main.ac.markers[i].Unit,
+                        role:    main.ac.markers[i].Role,
+                        type:    (main.ac.markers[i].Type == "BOOL")   ? 'boolean' : 'number',
+                        unit:    main.ac.markers[i].Unit || ((main.ac.markers[i].Type == "S5TIME") ? "s" : main.ac.markers[i].Unit),
                         history: main.history
                     },
                     native: {
@@ -625,40 +691,43 @@ var main = {
                         wp:        main.ac.markers[i].WP
                     }
                 });
-                main.new_objects.push(adapter.namespace + "." + main.ac.markers[i].id);
+
+                syncEnums('rooms', adapter.namespace + "." + main.ac.markers[i].id, main.ac.markers[i].Room);
+
+                main.new_objects.push(adapter.namespace + '.' + main.ac.markers[i].id);
             }
 
 
             for (i = 0; main.db_size.length > i; i++) {
                 if (main.db_size[i].lsb == 0xFFFF) main.db_size[i].lsb = 0;
 
-                adapter.setObject("DBs." + main.db_size[i].db, {
+                adapter.setObject('DBs.' + main.db_size[i].db, {
                     type: 'channel',
                     common: {
-                        name: "DBs"
+                        name: 'DBs'
                     },
                     native: {}
                 });
             }
 
             for (i = 0; main.ac.dbs.length > i; i++) {
-                if (main.old_objects[adapter.namespace + "." + main.ac.dbs[i].id]) {
+                if (main.old_objects[adapter.namespace + '.' + main.ac.dbs[i].id]) {
                     main.history = main.old_objects[adapter.namespace + "." + main.ac.dbs[i].id].common.history || {
-                            "enabled":     false,
-                            "changesOnly": true,
-                            "minLength":   480,
-                            "maxLength":   960,
-                            "retention":   604800,
-                            "debounce":    10000
+                            enabled:     false,
+                            changesOnly: true,
+                            minLength:   480,
+                            maxLength:   960,
+                            retention:   604800,
+                            debounce:    10000
                         };
                 } else {
                     main.history = {
-                        "enabled":     false,
-                        "changesOnly": true,
-                        "minLength":   480,
-                        "maxLength":   960,
-                        "retention":   604800,
-                        "debounce":    10000
+                        enabled:     false,
+                        changesOnly: true,
+                        minLength:   480,
+                        maxLength:   960,
+                        retention:   604800,
+                        debounce:    10000
                     };
                 }
 
@@ -666,9 +735,9 @@ var main = {
                     type: 'state',
                     common: {
                         name:    main.ac.dbs[i].Description,
-                        role:    main.ac.dbs[i].Type,//todo
-                        type:    (main.ac.dbs[i].Type == "BOOL")   ? "boolean" : main.ac.dbs[i].Type,
-                        unit:    (main.ac.dbs[i].Type == "S5TIME") ? "s"       : main.ac.dbs[i].Unit,
+                        role:    main.ac.dbs[i].Role,
+                        type:    (main.ac.dbs[i].Type == "BOOL")   ? 'boolean' : 'number',
+                        unit:    main.ac.dbs[i].Unit || ((main.ac.dbs[i].Type == "S5TIME") ? "s" : main.ac.dbs[i].Unit),
                         history: main.history
                     },
                     native: {
@@ -682,6 +751,7 @@ var main = {
                         wp:        main.ac.dbs[i].WP
                     }
                 });
+                syncEnums('rooms', adapter.namespace + "." + main.ac.dbs[i].id, main.ac.dbs[i].Room);
                 main.new_objects.push(adapter.namespace + "." + main.ac.dbs[i].id);
             }
 
@@ -726,9 +796,9 @@ var main = {
                 type: 'state',
                 common: {
                     name: "Poll time",
-                    type: "number",
-                    role: "",
-                    unit: "ms"
+                    type: 'number',
+                    role: '',
+                    unit: 'ms'
                 },
                 native: {}
             });
@@ -738,8 +808,8 @@ var main = {
                 type: 'state',
                 common: {
                     name: "Connection status",
-                    role: "",
-                    type: "string"
+                    role: 'indicator.connection',
+                    type: 'boolean'
                 },
                 native: {}
             });
@@ -748,9 +818,9 @@ var main = {
             adapter.setObject("info.pdu", {
                 type: 'state',
                 common: {
-                    name: "PDU size",
-                    role: "",
-                    type: "number"
+                    name: 'PDU size',
+                    role: '',
+                    type: 'number'
                 },
                 native: {}
             });
@@ -762,7 +832,7 @@ var main = {
                 main._db_size.push(main.db_size[key]);
             }
 
-            //clear unused states
+            // clear unused states
             var l = main.old_objects.length;
 
             function clear() {

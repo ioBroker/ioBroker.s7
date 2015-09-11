@@ -215,36 +215,39 @@
         if (systemLang == 'de') translate_de();
         if (systemLang == 'ru') translate_ru();
 
-        var inputs  = settings.inputs   || [];
-        var outputs = settings.outputs  || [];
-        var markers = settings.markers  || [];
-        var counter = settings.counter  || [];
-        var timer   = settings.timer    || [];
-        var dbs     = settings.dbs      || [];
-        var params  = settings.params   || {
-                    ip: "192.168.0.1",
-                    rack:     0,
-                    slot:     2,
-                    poll:     1000,
-                    recon:    60000,
-                    pulstime: 1000,
-                    round:    2
-                };
+        var data = {
+            inputs:  settings.inputs   || [],
+            outputs: settings.outputs  || [],
+            markers: settings.markers  || [],
+            counter: settings.counter  || [],
+            timer:   settings.timer    || [],
+            dbs:     settings.dbs      || [],
+            params:  settings.params   || {
+                ip:       '192.168.0.1',
+                rack:     0,
+                slot:     2,
+                poll:     1000,
+                recon:    60000,
+                pulstime: 1000,
+                round:    2
+            }
+        };
+
         onChange = onchange;
 
         $.each($(".s7_params"), function () {
             if ($(this).hasClass("check")) {
-                if (params[$(this).attr("id").split("_")[1]]) {
-                    document.getElementById($(this).attr("id")).checked = params[$(this).attr("id").split("_")[1]];
+                if (data.params[$(this).attr("id").split("_")[1]]) {
+                    document.getElementById($(this).attr("id")).checked = data.params[$(this).attr("id").split("_")[1]];
                 }
             } else {
-                $(this).val(params[$(this).attr("id").split("_")[1]]);
+                $(this).val(data.params[$(this).attr("id").split("_")[1]]);
             }
         });
 
         getEnums('rooms', function (err, rooms) {
             $.each($('.s7_grid'), function () {
-                var _id = $(this).attr("id");
+                var _id = $(this).attr('id');
 
                 var type_items = [
                     {value: "BOOL",   text: "BOOL",   roleRO: 'state', roleRW: 'switch'},
@@ -274,10 +277,10 @@
                     {value: 'level.dimmer',         text: 'level.dimmer'},
                     {value: 'level.valve',          text: 'level.valve'},
                     {value: 'level.blind',          text: 'level.blind'},
-                    {value: 'level.temperature',    text: 'level.temperature'},
+                    {value: 'level.temperature',    text: 'level.temperature'}
                 ];
 
-                var room_items = [];
+                var room_items = [{value: '', text: ''}];
                 for (var room in rooms) {
                     room_items.push({value: room, text: rooms[room].common.name || room.substring('enum.rooms.'.length)});
                 }
@@ -290,7 +293,7 @@
                     sorting:    true,
                     heading:    true,
                     paging:     false,
-                    data: eval(_id.split('_')[1]),
+                    data:       data[_id.split('_')[1]],
                     fields: [
                         {name: 'Address'    ,title:  _('Address'),       type: 'text',       width: '110px'},
                         {name: 'Name'       ,title:  _('Name'),          type: 'text',       width: '150px'},
@@ -326,7 +329,6 @@
                                 changed = true;
                             }
                         }
-
 
                         if (changed) this.render();//$("#" + _id).jsGrid("render");
 
