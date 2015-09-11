@@ -1,13 +1,7 @@
 /* jshint -W097 */// jshint strict:false
-/*jslint node: true */
+/* jslint node: true */
+
 "use strict";
-
-
-//if(process.platform.indexOf("win") != -1){
-//    snap7 = require(__dirname + '/lib/node-snap7')
-//}else{
-
-//}
 
 var utils     = require(__dirname + '/lib/utils');
 var adapter   = utils.adapter('s7');
@@ -106,7 +100,6 @@ function send() {
     var data = objects[id];
 
     var buf;
-    var sdata;
 
     if (type == "BOOL") {
         if (val === true || val === 1 || val === "true" || val === "1") {
@@ -288,10 +281,10 @@ var main = {
 
             main.old_objects = list;
 
-            main.ac.inputs.sort(SortByaddress);
-            main.ac.outputs.sort(SortByaddress);
-            main.ac.markers.sort(SortByaddress);
-            main.ac.dbs.sort(SortByaddress);
+            main.ac.inputs.sort(SortByAddress);
+            main.ac.outputs.sort(SortByAddress);
+            main.ac.markers.sort(SortByAddress);
+            main.ac.dbs.sort(SortByAddress);
 
             var parts;
             var i;
@@ -307,12 +300,15 @@ var main = {
                     main.ac.inputs[i].len = 1;
                     if (main.ac.inputs[i].Type == "WORD"  || main.ac.inputs[i].Type == "INT"  || main.ac.inputs[i].Type == "S5TIME") {
                         main.ac.inputs[i].len = 2;
-                    }
+                    } else
                     if (main.ac.inputs[i].Type == "DWORD" || main.ac.inputs[i].Type == "DINT" || main.ac.inputs[i].Type == "REAL") {
                         main.ac.inputs[i].len = 4;
+                    } else
+                    if (main.ac.inputs[i].Type == "S7TIME") {
+                        main.ac.inputs[i].len = 8;
                     }
                 }
-                main.input_lsb  = main.ac.inputs[i].offsetByte;
+                main.input_lsb  = main.ac.inputs[0].offsetByte;
                 main.input_msb  = main.ac.inputs[main.ac.inputs.length - 1].offsetByte + main.ac.inputs[main.ac.inputs.length - 1].len;
                 main.input_size = main.input_msb - main.input_lsb;
             }
@@ -328,9 +324,12 @@ var main = {
                     main.ac.outputs[i].len = 1;
                     if (main.ac.outputs[i].Type == "WORD"  || main.ac.outputs[i].Type == "INT"  || main.ac.outputs[i].Type == "S5TIME") {
                         main.ac.outputs[i].len = 2;
-                    }
+                    } else
                     if (main.ac.outputs[i].Type == "DWORD" || main.ac.outputs[i].Type == "DINT" || main.ac.outputs[i].Type == "REAL") {
                         main.ac.outputs[i].len = 4;
+                    } else
+                    if (main.ac.outputs[i].Type == "S7TIME") {
+                        main.ac.outputs[i].len = 8;
                     }
                 }
                 main.output_lsb  = main.ac.outputs[0].offsetByte;
@@ -349,9 +348,12 @@ var main = {
                     main.ac.markers[i].len = 1;
                     if (main.ac.markers[i].Type == "WORD"  || main.ac.markers[i].Type == "INT"  || main.ac.markers[i].Type == "S5TIME") {
                         main.ac.markers[i].len = 2;
-                    }
+                    } else
                     if (main.ac.markers[i].Type == "DWORD" || main.ac.markers[i].Type == "DINT" || main.ac.markers[i].Type == "REAL") {
                         main.ac.markers[i].len = 4;
+                    } else
+                    if (main.ac.markers[i].Type == "S7TIME") {
+                        main.ac.markers[i].len = 8;
                     }
                 }
                 main.marker_lsb  = main.ac.markers[0].offsetByte;
@@ -386,9 +388,8 @@ var main = {
 
                     parts = main.ac.dbs[i].offset.split('.');
                     main.ac.dbs[i].offsetByte = parseInt(parts[0], 10);
-
-                    if (main.ac.dbs[i].Type == 'BOOL') {
-                        main.ac.dbs[i].offsetBit = parseInt(parts[1] || 0, 10);
+                    if (main.ac.dbs[i].Type == "BOOL") {
+                        main.ac.dbs[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     } else {
                         main.ac.dbs[i].offsetBit = 0;
                         main.ac.dbs[i].offset    = main.ac.dbs[i].offsetByte;
@@ -396,9 +397,10 @@ var main = {
 
                     if (!main.db_size[main.ac.dbs[i].db]) {
                         main.db_size[main.ac.dbs[i].db] = {
+                            lsb:  0xFFFF,
                             msb:  0,
-                            db:   main.ac.dbs[i].db,
-                            dbId: main.ac.dbs[i].dbId
+                            dbId: main.ac.dbs[i].dbId,
+                            db:   main.ac.dbs[i].db
                         };
                     }
 
@@ -408,11 +410,17 @@ var main = {
                     } else
                     if (main.ac.dbs[i].Type == "DWORD" || main.ac.dbs[i].Type == "DINT" || main.ac.dbs[i].Type == "REAL") {
                         main.ac.dbs[i].len = 4;
+                    } else
+                    if (main.ac.dbs[i].Type == "S7TIME") {
+                        main.ac.dbs[i].len = 8;
                     }
 
                     // find size of DB
                     if (main.ac.dbs[i].offsetByte + main.ac.dbs[i].len > main.db_size[main.ac.dbs[i].db].msb) {
                         main.db_size[main.ac.dbs[i].db].msb = main.ac.dbs[i].offsetByte + main.ac.dbs[i].len;
+                    }
+                    if (main.ac.dbs[i].offsetByte < main.db_size[main.ac.dbs[i].db].lsb) {
+                        main.db_size[main.ac.dbs[i].db].lsb = main.ac.dbs[i].offsetByte;
                     }
                 }
             }
@@ -622,6 +630,8 @@ var main = {
 
 
             for (i = 0; main.db_size.length > i; i++) {
+                if (main.db_size[i].lsb == 0xFFFF) main.db_size[i].lsb = 0;
+
                 adapter.setObject("DBs." + main.db_size[i].db, {
                     type: 'channel',
                     common: {
@@ -876,12 +886,63 @@ var main = {
 
             val = ((val >> 8) & 0xF) * 100 + ((val >> 4) & 0xF) * 10 + (val & 0xF);
 
-            adapter.setState(id, val * factor, true);
+            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                ackObjects[id] = {val: val};
+                adapter.setState(id, val * factor, true);
+            }
         } else if (type == "S7TIME") {
             // 0x15100822 0x42301231 = 2015.10.08 22:42:30.123 Monday
-            // todo
+            var d = new Date();
+            var y = buff[offsetByte + 0];
+            // 21 = 0x15 => 2015
+            y = ((y >> 4) & 0xF) * 10 + (y & 0xF);
+            if (y >= 90) {
+                y += 1900;
+            } else {
+                y += 2000;
+            }
+            d.setUTCFullYear(y);
 
-            adapter.setState(id, 0, true);
+            // month
+            y = buff[offsetByte + 1];
+            // 21 = 0x15 => 2015
+            y = ((y >> 4) & 0xF) * 10 + (y & 0xF);
+            d.setUTCMonth(y - 1);
+
+            // day
+            y = buff[offsetByte + 2];
+            // 21 = 0x15 => 2015
+            y = ((y >> 4) & 0xF) * 10 + (y & 0xF);
+            d.setUTCDate(y);
+
+            // hour
+            y = buff[offsetByte + 3];
+            // 21 = 0x15 => 2015
+            y = ((y >> 4) & 0xF) * 10 + (y & 0xF);
+            d.setUTCHours(y);
+
+            // minutes
+            y = buff[offsetByte + 4];
+            // 21 = 0x15 => 2015
+            y = ((y >> 4) & 0xF) * 10 + (y & 0xF);
+            d.setUTCMinutes(y);
+
+            // seconds
+            y = buff[offsetByte + 5];
+            // 21 = 0x15 => 2015
+            y = ((y >> 4) & 0xF) * 10 + (y & 0xF);
+            d.setUTCSeconds(y);
+
+            // milliseconds
+            y = buff[offsetByte + 6];
+            // 21 = 0x15 => 2015
+            y = (((y >> 4) & 0xF) * 10 + (y & 0xF)) * 10 + ((buff[offsetByte + 7] >> 4) & 0xF);
+            d.setUTCMilliseconds(y);
+
+            if (ackObjects[id] === undefined || ackObjects[id].val != d.getTime()) {
+                ackObjects[id] = {val: d.getTime()};
+                adapter.setState(id, ackObjects[id].val, true);
+            }
         }
     },
 
@@ -970,7 +1031,7 @@ var main = {
 
                     async.each(main._db_size, function (db, callback) {
                         // Why not db.lsb ?
-                        s7client.DBRead(db.dbId, 0, db.msb, function (err, res) {
+                        s7client.DBRead(db.dbId, db.lsb, db.msb - db.lsb, function (err, res) {
                             if (err) {
                                 callback(err);
                             } else {
@@ -1034,7 +1095,7 @@ var main = {
     }
 };
 
-function SortByaddress(a, b) {
+function SortByAddress(a, b) {
     var ad = parseFloat(a.Address);
     var bd = parseFloat(b.Address);
     return ((ad < bd) ? -1 : ((ad > bd) ? 1 : 0));

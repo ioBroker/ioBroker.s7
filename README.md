@@ -23,7 +23,6 @@ sudo apt-get install build-essential
 ```
 
 Unter windows braucht man Visual Studio 2013 (Community Edition ist genug) oder später.
-
 ## English
 Format of the addresses for Inputs, Outputs or markers is "X.Y", where X is byte offset and Y is bit offset in byte.
 Format of the addresses for DBs is "DBZ +X.Y", where z is number of DB, like "DB34 +12.0"
@@ -38,8 +37,16 @@ sudo apt-get install build-essential
 
 Under windows is Visual Studio 2013 (Community Edition is enough) or later is required to get it run.
 
+## TODO
+  Time offset for S7 time.
 
 # Changelog 
+#0.2.2 [2015.09.11]
+* (bluefox) add S7time
+* (bluefox) support rooms and roles
+* (bluefox) it works
+* (bluefox) update packets
+
 #0.2.1 [2015.09.09]
 * (bluefox) fix creation of objects
 
