@@ -6,7 +6,7 @@
 var utils     = require(__dirname + '/lib/utils');
 var adapter   = utils.adapter('s7');
 var async     = require('async');
-var snap7     = null;//require('node-snap7');
+var snap7     = require('node-snap7');
 var s7client  = snap7 ? new snap7.S7Client() : null;
 var connected = false;
 
@@ -70,14 +70,16 @@ function prepareWrite(id, state) {
 
         } else {
             if (pulseList[id] === undefined) {
-
-                pulseList[id] = ackObjects[id.substring(adapter.namespace.length + 1)].val;
+                var _id = id.substring(adapter.namespace.length + 1);
+                pulseList[id] = ackObjects[_id] ? ackObjects[_id].val : !state.val;
 
                 setTimeout(function () {
                     writeHelper(id, {val: pulseList[id]});
 
                     setTimeout(function () {
-                        adapter.setState(id, ackObjects[id.substring(adapter.namespace.length + 1)].val, true);
+                        if (ackObjects[_id]) {
+                            adapter.setState(id, ackObjects[_id].val, true);
+                        }
                     }, main.acp.poll * 1.5);
 
                 }, adapter.config.params.pulsetime);
@@ -100,6 +102,9 @@ function send() {
     var val  = sendBuffer[id];
     var data = objects[id];
 
+    if (!s7client) {
+        return next('s7client not exists');
+    }
     var buf;
 
     if (type == "BOOL") {
@@ -137,7 +142,7 @@ function send() {
 
     var addr;
 
-    if (data.native.cat == "db") {
+    if (data.native.cat == 'db') {
 
         if (type == "BOOL") {
             addr = data.native.address * 8 + data.native.offsetBit;
@@ -200,7 +205,7 @@ function send() {
             });
         }
     }
-    if (data.native.cat == "marker") {
+    if (data.native.cat == 'marker') {
 
         if (type == "BOOL") {
             addr = data.native.address * 8 + data.native.offsetBit;
@@ -339,6 +344,8 @@ var main = {
         }
 
         main.round = Math.pow(10, main.round);
+
+        adapter.config.params.pulsetime = parseInt(adapter.config.params.pulsetime || 1000);
 
         adapter.getForeignObjects(adapter.namespace + ".*", function (err, list) {
 
@@ -882,7 +889,7 @@ var main = {
         var byte3 = "";
 
         if (type == "BOOL") {
-            val = ((buff[offsetByte] >> (7 - offsetBit)) & 1) ? true : false;
+            val = ((buff[offsetByte] >> offsetBit) & 1) ? true : false;
 
             if (ackObjects[id] === undefined || ackObjects[id].val != val) {
                 ackObjects[id] = {val: val};

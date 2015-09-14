@@ -160,10 +160,26 @@
         "WP":               {"en": "WP",                "de": "WP",                 "ru": "WP"},
         "Role":             {"en": "Role",              "de": "Rolle",              "ru": "Роль"},
         "Room":             {"en": "Room",              "de": "Raum",               "ru": "Комната"},
-        "sec":              {"en": "sec.",              "de": "Sek.",               "ru": "сек."}
+        "sec":              {"en": "sec.",              "de": "Sek.",               "ru": "сек."},
+        "Enable polling of data point": {
+            "en": "Enable polling of data point",
+            "de": "Zyklische Abfrage vom Datenpunkt",
+            "ru": "Постоянный опрос переменной в каждом цикле"
+        },
+        "Write access allowed": {
+            "en": "Write access allowed",
+            "de": "Schreiben erlaubt",
+            "ru": "Разрешить запись в переменную"
+        },
+        "Write pulses (true=>false edge)": {
+            "en": "Write pulses (true=>false edge)",
+            "de": "Schreibe Pulse (Ja=>Nein Kante)",
+            "ru": "Генерировать импульсы (1 => 0)"
+        }
     };
 
     var onChange = null;
+    var activePage = '';
 
     $(document).ready(function () {
         $("#btn_loadsymbole").button().click(function () {
@@ -189,7 +205,7 @@
 
             var data = $("#" + grid).jsGrid("option", "data");
             $.each(data, function () {
-                this.RW != this.RW;
+                this.RW = !this.RW;
             });
 
             $("#" + grid).jsGrid("option", "data", data);
@@ -201,19 +217,50 @@
             var data = $("#" + grid).jsGrid("option", "data");
 
             $.each(data, function () {
-                this.WP != this.WP;
+                this.WP = !this.WP;
             });
 
             $("#" + grid).jsGrid("option", "data", data);
         });
 
-        $("#adapter-container").tabs();
+        $("#adapter-container").tabs({
+            activate: function (event, ui) {
+                switch(ui.newPanel.selector) {
+                    case '#s7_tab_g':
+                        activePage = 0;
+                        break;
+                    case '#s7_tab_i':
+                        activePage = 1;
+                        break;
+                    case '#s7_tab_o':
+                        activePage = 2;
+                        break;
+                    case '#s7_tab_m':
+                        activePage = 3;
+                        break;
+                    case '#s7_tab_d':
+                        activePage = 4;
+                        break;
+                    default:
+                        activePage = 0;
+                        break;
+                }
+                if (typeof localStorage != 'undefined') {
+                    localStorage['s7page'] = activePage.toString();
+                }
+            }
+        });
     });
 
 
     function load(settings, onchange) {
         if (systemLang == 'de') translate_de();
         if (systemLang == 'ru') translate_ru();
+
+        if (typeof localStorage != 'undefined') {
+            activePage = localStorage['s7page'];
+            $("#adapter-container").tabs({active: parseInt(activePage || 0, 10)});
+        }
 
         var data = {
             inputs:  settings.inputs   || [],
@@ -257,7 +304,7 @@
                     {value: "INT",    text: "INT",    roleRO: 'value', roleRW: 'level'},
                     {value: "DINT",   text: "DINT",   roleRO: 'value', roleRW: 'level'},
                     {value: "REAL",   text: "REAL",   roleRO: 'value', roleRW: 'level'},
-                    {value: "S5TIME", text: "S5TIME", roleRO: 'value.interval', roleRW: 'value.interval'},
+                    {value: "S5TIME", text: "S5TIME", roleRO: 'value.interval', roleRW: 'level.interval'},
                     {value: "S7TIME", text: "S7TIME", roleRO: 'value.time', roleRW: 'value.time'}
                 ];
 
@@ -272,12 +319,15 @@
                     {value: 'value.brightness',     text: 'value.brightness'},
                     {value: 'value.battery',        text: 'value.battery'},
                     {value: 'value.valve',          text: 'value.valve'},
+                    {value: 'value.time',           text: 'value.time'},
+                    {value: 'value.interval',       text: 'value.interval'},
                     {value: 'button',               text: 'button'},
                     {value: 'indicator',            text: 'indicator'},
                     {value: 'level.dimmer',         text: 'level.dimmer'},
                     {value: 'level.valve',          text: 'level.valve'},
                     {value: 'level.blind',          text: 'level.blind'},
-                    {value: 'level.temperature',    text: 'level.temperature'}
+                    {value: 'level.temperature',    text: 'level.temperature'},
+                    {value: 'level.interval',       text: 'level.interval'}
                 ];
 
                 var room_items = [{value: '', text: ''}];
@@ -295,17 +345,17 @@
                     paging:     false,
                     data:       data[_id.split('_')[1]],
                     fields: [
-                        {name: 'Address'    ,title:  _('Address'),       type: 'text',       width: '110px'},
-                        {name: 'Name'       ,title:  _('Name'),          type: 'text',       width: '150px'},
-                        {name: 'Description',title:  _('Description'),   type: 'text',       width: '250px'},
-                        {name: 'Type'       ,title:  _('Type'),          type: 'select',     width: '95px', items: type_items, valueField: 'value', textField: 'text'},
-                        {name: 'Unit'       ,title:  _('Unit'),          type: 'text',       width: '50px'},
-                        {name: 'Role'       ,title:  _('Role'),          type: 'select',     width: '100px', items: role_items, valueField: 'value', textField: 'text'},
-                        {name: 'Room'       ,title:  _('Room'),          type: 'select',     width: '100px', items: room_items, valueField: 'value', textField: 'text'},
-                        {name: 'poll'       ,title:  _('poll'),          type: 'checkbox',   width: '35px'},
-                        {name: 'RW'         ,title:  _('RW'),            type: 'checkbox',   width: '35px'},
-                        {name: 'WP'         ,title:  _('WP'),            type: 'checkbox',   width: '35px'},
-                        {                                                type: 'control',    width: '80px'}
+                        {name: 'Address'    , title:  _('Address'),       type: 'text',       width: '110px'},
+                        {name: 'Name'       , title:  _('Name'),          type: 'text',       width: '150px'},
+                        {name: 'Description', title:  _('Description'),   type: 'text',       width: '250px'},
+                        {name: 'Type'       , title:  _('Type'),          type: 'select',     width: '95px',  items: type_items, valueField: 'value', textField: 'text'},
+                        {name: 'Unit'       , title:  _('Unit'),          type: 'text',       width: '50px'},
+                        {name: 'Role'       , title:  _('Role'),          type: 'select',     width: '100px', items: role_items, valueField: 'value', textField: 'text'},
+                        {name: 'Room'       , title:  _('Room'),          type: 'select',     width: '100px', items: room_items, valueField: 'value', textField: 'text'},
+                        {name: 'poll'       , title:  _('poll'),          type: 'checkbox',   width: '35px'},
+                        {name: 'RW'         , title:  _('RW'),            type: 'checkbox',   width: '35px'},
+                        {name: 'WP'         , title:  _('WP'),            type: 'checkbox',   width: '35px'},
+                        {                                                 type: 'control',    width: '80px'}
                     ],
                     onItemUpdated: function (obj) {
                         /* {grid, row, item, itemIndex, previousItem}*/
@@ -335,7 +385,20 @@
                         onchange();
                     },
                     onItemInserting: function (obj) {
+                        obj.item.poll = true;
                         onchange();
+                    }
+                });
+                // add custom titles
+                $('.jsgrid-header-sortable').each(function () {
+                    if ($(this).text() == _('poll')) {
+                        $(this).attr('title', _('Enable polling of data point'));
+                    }
+                    if ($(this).text() == _('RW')) {
+                        $(this).attr('title', _('Write access allowed'));
+                    }
+                    if ($(this).text() == _('WP')) {
+                        $(this).attr('title', _('Write pulses (true=>false edge)'));
                     }
                 });
             });
@@ -393,7 +456,7 @@
                     Type:         this.slice(36, 41).replace(/( )/g, ""),
                     Description:  this.slice(46, 126).replace(/( ){2,}/, ""),
                     Unit:         "",
-//                    Roll:         "",
+//                    Role:         "",
 //                    Room:         "",
                     poll:         true,
                     RW:           false,
@@ -462,7 +525,7 @@
                         dec:          x.shift(),
                         Description:  x.join(' '),
                         Unit:         '',
-                        Roll:         '',
+                        Role:         '',
                         Room:         '',
                         poll:         true,
                         RW:           false,
@@ -604,9 +667,9 @@
     </div>
     <div id="s7_tab_i" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_inputs">
-            <button class="btn_toggle_pool translateB" title="Polling">Toggle poll</button>
-            <button class="btn_toggle_rw translateB"   title="Write access">Toggle RW</button>
-            <button class="btn_toggle_wp translateB"   title="write as Pulse">Toggle WP</button>
+            <button class="btn_toggle_pool translateB translateT" title="Polling">Toggle poll</button>
+            <button class="btn_toggle_rw translateB translateT"   title="Write access">Toggle RW</button>
+            <button class="btn_toggle_wp translateB translateT"   title="write as Pulse">Toggle WP</button>
         </div>
         <div id="s7_inputs" class="s7_grid"></div>
     </div>
