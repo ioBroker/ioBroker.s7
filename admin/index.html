@@ -198,6 +198,7 @@
             });
 
             $("#" + grid).jsGrid("option", "data", data);
+            onChange();
         });
 
         $(".btn_toggle_rw").button().click(function () {
@@ -209,6 +210,8 @@
             });
 
             $("#" + grid).jsGrid("option", "data", data);
+            onChange();
+
         });
 
         $(".btn_toggle_wp").button().click(function () {
@@ -221,6 +224,8 @@
             });
 
             $("#" + grid).jsGrid("option", "data", data);
+            onChange();
+
         });
 
         $("#adapter-container").tabs({
@@ -290,6 +295,11 @@
             } else {
                 $(this).val(data.params[$(this).attr("id").split("_")[1]]);
             }
+            $(this).change(function () {
+                onchange();
+            }).keyup(function () {
+                $(this).trigger('change');
+            });
         });
 
         getEnums('rooms', function (err, rooms) {
@@ -532,38 +542,6 @@
                         WP:           false
                     };
 
-                    //var _desc = data.Description.split(";");
-
-                    // todo
-//                    var remove =[];
-//
-//                    for(var i= 0;_desc.length > i; i++) {
-//                        var part = _desc[i].split(":");
-//
-//                        if (part[1] != undefined) {
-//                            if ((part[0].indexOf("Unit") != -1 || part[0].indexOf("unit") != -1) && part[1]) {
-//                                data.Unit = part[1]
-//                                remove.push(i)
-//                            }
-//                            if ((part[0].indexOf("Room") != -1 || part[0].indexOf("room") != -1) && part[1]) {
-//                                data.Room = part[1]
-//                                remove.push(i)
-//                            }
-//                            if ((part[0].indexOf("Role") != -1 || part[0].indexOf("rool") != -1) && part[1]) {
-//                                data.Role = part[1]
-//                                remove.push(i)
-//                            }
-//                        }
-//                    };
-//
-//                    for(var i= 0;remove.length > i; i++) {
-//
-//                        _desc.splice(remove[i]-i,1)
-//                    }
-//
-//
-//                    data.Description = _desc.join(";")
-                    // todo
                     _data.push(data)
                 }
             });
