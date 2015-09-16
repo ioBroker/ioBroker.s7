@@ -80,6 +80,7 @@ function prepareWrite(id, state) {
                         if (ackObjects[_id]) {
                             adapter.setState(id, ackObjects[_id].val, true);
                         }
+                        delete pulseList[id];
                     }, main.acp.poll * 1.5);
 
                 }, adapter.config.params.pulsetime);
