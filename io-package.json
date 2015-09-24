@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "s7",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "title": "Siemens S7 Adapter",
     "desc": {
       "en": "Siemens SIMATIC S7 connection over Snap7",
@@ -38,7 +38,9 @@
       "round": "2",
       "poll": "1000",
       "recon": "60000",
-      "pulsetime": "1000"
+      "pulsetime": "1000",
+      "localTsap": 0,
+      "remoteTsap": 0
     },
     "inputs": [],
     "outputs": [],

@@ -161,6 +161,9 @@
         "Role":             {"en": "Role",              "de": "Rolle",              "ru": "Роль"},
         "Room":             {"en": "Room",              "de": "Raum",               "ru": "Комната"},
         "sec":              {"en": "sec.",              "de": "Sek.",               "ru": "сек."},
+        "S7 LOGO!:":        {"en": "S7 LOGO!:",         "de": "S7 LOGO!:",          "ru": "S7 LOGO!:"},
+        "Local TSAP:":      {"en": "Local TSAP:",       "de": "Local TSAP:",        "ru": "Local TSAP:"},
+        "Remote TSAP:":     {"en": "Remote TSAP:",      "de": "Remote TSAP:",       "ru": "Remote TSAP:"},
         "Enable polling of data point": {
             "en": "Enable polling of data point",
             "de": "Zyklische Abfrage vom Datenpunkt",
@@ -257,6 +260,32 @@
         });
     });
 
+    function tsap2input(input) {
+        var val = $('#' + input).val();
+
+        var val1 = (val >> 8).toString(16);
+        if (val1.length == 1) val1 = '0' + val1;
+        $('#' + input + '0').val(val1).change(function () {
+            var v = $(this).val();
+            if (v.toString().length > 2) $(this).val(v.substring(0,2));
+            onChange();
+
+            $('#' + input).val(((parseInt($('#' + input + '0').val(), 16) & 0xFF) << 8) + (parseInt($('#' + input + '1').val(), 16) & 0xFF));
+        }).keyup(function() {
+            $(this).trigger('change');
+        });
+
+        val1 = (val & 0xFF).toString(16);
+        if (val1.length == 1) val1 = '0' + val1;
+        $('#' + input + '1').val(val1).change(function () {
+            var v = $(this).val();
+            if (v.toString().length > 2) $(this).val(v.substring(0,2));
+            $('#' + input).val(((parseInt($('#' + input + '0').val(), 16) & 0xFF) << 8) + (parseInt($('#' + input + '1').val(), 16) & 0xFF));
+            onChange();
+        }).keyup(function() {
+            $(this).trigger('change');
+        })
+    }
 
     function load(settings, onchange) {
         if (systemLang == 'de') translate_de();
@@ -275,32 +304,68 @@
             timer:   settings.timer    || [],
             dbs:     settings.dbs      || [],
             params:  settings.params   || {
-                ip:       '192.168.0.1',
-                rack:     0,
-                slot:     2,
-                poll:     1000,
-                recon:    60000,
-                pulstime: 1000,
-                round:    2
+                ip:         '192.168.0.1',
+                rack:       0,
+                slot:       2,
+                poll:       1000,
+                recon:      60000,
+                pulstime:   1000,
+                round:      2,
+                localTsap:  0,
+                remoteTsap: 0
             }
         };
 
         onChange = onchange;
 
         $.each($(".s7_params"), function () {
+            var id = $(this).attr("id");
             if ($(this).hasClass("check")) {
-                if (data.params[$(this).attr("id").split("_")[1]]) {
-                    document.getElementById($(this).attr("id")).checked = data.params[$(this).attr("id").split("_")[1]];
+                if (data.params[id.split("_")[1]]) {
+                    document.getElementById(id).checked = data.params[id.split("_")[1]];
                 }
             } else {
-                $(this).val(data.params[$(this).attr("id").split("_")[1]]);
+                $(this).val(data.params[id.split("_")[1]]);
             }
+
+            if (id == 's7params_remoteTSAP' || id == 's7params_localTSAP') {
+                tsap2input(id);
+            }
+
             $(this).change(function () {
                 onchange();
             }).keyup(function () {
                 $(this).trigger('change');
             });
         });
+
+        $('#s7logo').change(function () {
+            onchange();
+            if ($(this).prop('checked')) {
+                $('.logoS7').show();
+                $('.realS7').hide();
+                $('#s7params_remoteTSAP0').val('02').trigger('change');
+                $('#s7params_remoteTSAP1').val('00').trigger('change');
+                $('#s7params_localTSAP0').val('02').trigger('change');
+                $('#s7params_localTSAP1').val('00').trigger('change');
+            } else {
+                $('#s7params_remoteTSAP0').val('00').trigger('change');
+                $('#s7params_remoteTSAP1').val('00').trigger('change');
+                $('#s7params_localTSAP0').val('00').trigger('change');
+                $('#s7params_localTSAP1').val('00').trigger('change');
+                $('.realS7').show();
+                $('.logoS7').hide();
+            }
+        })
+
+        if (data.params.remoteTSAP || data.params.localTSAP) {
+            $('#s7logo').prop('checked', true);
+            $('.logoS7').show();
+            $('.realS7').hide();
+        } else {
+            $('.logoS7').hide();
+            $('.realS7').show();
+        }
 
         getEnums('rooms', function (err, rooms) {
             $.each($('.s7_grid'), function () {
@@ -430,13 +495,13 @@
         });
 
         $.each($(".s7_params"), function () {
+            var id = $(this).attr("id").split("_")[1];
             if ($(this).hasClass("check")) {
-
-                obj.params[$(this).attr("id").split("_")[1]] = document.getElementById($(this).attr("id")).checked;
-
+                obj.params[id] = document.getElementById($(this).attr("id")).checked;
             } else {
-                obj.params[$(this).attr("id").split("_")[1]] = $(this).val();
+                obj.params[id] = $(this).val();
             }
+            if (id == 'remoteTSAP' || id == 'localTSAP') obj.params[id] = parseInt(obj.params[id], 10);
         });
         callback(obj);
     }
@@ -592,12 +657,24 @@
                 <td style="width: 200px"><input class="s7_params" id="s7params_ip"/></td>
             </tr>
             <tr>
+                <td class="translate">S7 LOGO!:</td>
+                <td><input id="s7logo" type="checkbox"/></td>
+            </tr>
+            <tr class="realS7">
                 <td class="translate">PLC Rack:</td>
                 <td><input class="s7_params" id="s7params_rack"/></td>
             </tr>
-            <tr>
+            <tr class="realS7">
                 <td class="translate">PLC Slot:</td>
                 <td><input class="s7_params" id="s7params_slot"/></td>
+            </tr>
+            <tr class="logoS7">
+                <td class="translate">Local TSAP:</td>
+                <td><input id="s7params_localTSAP0" maxsize="2" size="2"/><input id="s7params_localTSAP1" maxsize="2" size="2"/> <input class="s7_params" id="s7params_localTSAP" type="hidden"/></td>
+            </tr>
+            <tr class="logoS7">
+                <td class="translate">Remote TSAP:</td>
+                <td><input id="s7params_remoteTSAP0" maxsize="2" size="2"/><input id="s7params_remoteTSAP1" maxsize="2" size="2"/> <input class="s7_params" id="s7params_remoteTSAP" type="hidden"/></td>
             </tr>
         </table>
 

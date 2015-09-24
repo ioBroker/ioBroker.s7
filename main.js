@@ -865,21 +865,38 @@ var main = {
     start: function () {
 
         if (!s7client) return;
+        if (main.acp.localTsap && main.acp.remoteTsap) {
+            s7client.SetConnectionParams(main.acp.ip, main.acp.localTsap, main.acp.remoteTsap); // C++
+            s7client.Connect(function (err) {
 
-        s7client.ConnectTo(main.acp.ip, main.acp.rack, main.acp.slot, function (err) {
+                if (err) {
+                    adapter.log.error('Connection failed. Code #' + err);
+                    adapter.setState("info.connection", false, true);
+                    return setTimeout(main.start, main.acp.recon);
+                }
 
-            if (err) {
-                adapter.log.error('Connection failed. Code #' + err);
-                adapter.setState("info.connection", false, true);
-                return setTimeout(main.start, main.acp.recon);
-            }
+                connected = true;
+                adapter.setState("info.connection", true, true);
+                adapter.setState("info.pdu", s7client.PDULength(), true);
 
-            connected = true;
-            adapter.setState("info.connection", true, true);
-            adapter.setState("info.pdu", s7client.PDULength(), true);
+                main.poll();
+            });
+        } else {
+            s7client.ConnectTo(main.acp.ip, main.acp.rack, main.acp.slot, function (err) {
 
-            main.poll();
-        });
+                if (err) {
+                    adapter.log.error('Connection failed. Code #' + err);
+                    adapter.setState("info.connection", false, true);
+                    return setTimeout(main.start, main.acp.recon);
+                }
+
+                connected = true;
+                adapter.setState("info.connection", true, true);
+                adapter.setState("info.pdu", s7client.PDULength(), true);
+
+                main.poll();
+            });
+        }
     },
 
     write: function (id, buff, type, offsetByte, offsetBit) {

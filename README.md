@@ -41,6 +41,9 @@ Under windows is Visual Studio 2013 (Community Edition is enough) or later is re
   Time offset for S7 time.
 
 # Changelog 
+#0.2.3 [2015.09.24]
+* (bluefox) add suppor of Logo!
+
 #0.2.2 [2015.09.11]
 * (bluefox) add S7time
 * (bluefox) support rooms and roles
