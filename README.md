@@ -22,7 +22,7 @@ sudo apt-get update
 sudo apt-get install build-essential
 ```
 
-Unter windows braucht man Visual Studio 2013 (Community Edition ist genug) oder später.
+Unter windows braucht man Visual Studio 2013 (Community Edition ist genug) oder später. Auch Python 2.7 (nicht 3.x) muss instaliert werden.
 ## English
 Format of the addresses for Inputs, Outputs or markers is "X.Y", where X is byte offset and Y is bit offset in byte.
 Format of the addresses for DBs is "DBZ +X.Y", where z is number of DB, like "DB34 +12.0"
@@ -36,6 +36,7 @@ sudo apt-get install build-essential
 ```
 
 Under windows is Visual Studio 2013 (Community Edition is enough) or later is required to get it run.
+Python 2.x is required too. Not 3.x.
 
 ## TODO
   Time offset for S7 time.
