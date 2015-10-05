@@ -596,8 +596,8 @@ var main = {
             }
             channels = [];
             for (i = 0; main.ac.outputs.length > i; i++) {
-                if (channels.indexOf("Outputs." + main.ac.inputs[i].offsetByte) == -1) {
-                    channels.push("Outputs." + main.ac.inputs[i].offsetByte);
+                if (channels.indexOf("Outputs." + main.ac.outputs[i].offsetByte) == -1) {
+                    channels.push("Outputs." + main.ac.outputs[i].offsetByte);
                     adapter.setObject("Outputs." + main.ac.outputs[i].offsetByte, {
                         type: 'channel',
                         common: {
@@ -650,8 +650,8 @@ var main = {
 
             channels = [];
             for (i = 0; main.ac.markers.length > i; i++) {
-                if (channels.indexOf("Markers." + main.ac.inputs[i].offsetByte) == -1) {
-                    channels.push("Markers." + main.ac.inputs[i].offsetByte);
+                if (channels.indexOf("Markers." + main.ac.markers[i].offsetByte) == -1) {
+                    channels.push("Markers." + main.ac.markers[i].offsetByte);
 
                     adapter.setObject("Markers." + main.ac.markers[i].offsetByte, {
                         type: 'channel',
