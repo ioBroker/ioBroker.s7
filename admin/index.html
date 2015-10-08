@@ -372,15 +372,19 @@
                 var _id = $(this).attr('id');
 
                 var type_items = [
-                    {value: "BOOL",   text: "BOOL",   roleRO: 'state', roleRW: 'switch'},
-                    {value: "BYTE",   text: "BYTE",   roleRO: 'value', roleRW: 'level'},
-                    {value: "WORD",   text: "WORD",   roleRO: 'value', roleRW: 'level'},
-                    {value: "DWORD",  text: "DWORD",  roleRO: 'value', roleRW: 'level'},
-                    {value: "INT",    text: "INT",    roleRO: 'value', roleRW: 'level'},
-                    {value: "DINT",   text: "DINT",   roleRO: 'value', roleRW: 'level'},
-                    {value: "REAL",   text: "REAL",   roleRO: 'value', roleRW: 'level'},
-                    {value: "S5TIME", text: "S5TIME", roleRO: 'value.interval', roleRW: 'level.interval'},
-                    {value: "S7TIME", text: "S7TIME", roleRO: 'value.time', roleRW: 'value.time'}
+                    {value: "BOOL",     text: "BOOL",     roleRO: 'state',  roleRW: 'switch'},
+                    {value: "BYTE",     text: "BYTE",     roleRO: 'value',  roleRW: 'level'},
+                    {value: "WORD",     text: "WORD",     roleRO: 'value',  roleRW: 'level'},
+                    {value: "DWORD",    text: "DWORD",    roleRO: 'value',  roleRW: 'level'},
+                    {value: "INT",      text: "INT",      roleRO: 'value',  roleRW: 'level'},
+                    {value: "DINT",     text: "DINT",     roleRO: 'value',  roleRW: 'level'},
+                    {value: "REAL",     text: "REAL",     roleRO: 'value',  roleRW: 'level'},
+                    {value: "S7STRING", text: "S7STRING", roleRO: 'string', roleRW: 'string'},
+                    {value: "STRING",   text: "STRING",   roleRO: 'string', roleRW: 'string'},
+                    {value: "ARRAY",    text: "ARRAY",    roleRO: '',       roleRW: ''},
+                    {value: "REAL",     text: "REAL",     roleRO: 'value',  roleRW: 'level'},
+                    {value: "S5TIME",   text: "S5TIME",   roleRO: 'value.interval', roleRW: 'level.interval'},
+                    {value: "S7TIME",   text: "S7TIME",   roleRO: 'value.time', roleRW: 'value.time'}
                 ];
 
                 var role_items = [
@@ -424,6 +428,7 @@
                         {name: 'Name'       , title:  _('Name'),          type: 'text',       width: '150px'},
                         {name: 'Description', title:  _('Description'),   type: 'text',       width: '250px'},
                         {name: 'Type'       , title:  _('Type'),          type: 'select',     width: '95px',  items: type_items, valueField: 'value', textField: 'text'},
+                        {name: 'Length'     , title:  _('Length'),        type: 'text',       width: '40px'},
                         {name: 'Unit'       , title:  _('Unit'),          type: 'text',       width: '50px'},
                         {name: 'Role'       , title:  _('Role'),          type: 'select',     width: '100px', items: role_items, valueField: 'value', textField: 'text'},
                         {name: 'Room'       , title:  _('Room'),          type: 'select',     width: '100px', items: room_items, valueField: 'value', textField: 'text'},
@@ -454,7 +459,13 @@
                                 changed = true;
                             }
                         }
-
+                        if (obj.item.Type == 'S7STRING' || obj.item.Type == 'STRING' || obj.item.Type == 'ARRAY') {
+                            obj.item.Length = parseInt(obj.item.Length, 10) || 32;
+                            if (obj.item.Length != parseInt(obj.item.Length, 10) || !parseInt(obj.item.Length, 10)) {
+                                obj.item.Length = 32;
+                                changed = true;
+                            }
+                        }
                         if (changed) this.render();//$("#" + _id).jsGrid("render");
 
                         onchange();

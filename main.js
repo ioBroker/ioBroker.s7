@@ -139,6 +139,36 @@ function send() {
     } else if (type == "REAL") {
         buf = new Buffer(4);
         buf.writeFloatBE(parseFloat(val), 0);
+    } else if (type == "STRING" || type == "ARRAY") {
+        buf = new Buffer(data.native.len);
+        if (typeof val === 'string' && val[0] === '{') {
+            try {
+                val = JSON.parse(val);
+            } catch (err) {
+
+            }
+        }
+        var s;
+        for (s = 0; s < val.length && s < data.native.len; s++) {
+            buf[s] = val[s];
+        }
+        // zero end string
+        if (type == "STRING") {
+            if (s >= data.native.len) s--;
+            buf[s] = 0;
+        }
+    } else if (type == "S7STRING") {
+        buf = new Buffer(data.native.len + 2);
+        var s;
+        buf[0] = data.native.len;
+        for (s = 0; s < val.length && s < data.native.len; s++) {
+            buf[s + 2] = val[s];
+        }
+        // zero end string
+        if (s < data.native.len - 1) {
+            buf[s] = 0;
+        }
+        buf[1] = s;
     }
 
     var addr;
@@ -162,6 +192,10 @@ function send() {
             s7client.DBWrite(data.native.dbId, data.native.address, 4, buf, function (err) {
                 next(err);
             });
+        } else if (type == "STRING" || type == "ARRAY" || type == "S7STRING") {
+            s7client.DBWrite(data.native.dbId, data.native.address, data.native.len, buf, function (err) {
+                next(err);
+            });
         }
     }
 
@@ -181,6 +215,10 @@ function send() {
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
             s7client.EBWrite(data.native.address, data.native.address, 4, buf, function (err) {
+                next(err);
+            });
+        } else if (type == "STRING" || type == "ARRAY" || type == "S7STRING") {
+            s7client.EBWrite(data.native.address, data.native.address, data.native.len, buf, function (err) {
                 next(err);
             });
         }
@@ -204,6 +242,10 @@ function send() {
             s7client.ABWrite(data.native.address, data.native.address, 4, buf, function (err) {
                 next(err);
             });
+        } else if (type == "STRING" || type == "ARRAY" || type == "S7STRING") {
+            s7client.ABWrite(data.native.address, data.native.address, data.native.len, buf, function (err) {
+                next(err);
+            });
         }
     }
     if (data.native.cat == 'marker') {
@@ -223,6 +265,10 @@ function send() {
             });
         } else if (type == "REAL" || type == "DINT" || type == "DWORD") {
             s7client.MBWrite(data.native.address, 4, buf, function (err) {
+                next(err);
+            });
+        } else if (type == "STRING" || type == "ARRAY" || type == "S7STRING") {
+            s7client.MBWrite(data.native.address, data.native.len, buf, function (err) {
                 next(err);
             });
         }
@@ -377,6 +423,9 @@ var main = {
                     } else
                     if (main.ac.inputs[i].Type == "S7TIME") {
                         main.ac.inputs[i].len = 8;
+                    } else
+                    if (main.ac.inputs[i].Type == "ARRAY" || main.ac.inputs[i].Type == "STRING" || main.ac.inputs[i].Type == "S7STRING") {
+                        main.ac.inputs[i].len = main.ac.inputs[i].Length;
                     }
                 }
                 main.input_lsb  = main.ac.inputs[0].offsetByte;
@@ -401,6 +450,9 @@ var main = {
                     } else
                     if (main.ac.outputs[i].Type == "S7TIME") {
                         main.ac.outputs[i].len = 8;
+                    } else
+                    if (main.ac.outputs[i].Type == "ARRAY" || main.ac.outputs[i].Type == "STRING" || main.ac.outputs[i].Type == "S7STRING") {
+                        main.ac.outputs[i].len = main.ac.outputs[i].Length;
                     }
                 }
                 main.output_lsb  = main.ac.outputs[0].offsetByte;
@@ -425,6 +477,9 @@ var main = {
                     } else
                     if (main.ac.markers[i].Type == "S7TIME") {
                         main.ac.markers[i].len = 8;
+                    } else
+                    if (main.ac.markers[i].Type == "ARRAY" || main.ac.markers[i].Type == "STRING" || main.ac.markers[i].Type == "S7STRING") {
+                        main.ac.markers[i].len = main.ac.markers[i].Length;
                     }
                 }
                 main.marker_lsb  = main.ac.markers[0].offsetByte;
@@ -484,6 +539,9 @@ var main = {
                     } else
                     if (main.ac.dbs[i].Type == "S7TIME") {
                         main.ac.dbs[i].len = 8;
+                    } else
+                    if (main.ac.dbs[i].Type == "ARRAY" || main.ac.dbs[i].Type == "STRING" || main.ac.dbs[i].Type == "S7STRING") {
+                        main.ac.dbs[i].len = main.ac.dbs[i].Length;
                     }
 
                     // find size of DB
@@ -586,7 +644,8 @@ var main = {
                         address:   main.ac.inputs[i].offsetByte,
                         offsetBit: main.ac.inputs[i].offsetBit,
                         rw:        main.ac.inputs[i].RW,
-                        wp:        main.ac.inputs[i].WP
+                        wp:        main.ac.inputs[i].WP,
+                        len:       main.ac.inputs[i].Length
                     }
                 });
 
@@ -641,7 +700,8 @@ var main = {
                         address:   main.ac.outputs[i].offsetByte,
                         offsetBit: main.ac.outputs[i].offsetBit,
                         rw:        main.ac.outputs[i].RW,
-                        wp:        main.ac.outputs[i].WP
+                        wp:        main.ac.outputs[i].WP,
+                        len:       main.ac.outputs[i].Length
                     }
                 });
                 syncEnums('rooms', adapter.namespace + "." + main.ac.outputs[i].id, main.ac.outputs[i].Room);
@@ -696,7 +756,8 @@ var main = {
                         address:   main.ac.markers[i].offsetByte,
                         offsetBit: main.ac.markers[i].offsetBit,
                         rw:        main.ac.markers[i].RW,
-                        wp:        main.ac.markers[i].WP
+                        wp:        main.ac.markers[i].WP,
+                        len:       main.ac.markers[i].Length
                     }
                 });
 
@@ -756,7 +817,8 @@ var main = {
                         address:   main.ac.dbs[i].offsetByte,
                         offsetBit: main.ac.dbs[i].offsetBit,
                         rw:        main.ac.dbs[i].RW,
-                        wp:        main.ac.dbs[i].WP
+                        wp:        main.ac.dbs[i].WP,
+                        len:       main.ac.dbs[i].Length
                     }
                 });
                 syncEnums('rooms', adapter.namespace + "." + main.ac.dbs[i].id, main.ac.dbs[i].Room);
@@ -899,12 +961,8 @@ var main = {
         }
     },
 
-    write: function (id, buff, type, offsetByte, offsetBit) {
+    write: function (id, buff, type, offsetByte, offsetBit, len) {
         var val   = 0;
-        var byte0 = "";
-        var byte1 = "";
-        var byte2 = "";
-        var byte3 = "";
 
         if (type == "BOOL") {
             val = ((buff[offsetByte] >> offsetBit) & 1) ? true : false;
@@ -939,6 +997,30 @@ var main = {
             }
         } else if (type == "DINT") {
             val = buff.readInt32BE(offsetByte);
+            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                ackObjects[id] = {val: val};
+                adapter.setState(id, val, true);
+            }
+        } else if (type == "STRING") {
+            val = buff.toString('ascii', offsetByte, len);
+            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                ackObjects[id] = {val: val};
+                adapter.setState(id, val, true);
+            }
+        } else if (type == "S7STRING") {
+            var max = buff[offsetByte];
+            len = buff[offsetByte + 1];
+            val = buff.toString('ascii', offsetByte + 2, len);
+            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+                ackObjects[id] = {val: val};
+                adapter.setState(id, val, true);
+            }
+        } else if (type == "ARRAY") {
+            var result = [];
+            for (var i = 0; i < len; i++) {
+                result.push(buff[offsetByte + i]);
+            }
+            val = JSON.stringify(result);
             if (ackObjects[id] === undefined || ackObjects[id].val != val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
@@ -1057,7 +1139,8 @@ var main = {
                                             res,                     // buffer
                                             main.inputs[n].Type,     // type
                                             main.inputs[n].offsetByte - main.input_lsb,  // offset in the buffer
-                                            main.inputs[n].offsetBit // bit offset
+                                            main.inputs[n].offsetBit, // bit offset
+                                            main.inputs[n].Length    // length for string, array
                                         );
                                     } catch (err) {
                                         adapter.log.error('Writing Input. Code #' + err);
@@ -1082,7 +1165,10 @@ var main = {
                                             main.outputs[n].id,
                                             res,
                                             main.outputs[n].Type,
-                                            main.outputs[n].offsetByte - main.output_lsb,  main.outputs[n].offsetBit);
+                                            main.outputs[n].offsetByte - main.output_lsb,
+                                            main.outputs[n].offsetBit,
+                                            main.outputs[n].Length    // length for string, array
+                                        );
                                     } catch (err) {
                                         adapter.log.error('Writing Output. Code #' + err);
                                     }
@@ -1107,7 +1193,8 @@ var main = {
                                             res,
                                             main.markers[n].Type,
                                             main.markers[n].offsetByte - main.marker_lsb,
-                                            main.markers[n].offsetBit
+                                            main.markers[n].offsetBit,
+                                            main.markers[n].Length    // length for string, array
                                         );
                                     } catch (err) {
                                         adapter.log.error('Writing Merker. Code #' + err);
@@ -1146,7 +1233,8 @@ var main = {
                                         buf[main.dbs[n].db],
                                         main.dbs[n].Type,
                                         main.dbs[n].offsetByte,
-                                        main.dbs[n].offsetBit
+                                        main.dbs[n].offsetBit,
+                                        main.dbs[n].Length    // length for string, array
                                     );
                                 } catch (err) {
                                     adapter.log.error('Writing DB. Code #' + err);
