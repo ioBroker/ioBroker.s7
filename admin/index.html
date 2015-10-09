@@ -483,7 +483,8 @@
                                 } else {
                                     db = 1;
                                 }
-                                obj.item.Type = data[id][data[id].length - 1].Type;
+                                obj.item.Type   = data[id][data[id].length - 1].Type;
+                                obj.item.Length = data[id][data[id].length - 1].Length;
 
                                 for (var a = 0; a < data[id].length; a++) {
                                     var len = 0;
@@ -524,7 +525,8 @@
                                     obj.item.Address = 'DB' + db + ' ' + Math.floor(max) + '.' + (max - Math.floor(max)) * 8;
                                 }
                             } else {
-                                obj.item.Type = data[id][data[id].length - 1].Type;
+                                obj.item.Type   = data[id][data[id].length - 1].Type;
+                                obj.item.Length = data[id][data[id].length - 1].Length;
 
                                 for (var a = 0; a < data[id].length; a++) {
                                     var len = 0;
