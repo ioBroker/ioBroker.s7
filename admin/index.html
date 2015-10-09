@@ -472,6 +472,101 @@
                     },
                     onItemInserting: function (obj) {
                         obj.item.poll = true;
+                        // find automatically next address
+                        var id = obj.grid._body.parent().attr('id').split('_')[1];
+                        if (data[id].length) {
+                            var max = 0;
+                            if (id == 'dbs') {
+                                var db = data[id][data[id].length - 1].Address.match(/^DB(\d+)\s*/);
+                                if (db) {
+                                    db = db[1];
+                                } else {
+                                    db = 1;
+                                }
+                                obj.item.Type = data[id][data[id].length - 1].Type;
+
+                                for (var a = 0; a < data[id].length; a++) {
+                                    var len = 0;
+                                    var _db = data[id][a].Address.match(/^DB(\d+)\s*/);
+                                    if (!_db ||_db[1] != db) continue;
+                                    var address = data[id][a].Address.match(/^DB\d+\s\+?([\d.]+)$/);
+                                    if (address) address = address[1];
+
+                                    if (data[id][a].Type == 'BOOL') {
+                                        len = 1/8;
+                                        var parts = address.split('.');
+                                        address = parseInt(parts[0], 10) + ((parseInt(parts[1], 10) || 0) / 8);
+                                    } else if (data[id][a].Type == 'BYTE') {
+                                        len = 1;
+                                        address = parseInt(address, 10);
+                                    } else
+                                    if (data[id][a].Type == "WORD"  || data[id][a].Type == "INT"  || data[id][a].Type == "S5TIME") {
+                                        len = 2;
+                                        address = parseInt(address, 10);
+                                    } else
+                                    if (data[id][a].Type == "DWORD" || data[id][a].Type == "DINT" || data[id][a].Type == "REAL") {
+                                        len = 4;
+                                        address = parseInt(address, 10);
+                                    } else
+                                    if (data[id][a].Type == "S7TIME") {
+                                        len = 8;
+                                        address = parseInt(address, 10);
+                                    } else
+                                    if (data[id][a].Type == "ARRAY" || data[id][a].Type == "STRING" || data[id][a].Type == "S7STRING") {
+                                        len = data[id][a].Length;
+                                        address = parseInt(address, 10);
+                                    }
+                                    if (address + len > max) max = address + len;
+                                }
+                                if (obj.item.Type != 'BOOL') {
+                                    obj.item.Address = 'DB' + db + ' ' + Math.ceil(max);
+                                } else {
+                                    obj.item.Address = 'DB' + db + ' ' + Math.floor(max) + '.' + (max - Math.floor(max)) * 8;
+                                }
+                            } else {
+                                obj.item.Type = data[id][data[id].length - 1].Type;
+
+                                for (var a = 0; a < data[id].length; a++) {
+                                    var len = 0;
+                                    var address = parseInt(data[id][a].Address, 10);
+
+                                    if (data[id][a].Type == 'BOOL') {
+                                        len = 1/8;
+                                        var parts = data[id][a].Address.split('.');
+                                        address = parseInt(parts[0], 10) + ((parseInt(parts[1], 10) || 0) / 8);
+                                    } else if (data[id][a].Type == 'BYTE') {
+                                        len = 1;
+                                    } else
+                                    if (data[id][a].Type == "WORD"  || data[id][a].Type == "INT"  || data[id][a].Type == "S5TIME") {
+                                        len = 2;
+                                    } else
+                                    if (data[id][a].Type == "DWORD" || data[id][a].Type == "DINT" || data[id][a].Type == "REAL") {
+                                        len = 4;
+                                    } else
+                                    if (data[id][a].Type == "S7TIME") {
+                                        len = 8;
+                                    } else
+                                    if (data[id][a].Type == "ARRAY" || data[id][a].Type == "STRING" || data[id][a].Type == "S7STRING") {
+                                        len = data[id][a].Length;
+                                    }
+                                    if (address + len > max) max = address + len;
+                                }
+                                if (obj.item.Type != 'BOOL') {
+                                    obj.item.Address = Math.ceil(max);
+                                } else {
+                                    obj.item.Address = Math.floor(max) + '.' + (max - Math.floor(max)) * 8;
+                                }
+                            }
+                        } else {
+                            if (id == 'dbs') {
+                                obj.item.Address = 'DB1 0';
+                            } else {
+                                obj.item.Address = '0.0';
+                            }
+                            obj.item.Type = 'BOOL';
+                        }
+
+
                         onchange();
                     }
                 });
