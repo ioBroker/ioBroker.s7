@@ -178,7 +178,19 @@
             "en": "Write pulses (true=>false edge)",
             "de": "Schreibe Pulse (Ja=>Nein Kante)",
             "ru": "Генерировать импульсы (1 => 0)"
-        }
+        },
+        "Text copied to clipboard. Click to close the window": {"en": "Text copied to clipboard. Click to close the window", "de": "Text copied to clipboard. Click to close the window", "ru": "Text copied to clipboard. Click to close the window"},
+        "Export":           {"en": "Export",            "de": "Export",             "ru": "Экспорт"},
+        "Close":            {"en": "Close",             "de": "Zumachen",           "ru": "Закрыть"},
+        "Export to CSV":    {"en": "Export to CSV",     "de": "Export in CSV",      "ru": "Экспорт в CSV"},
+        "Import from CSV":  {"en": "Import from CSV",   "de": "Import aus CSV",     "ru": "Импорт из CSV"},
+        "Delete all entries": {"en": "Delete all entries", "de": "Alle Einträge löschen", "ru": "Удалить все элементы"},
+        "Length":           {"en": "Length",            "de": "Länge", "ru": "Length"},
+        "All entries will be deleted. Are you sure?": {
+            "en": "All entries will be deleted. Are you sure?",
+            "de": "Alle Einträge werden gelöscht. Sind sie sicher?",
+            "ru": "Все элементы будут удалены. Вы уверенны?"
+        },
     };
 
     var onChange = null;
@@ -195,24 +207,24 @@
         $(".btn_toggle_pool").button().click(function (e, ui) {
             var grid = $(this).parent().data("grid");
 
-            var data = $("#" + grid).jsGrid("option", "data");
+            var data = $('#' + grid).jsGrid('option', "data");
             $.each(data, function () {
                 this.poll = !this.poll;
             });
 
-            $("#" + grid).jsGrid("option", "data", data);
+            $('#' + grid).jsGrid('option', "data", data);
             onChange();
         });
 
         $(".btn_toggle_rw").button().click(function () {
             var grid = $(this).parent().data("grid");
 
-            var data = $("#" + grid).jsGrid("option", "data");
+            var data = $('#' + grid).jsGrid('option', "data");
             $.each(data, function () {
                 this.RW = !this.RW;
             });
 
-            $("#" + grid).jsGrid("option", "data", data);
+            $('#' + grid).jsGrid('option', "data", data);
             onChange();
 
         });
@@ -220,13 +232,13 @@
         $(".btn_toggle_wp").button().click(function () {
             var grid = $(this).parent().data("grid");
 
-            var data = $("#" + grid).jsGrid("option", "data");
+            var data = $('#' + grid).jsGrid('option', "data");
 
             $.each(data, function () {
                 this.WP = !this.WP;
             });
 
-            $("#" + grid).jsGrid("option", "data", data);
+            $('#' + grid).jsGrid('option', "data", data);
             onChange();
 
         });
@@ -287,6 +299,113 @@
         })
     }
 
+    function getExport(data, id, delimiter) {
+        delimiter = delimiter || '\t';
+        var text;
+        if (id === 'dbs') {
+            text = 'DB'     + delimiter + 'Byte' + delimiter + 'Bit' + delimiter;
+        } else {
+            text = 'Byte' + delimiter + 'Bit' + delimiter;
+        }
+        text +=
+        'Name' + delimiter +
+        'Description' + delimiter +
+        'Type' + delimiter +
+        'Length' + delimiter +
+        'Unit' + delimiter +
+        'Role' + delimiter +
+        'Room' + delimiter +
+        'poll' + delimiter +
+        'RW' + delimiter +
+        'WP' + '\n';
+
+        for (var i = 0; i < data[id].length; i++) {
+            var p;
+            if (id === 'dbs') {
+                p = data[id][i].Address.trim().match(/^DB(\d+)\s\+?(\d+)(.\d+)?$/);
+                if (p) {
+                    text += p[1] + delimiter + (p[2] || 0) + delimiter + (data[id][i].Type === 'BOOL' ? (p[3] || '0').replace('.', '') : '') + delimiter;
+                } else {
+                    text += data[id][i].Address + delimiter;
+                }
+            } else {
+                p = data[id][i].Address.trim().match(/^\+?(\d+)(.\d+)?$/);
+                if (p) {
+                    text += p[1] + delimiter + (p[2] || '') + delimiter;
+                } else {
+                    text += data[id][i].Address + delimiter;
+                }
+            }
+            text += (data[id][i].Name || '') + delimiter;
+            text += (data[id][i].Description || '') + delimiter;
+            text += data[id][i].Type + delimiter;
+            text += (data[id][i].Length || '') + delimiter;
+            text += (data[id][i].Unit || '') + delimiter;
+            text += (data[id][i].Role || '') + delimiter;
+            text += (data[id][i].Room || '') + delimiter;
+            text += (data[id][i].poll ? 'true' : 'false') + delimiter;
+            text += (data[id][i].RW ? 'true' : 'false') + delimiter;
+            text += (data[id][i].WP ? 'true' : 'false') + delimiter;
+            text += '\n';
+        }
+        return text;
+    }
+
+    function getImport(data, id, text) {
+        var delimiter;
+        if (text.indexOf('\t') != -1) {
+            delimiter = '\t';
+        } else if (text.indexOf(';') != -1) {
+            delimiter = ';';
+        } else {
+            delimiter = ' ';
+        }
+        var lines = text.split('\r\n');
+        if (lines.length === 1) {
+            lines = text.split('\n');
+            if (lines.length === 1) {
+                lines = text.split('\r');
+            }
+        }
+        for (var i = 0; i < lines.length; i++) {
+            var parts = lines[i].split(delimiter);
+            if (parts.length === 1) {
+                continue;
+            }
+            if (parseInt(parts[0].trim(), 10).toString() != parts[0]) continue;
+            var obj = {};
+            if (id === 'dbs') {
+                if (parts[5].toLowerCase() === 'bool') {
+                    obj.Address = 'DB' + parts[0].trim() + ' ' + parts[1].trim() + '.' + parts[2];
+                } else {
+                    obj.Address = 'DB' + parts[0].trim() + ' ' + parts[1].trim();
+                }
+                parts.splice(0, 1);
+            } else {
+                if (parts[4].toLowerCase() === 'bool') {
+                    obj.Address = parts[0].trim() + '.' + parts[1];
+                } else {
+                    obj.Address = parts[0].trim();
+                }
+            }
+            obj.Name = parts[2].trim() || '';
+            obj.Description = parts[3].trim() || '';
+            obj.Type = parts[4].trim() || '';
+            obj.Length = parts[5].trim() || '';
+            obj.Unit = parts[6].trim() || '';
+            obj.Role = parts[7].trim() || '';
+            obj.Room = parts[8].trim() || '';
+            obj.poll = parts[9].trim() || '';
+            obj.RW = parts[10].trim() || '';
+            obj.WP = parts[11].trim() || '';
+            obj.poll = (obj.poll.toLowerCase() === 'true' || obj.poll === '1' || obj.poll === '+');
+            obj.RW   = (obj.RW.toLowerCase()   === 'true' || obj.RW   === '1' || obj.RW   === '+');
+            obj.WP   = (obj.WP.toLowerCase()   === 'true' || obj.WP   === '1' || obj.WP   === '+');
+            data[id].push(obj);
+        }
+        $('#s7_' + id).jsGrid('render');
+    }
+    
     function load(settings, onchange) {
         if (systemLang == 'de') translate_de();
         if (systemLang == 'ru') translate_ru();
@@ -319,13 +438,13 @@
         onChange = onchange;
 
         $.each($(".s7_params"), function () {
-            var id = $(this).attr("id");
-            if ($(this).hasClass("check")) {
-                if (data.params[id.split("_")[1]]) {
-                    document.getElementById(id).checked = data.params[id.split("_")[1]];
+            var id = $(this).attr('id');
+            if ($(this).hasClass('check')) {
+                if (data.params[id.split('_')[1]]) {
+                    document.getElementById(id).checked = data.params[id.split('_')[1]];
                 }
             } else {
-                $(this).val(data.params[id.split("_")[1]]);
+                $(this).val(data.params[id.split('_')[1]]);
             }
 
             if (id == 's7params_remoteTSAP' || id == 's7params_localTSAP') {
@@ -374,17 +493,17 @@
                 var type_items = [
                     {value: "BOOL",     text: "BOOL",     roleRO: 'state',  roleRW: 'switch'},
                     {value: "BYTE",     text: "BYTE",     roleRO: 'value',  roleRW: 'level'},
-                    {value: "WORD",     text: "WORD",     roleRO: 'value',  roleRW: 'level'},
-                    {value: "DWORD",    text: "DWORD",    roleRO: 'value',  roleRW: 'level'},
-                    {value: "INT",      text: "INT",      roleRO: 'value',  roleRW: 'level'},
-                    {value: "DINT",     text: "DINT",     roleRO: 'value',  roleRW: 'level'},
-                    {value: "REAL",     text: "REAL",     roleRO: 'value',  roleRW: 'level'},
-                    {value: "S7STRING", text: "S7STRING", roleRO: 'string', roleRW: 'string'},
+                    {value: 'WORD',     text: 'WORD',     roleRO: 'value',  roleRW: 'level'},
+                    {value: 'DWORD',    text: 'DWORD',    roleRO: 'value',  roleRW: 'level'},
+                    {value: 'INT',      text: 'INT',      roleRO: 'value',  roleRW: 'level'},
+                    {value: 'DINT',     text: 'DINT',     roleRO: 'value',  roleRW: 'level'},
+                    {value: 'REAL',     text: 'REAL',     roleRO: 'value',  roleRW: 'level'},
+                    {value: 'S7STRING', text: 'S7STRING', roleRO: 'string', roleRW: 'string'},
                     {value: "STRING",   text: "STRING",   roleRO: 'string', roleRW: 'string'},
-                    {value: "ARRAY",    text: "ARRAY",    roleRO: '',       roleRW: ''},
-                    {value: "REAL",     text: "REAL",     roleRO: 'value',  roleRW: 'level'},
-                    {value: "S5TIME",   text: "S5TIME",   roleRO: 'value.interval', roleRW: 'level.interval'},
-                    {value: "S7TIME",   text: "S7TIME",   roleRO: 'value.time', roleRW: 'value.time'}
+                    {value: 'ARRAY',    text: 'ARRAY',    roleRO: '',       roleRW: ''},
+                    {value: 'REAL',     text: 'REAL',     roleRO: 'value',  roleRW: 'level'},
+                    {value: 'S5TIME',   text: 'S5TIME',   roleRO: 'value.interval', roleRW: 'level.interval'},
+                    {value: 'S7TIME',   text: 'S7TIME',   roleRO: 'value.time', roleRW: 'value.time'}
                 ];
 
                 var role_items = [
@@ -414,7 +533,7 @@
                     room_items.push({value: room, text: rooms[room].common.name || room.substring('enum.rooms.'.length)});
                 }
 
-                $("#" + _id).jsGrid({
+                var g = $('#' + _id).jsGrid({
                     width:      'auto',
                     height:     'auto',
                     inserting:  true,
@@ -424,11 +543,37 @@
                     paging:     false,
                     data:       data[_id.split('_')[1]],
                     fields: [
-                        {name: 'Address'    , title:  _('Address'),       type: 'text',       width: '110px'},
+                        {name: 'Address'    , title:  _('Address'),       type: 'text',       width: '110px', sorter: function (a, b) {
+                            var p;
+                            if (a[0] === 'D' || a[0] === 'd') {
+                                p = a.trim().match(/^DB(\d+)\s\+?(\d+)(.\d+)?$/);
+                                if (p) {
+                                    a = (parseInt(p[1], 10) || 0) * 100000 + (parseInt(p[2], 10) || 0) + parseInt((p[3] || '0').replace('.', ''), 10) / 8;
+                                }
+                            } else {
+                                p = a.trim().match(/^\+?(\d+)(.\d+)?$/);
+                                if (p) {
+                                    a = (parseInt(p[1], 10) || 0) + parseInt((p[2] || '0').replace('.', ''), 10) / 8;
+                                }
+                            }
+                            if (b[0] === 'D' || b[0] === 'd') {
+                                p = b.trim().match(/^DB(\d+)\s\+?(\d+)(.\d+)?$/);
+                                if (p) {
+                                    b = (parseInt(p[1], 10) || 0) * 100000 + (parseInt(p[2], 10) || 0) + parseInt((p[3] || '0').replace('.', ''), 10) / 8;
+                                }
+                            } else {
+                                p = b.trim().match(/^\+?(\d+)(.\d+)?$/);
+                                if (p) {
+                                    b = (parseInt(p[1], 10) || 0) + parseInt((p[2] || '0').replace('.', ''), 10) / 8;
+                                }
+                            }
+
+                            return a == b ? 0 : (a > b ? 1 : -1);
+                        }},
                         {name: 'Name'       , title:  _('Name'),          type: 'text',       width: '150px'},
                         {name: 'Description', title:  _('Description'),   type: 'text',       width: '250px'},
                         {name: 'Type'       , title:  _('Type'),          type: 'select',     width: '95px',  items: type_items, valueField: 'value', textField: 'text'},
-                        {name: 'Length'     , title:  _('Length'),        type: 'text',       width: '40px'},
+                        {name: 'Length'     , title:  _('Length'),        type: 'text',       width: '40px', sorter: 'number'},
                         {name: 'Unit'       , title:  _('Unit'),          type: 'text',       width: '50px'},
                         {name: 'Role'       , title:  _('Role'),          type: 'select',     width: '100px', items: role_items, valueField: 'value', textField: 'text'},
                         {name: 'Room'       , title:  _('Room'),          type: 'select',     width: '100px', items: room_items, valueField: 'value', textField: 'text'},
@@ -437,6 +582,22 @@
                         {name: 'WP'         , title:  _('WP'),            type: 'checkbox',   width: '35px'},
                         {                                                 type: 'control',    width: '80px'}
                     ],
+                    editRowRenderer: function(item) {
+                        var $result = $("<tr>").addClass(this.editRowClass);
+
+                        this._eachField(function(field) {
+                            $("<td>").addClass(field.css)
+                                    .appendTo($result)
+                                    .append(field.editTemplate ? field.editTemplate(item[field.name], item) : "")
+                                    .width(field.width || "auto").keypress(function (e) {
+                                        if (e.which == 13) {
+                                            $('#' + _id).jsGrid("updateItem");
+                                        }
+                                        onchange();
+                                    });
+                        });
+                        return $result;
+                    },
                     onItemUpdated: function (obj) {
                         /* {grid, row, item, itemIndex, previousItem}*/
                         var changed = false;
@@ -453,6 +614,18 @@
                                 }
                             }
                         }
+                        if (obj.item.Type === 'BOOL') {
+                            if (obj.item.Address.indexOf('.') == -1) {
+                                obj.item.Address += '.0';
+                                changed = true;
+                            }
+                        }
+                        if (obj.item.Type !== 'STRING' && obj.item.Type !== 'S7STRING' && obj.item.Type !== 'ARRAY') {
+                            if (obj.item.Length || obj.item.Length === 0) {
+                                obj.item.Length = '';
+                                changed = true;
+                            }
+                        }
                         if (obj.item.Type == 'S5TIME') {
                             if (!obj.item.Unit) {
                                 obj.item.Unit = _('sec');
@@ -466,7 +639,7 @@
                                 changed = true;
                             }
                         }
-                        if (changed) this.render();//$("#" + _id).jsGrid("render");
+                        if (changed) this.render();//$('#' + _id).jsGrid("render");
 
                         onchange();
                     },
@@ -485,6 +658,8 @@
                                 }
                                 obj.item.Type   = data[id][data[id].length - 1].Type;
                                 obj.item.Length = data[id][data[id].length - 1].Length;
+                                obj.item.RW     = data[id][data[id].length - 1].RW;
+                                obj.item.WP     = data[id][data[id].length - 1].WP;
 
                                 for (var a = 0; a < data[id].length; a++) {
                                     var len = 0;
@@ -501,19 +676,19 @@
                                         len = 1;
                                         address = parseInt(address, 10);
                                     } else
-                                    if (data[id][a].Type == "WORD"  || data[id][a].Type == "INT"  || data[id][a].Type == "S5TIME") {
+                                    if (data[id][a].Type == 'WORD'  || data[id][a].Type == 'INT'  || data[id][a].Type == 'S5TIME') {
                                         len = 2;
                                         address = parseInt(address, 10);
                                     } else
-                                    if (data[id][a].Type == "DWORD" || data[id][a].Type == "DINT" || data[id][a].Type == "REAL") {
+                                    if (data[id][a].Type == 'DWORD' || data[id][a].Type == 'DINT' || data[id][a].Type == 'REAL') {
                                         len = 4;
                                         address = parseInt(address, 10);
                                     } else
-                                    if (data[id][a].Type == "S7TIME") {
+                                    if (data[id][a].Type == 'S7TIME') {
                                         len = 8;
                                         address = parseInt(address, 10);
                                     } else
-                                    if (data[id][a].Type == "ARRAY" || data[id][a].Type == "STRING" || data[id][a].Type == "S7STRING") {
+                                    if (data[id][a].Type == 'ARRAY' || data[id][a].Type == "STRING" || data[id][a].Type == 'S7STRING') {
                                         len = data[id][a].Length;
                                         address = parseInt(address, 10);
                                     }
@@ -527,6 +702,8 @@
                             } else {
                                 obj.item.Type   = data[id][data[id].length - 1].Type;
                                 obj.item.Length = data[id][data[id].length - 1].Length;
+                                obj.item.RW     = data[id][data[id].length - 1].RW;
+                                obj.item.WP     = data[id][data[id].length - 1].WP;
 
                                 for (var a = 0; a < data[id].length; a++) {
                                     var len = 0;
@@ -539,16 +716,16 @@
                                     } else if (data[id][a].Type == 'BYTE') {
                                         len = 1;
                                     } else
-                                    if (data[id][a].Type == "WORD"  || data[id][a].Type == "INT"  || data[id][a].Type == "S5TIME") {
+                                    if (data[id][a].Type == 'WORD'  || data[id][a].Type == 'INT'  || data[id][a].Type == 'S5TIME') {
                                         len = 2;
                                     } else
-                                    if (data[id][a].Type == "DWORD" || data[id][a].Type == "DINT" || data[id][a].Type == "REAL") {
+                                    if (data[id][a].Type == 'DWORD' || data[id][a].Type == 'DINT' || data[id][a].Type == 'REAL') {
                                         len = 4;
                                     } else
-                                    if (data[id][a].Type == "S7TIME") {
+                                    if (data[id][a].Type == 'S7TIME') {
                                         len = 8;
                                     } else
-                                    if (data[id][a].Type == "ARRAY" || data[id][a].Type == "STRING" || data[id][a].Type == "S7STRING") {
+                                    if (data[id][a].Type == 'ARRAY' || data[id][a].Type == "STRING" || data[id][a].Type == 'S7STRING') {
                                         len = data[id][a].Length;
                                     }
                                     if (address + len > max) max = address + len;
@@ -572,6 +749,20 @@
                         onchange();
                     }
                 });
+                g.data('JSGrid')._editRow = function($row) {
+                    if(this._editingRow) {
+                        this.updateItem();
+                    }
+
+                    var item = $row.data('JSGridItem');
+                    var $editRow = this._createEditRow(item);
+
+                    this._editingRow = $row;
+                    $row.hide();
+                    $editRow.insertAfter($row);
+                    $row.data('JSGridEditRow', $editRow);
+                };
+                
                 // add custom titles
                 $('.jsgrid-header-sortable').each(function () {
                     if ($(this).text() == _('poll')) {
@@ -586,6 +777,70 @@
                 });
             });
         });
+
+        $('.btn_export').button({
+            icons: {primary: 'ui-icon-circle-minus'},
+            text: false
+        })
+            .attr('title', _('Export to CSV'))
+            .css({width: 24, height: 24})
+            .click(function () {
+                var id = $(this).data('table');
+                // build text
+                var text = getExport(data, id);
+                $('#export-dlg').show();
+                $('#export_textarea').val(text).focus().select();
+                document.execCommand('copy');
+            });
+
+        $('#export-dlg').click(function () {
+            $(this).hide();
+        });
+
+        $('.btn_import').button({
+            icons: {primary: 'ui-icon-circle-plus'},
+            text: false
+        })
+                .attr('title', _('Import from CSV'))
+                .css({width: 24, height: 24})
+                .click(function () {
+                    $('#import-dlg').show();
+                    $('#import_textarea').val('').focus();
+                    $('#import-dlg').data('table', $(this).data('table'));
+                });
+
+        $('#import_button_ok').button({
+            icons: {primary: 'ui-icon-check'},
+            text: _('Export')
+        }).click(function () {
+            getImport(data, $('#import-dlg').data('table'), $('#import_textarea').val());
+            $('#import-dlg').hide();
+            onchange();
+        });
+        $('#import_button_cancel').button({
+            icons: {primary: 'ui-icon-close'},
+            text: _('Close')
+        }).click(function () {
+            $('#import-dlg').hide();
+        });
+
+        $('.btn_delete_all').button({
+            icons: {primary: 'ui-icon-trash'},
+            text: false
+        })
+            .attr('title', _('Delete all entries'))
+            .css({width: 24, height: 24})
+            .click(function () {
+                if (window.confirm(_('All entries will be deleted. Are you sure?'))) {
+                    var id = $(this).data('table');
+                    if (data[id].length) {
+                        data[id].splice(0, data[id].length);
+                        $('#s7_' + id).jsGrid('render');
+                        onchange();
+                    }
+                }
+        });
+
         onchange(false);
     }
 
@@ -596,16 +851,19 @@
         };
 
         $.each($('.s7_grid'), function () {
-            var id = $(this).attr("id");
-            var key = id.split("_")[1];
-
-            obj[key] = $(this).jsGrid("option", "data");
+            var id = $(this).attr('id');
+            var key = id.split('_')[1];
+            
+            if ($(this).data('JSGrid')._editingRow) {
+                $(this).jsGrid('updateItem');
+            }
+            obj[key] = $(this).jsGrid('option', "data");
         });
 
         $.each($(".s7_params"), function () {
-            var id = $(this).attr("id").split("_")[1];
-            if ($(this).hasClass("check")) {
-                obj.params[id] = document.getElementById($(this).attr("id")).checked;
+            var id = $(this).attr('id').split('_')[1];
+            if ($(this).hasClass('check')) {
+                obj.params[id] = document.getElementById($(this).attr('id')).checked;
             } else {
                 obj.params[id] = $(this).val();
             }
@@ -615,7 +873,7 @@
     }
 
     function symbol_import(e) {
-        $("#btn_loadsymbole").button("option", "disabled", true);
+        $("#btn_loadsymbole").button('option', 'disabled', true);
         var reader = new FileReader();
 
         reader.onload = function (e) {
@@ -659,23 +917,23 @@
 
             $.each($('.s7_grid'), function () {
 
-                if ($(this).attr("id") != "s7_dbs") {
-                    var id = $(this).attr("id");
-                    $("#" + id).jsGrid("option", "data", data[id.split("_")[1]]);
+                if ($(this).attr('id') != "s7_dbs") {
+                    var id = $(this).attr('id');
+                    $('#' + id).jsGrid('option', "data", data[id.split('_')[1]]);
                 }
             });
 
             onChange();
 
-            $("#symol_import").replaceWith($("#symol_import").clone());
-            $("#btn_loadsymbole").button("option", "disabled", false);
+            $('#symol_import').replaceWith($('#symol_import').clone());
+            $('#btn_loadsymbole').button('option', 'disabled', false);
         };
 
         reader.readAsText(e[0], "ISO-8859-1");
     }
 
     function db_import(e) {
-        $("#btn_loaddb").button("option", "disabled", true);
+        $('#btn_loaddb').button('option', 'disabled', true);
 
         var reader = new FileReader();
 
@@ -686,7 +944,7 @@
             var text  = reader.result;
             db = text.match(/(DB)[0-9]+\s-\s/g)[0].replace(" - ", "");
 
-            var old_data = $("#s7_dbs").jsGrid("option", "data");
+            var old_data = $("#s7_dbs").jsGrid('option', "data");
             var new_data = [];
 
             $.each(old_data, function () {
@@ -728,10 +986,10 @@
             });
 
 
-            $("#s7_dbs").jsGrid("option", "data", new_data);
+            $("#s7_dbs").jsGrid('option', "data", new_data);
 
             $("#db_import").replaceWith($("#db_import").clone());
-            $("#btn_loaddb").button("option", "disabled", false);
+            $("#btn_loaddb").button('option', 'disabled', false);
             onChange();
         };
 
@@ -862,11 +1120,23 @@
     <!--</div>-->
     <div id="s7_tab_d" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_dbs">
+            <button class="btn_delete_all translateB" data-table="dbs"></button>
+            <button class="btn_export translateB" data-table="dbs"></button>
+            <button class="btn_import translateB" data-table="dbs"></button>
             <button class="btn_toggle_pool translateB" title="Polling">Toggle poll</button>
             <button class="btn_toggle_rw translateB"   title="Write access">Toggle RW</button>
             <button class="btn_toggle_wp translateB"   title="write as Pulse">Toggle WP</button>
         </div>
         <div id="s7_dbs" class="s7_grid"></div>
+    </div>
+    <div id="export-dlg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;display: none; z-index: 100">
+        <div id="export_help" class="translate" style="position: absolute; top: 10px; right: 10px; font-size: 24px; font-weight: bold; color: blue">Text copied to clipboard. Click to close the window</div>
+        <textarea id="export_textarea" readonly style="width: 100%; height: 100%"></textarea>
+    </div>
+    <div id="import-dlg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;display: none; z-index: 100">
+        <textarea id="import_textarea" style="width: 100%; height: calc(100% - 40px)"></textarea>
+        <button id="import_button_ok"    style="position: absolute; bottom: 10px; right: 120px;" class="translateB">Export</button>
+        <button id="import_button_cancel" style="position: absolute; bottom: 10px; right: 10px;" class="translateB">Close</button>
     </div>
 </div>
 
