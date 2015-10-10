@@ -588,7 +588,7 @@
                         this._eachField(function(field) {
                             $("<td>").addClass(field.css)
                                     .appendTo($result)
-                                    .append(field.editTemplate ? field.editTemplate(item[field.name], item) : "")
+                                    .append(field.editTemplate ? field.editTemplate(item ? item[field.name] : '', item) : "")
                                     .width(field.width || "auto").keypress(function (e) {
                                         if (e.which == 13) {
                                             $('#' + _id).jsGrid("updateItem");
@@ -755,6 +755,7 @@
                     }
 
                     var item = $row.data('JSGridItem');
+                    if (!item) return;
                     var $editRow = this._createEditRow(item);
 
                     this._editingRow = $row;
