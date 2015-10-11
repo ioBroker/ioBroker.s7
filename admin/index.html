@@ -588,7 +588,7 @@
                         this._eachField(function(field) {
                             $("<td>").addClass(field.css)
                                     .appendTo($result)
-                                    .append(field.editTemplate ? field.editTemplate(item ? item[field.name] : '', item) : "")
+                                    .append(field.editTemplate ? field.editTemplate(item[field.name], item) : "")
                                     .width(field.width || "auto").keypress(function (e) {
                                         if (e.which == 13) {
                                             $('#' + _id).jsGrid("updateItem");
@@ -755,7 +755,6 @@
                     }
 
                     var item = $row.data('JSGridItem');
-                    if (!item) return;
                     var $editRow = this._createEditRow(item);
 
                     this._editingRow = $row;
@@ -1089,6 +1088,9 @@
     </div>
     <div id="s7_tab_i" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_inputs">
+            <button class="btn_delete_all translateB" data-table="inputs"></button>
+            <button class="btn_export translateB" data-table="inputs"></button>
+            <button class="btn_import translateB" data-table="inputs"></button>
             <button class="btn_toggle_pool translateB translateT" title="Polling">Toggle poll</button>
             <button class="btn_toggle_rw translateB translateT"   title="Write access">Toggle RW</button>
             <button class="btn_toggle_wp translateB translateT"   title="write as Pulse">Toggle WP</button>
@@ -1097,6 +1099,9 @@
     </div>
     <div id="s7_tab_o" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_outputs">
+            <button class="btn_delete_all translateB" data-table="outputs"></button>
+            <button class="btn_export translateB" data-table="outputs"></button>
+            <button class="btn_import translateB" data-table="outputs"></button>
             <button class="btn_toggle_pool translateB" title="Polling">Toggle poll</button>
             <button class="btn_toggle_rw translateB" title="Write access">Toggle RW</button>
             <button class="btn_toggle_wp translateB" title="write as Pulse">Toggle WP</button>
@@ -1105,6 +1110,9 @@
     </div>
     <div id="s7_tab_m" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_markers">
+            <button class="btn_delete_all translateB" data-table="markers"></button>
+            <button class="btn_export translateB" data-table="markers"></button>
+            <button class="btn_import translateB" data-table="markers"></button>
             <button class="btn_toggle_pool translateB" title="Polling">Toggle poll</button>
             <button class="btn_toggle_rw translateB" title="Write access">Toggle RW</button>
             <button class="btn_toggle_wp translateB" title="write as Pulse">Toggle WP</button>
