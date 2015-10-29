@@ -42,6 +42,16 @@ Python 2.x is required too. Not 3.x.
   Time offset for S7 time.
 
 # Changelog 
+#0.2.4 [2015.10.29]
+* (bluefox) add comment about python
+* (bluefox) implement string read and write
+* (bluefox) implement auto-increment of addresses.
+* (bluefox) fix length
+* (bluefox) implement export import from/to CSV
+* (bluefox) fix small errors in config
+* (bluefox) implement import/export for inputs and outputs too.
+* (bluefox) add translation
+
 #0.2.3 [2015.09.24]
 * (bluefox) add suppor of Logo!
 

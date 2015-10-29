@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "s7",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "title": "Siemens S7 Adapter",
     "desc": {
       "en": "Siemens SIMATIC S7 connection over Snap7",
