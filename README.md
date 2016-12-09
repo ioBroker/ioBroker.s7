@@ -1,5 +1,13 @@
 ![Logo](admin/S7.png)
-### iobroker.s7
+# iobroker.s7
+=================
+
+[![NPM version](http://img.shields.io/npm/v/iobroker.s7.svg)](https://www.npmjs.com/package/iobroker.s7)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.s7.svg)](https://www.npmjs.com/package/iobroker.s7)
+[![Tests](https://travis-ci.org/ioBroker/ioBroker.s7.svg?branch=master)](https://travis-ci.org/ioBroker/ioBroker.s7)
+
+[![NPM](https://nodei.co/npm/iobroker.s7.png?downloads=true)](https://nodei.co/npm/iobroker.s7/)
+
 
 ## Deutsch
 Der Siemens S7 Adapter basiert auf Snap7, wobei Snap7 bei der Erstinstallation des 
@@ -42,6 +50,9 @@ Python 2.x is required too. Not 3.x.
   Time offset for S7 time.
 
 # Changelog 
+#0.2.5 [2016.12.09]
+* (bluefox) Fix button text: Import
+
 #0.2.4 [2015.10.29]
 * (bluefox) add comment about python
 * (bluefox) implement string read and write

@@ -1,7 +1,14 @@
 {
   "common": {
     "name": "s7",
-    "version": "0.2.4",
+    "version": "0.2.5",
+    "news": {
+      "0.2.5": {
+        "en": "Fix button text: Import",
+        "de": "Korrigiere Knopftext: Import",
+        "ru": "Исправлен текст на кнопке импорт"
+      }
+    },
     "title": "Siemens S7 Adapter",
     "desc": {
       "en": "Siemens SIMATIC S7 connection over Snap7",
