@@ -45,6 +45,7 @@
     "url": "https://github.com/ioBroker/ioBroker.s7/issues"
   },
   "readmeFilename": "README.md",
+  "main": "main.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha"
   }
