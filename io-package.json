@@ -24,6 +24,7 @@
     "loglevel": "info",
     "icon": "S7.png",
     "messagebox": true,
+    "subscribable": true,
     "keywords": [
       "S7",
       "SPS"
