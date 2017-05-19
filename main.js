@@ -347,6 +347,16 @@ function syncEnums(enumGroup, id, newEnumName, callback) {
     }
 }
 
+function createExtendObject(id, objData, callback) {
+    adapter.getObject(id, function (err, oldObj) {
+        if (!err && oldObj) {
+            adapter.extendObject(id, objData, callback);
+        } else {
+            adapter.setObjectNotExists(id, objData, callback);
+        }
+    });
+}
+
 var main = {
     old_objects: [],
     new_objects: [],
@@ -609,7 +619,7 @@ var main = {
                     });
                 }
 
-                if (main.old_objects[adapter.namespace + "." + main.ac.inputs[i].id]) {
+                /*if (main.old_objects[adapter.namespace + "." + main.ac.inputs[i].id]) {
                     main.history = main.old_objects[adapter.namespace + "." + main.ac.inputs[i].id].common.history || {
                             enabled:     false,
                             changesOnly: true,
@@ -627,9 +637,9 @@ var main = {
                         retention:    604800,
                         debounc:      10000
                     };
-                }
+                }*/
 
-                adapter.setObject(main.ac.inputs[i].id, {
+                createExtendObject(main.ac.inputs[i].id, {
                     type: 'state',
                     common: {
                         name:    main.ac.inputs[i].Description,
@@ -666,7 +676,7 @@ var main = {
                     });
                 }
 
-                if (main.old_objects[adapter.namespace + "." + main.ac.outputs[i].id]) {
+                /*if (main.old_objects[adapter.namespace + "." + main.ac.outputs[i].id]) {
                     main.history = main.old_objects[adapter.namespace + "." + main.ac.outputs[i].id].common.history || {
                             "enabled":     false,
                             "changesOnly": true,
@@ -684,8 +694,8 @@ var main = {
                         "retention":   604800,
                         "debounce":    10000
                     };
-                }
-                adapter.setObject(main.ac.outputs[i].id, {
+                }*/
+                createExtendObject(main.ac.outputs[i].id, {
                     type: 'state',
                     common: {
                         name:    main.ac.outputs[i].Description,
@@ -722,7 +732,7 @@ var main = {
                     });
                 }
 
-                if (main.old_objects[adapter.namespace + "." + main.ac.markers[i].id]) {
+                /*if (main.old_objects[adapter.namespace + "." + main.ac.markers[i].id]) {
                     main.history = main.old_objects[adapter.namespace + "." + main.ac.markers[i].id].common.history || {
                             enabled:     false,
                             changesOnly: true,
@@ -740,8 +750,8 @@ var main = {
                         retention:   604800,
                         debounce:    10000
                     };
-                }
-                adapter.setObject(main.ac.markers[i].id, {
+                }*/
+                createExtendObject(main.ac.markers[i].id, {
                     type: 'state',
                     common: {
                         name:    main.ac.markers[i].Description,
@@ -780,7 +790,7 @@ var main = {
             }
 
             for (i = 0; main.ac.dbs.length > i; i++) {
-                if (main.old_objects[adapter.namespace + '.' + main.ac.dbs[i].id]) {
+                /*if (main.old_objects[adapter.namespace + '.' + main.ac.dbs[i].id]) {
                     main.history = main.old_objects[adapter.namespace + "." + main.ac.dbs[i].id].common.history || {
                             enabled:     false,
                             changesOnly: true,
@@ -798,9 +808,9 @@ var main = {
                         retention:   604800,
                         debounce:    10000
                     };
-                }
+                }*/
 
-                adapter.setObject(main.ac.dbs[i].id, {
+                createExtendObject(main.ac.dbs[i].id, {
                     type: 'state',
                     common: {
                         name:    main.ac.dbs[i].Description,
@@ -862,7 +872,7 @@ var main = {
                 native: {}
             });
 
-            adapter.setObject("info.poll_time", {
+            createExtendObject("info.poll_time", {
                 type: 'state',
                 common: {
                     name: "Poll time",
@@ -874,7 +884,7 @@ var main = {
             });
             main.new_objects.push(adapter.namespace + ".info.poll_time");
 
-            adapter.setObject("info.connection", {
+            createExtendObject("info.connection", {
                 type: 'state',
                 common: {
                     name: "Connection status",
@@ -885,7 +895,7 @@ var main = {
             });
             main.new_objects.push(adapter.namespace + ".info.connection");
 
-            adapter.setObject("info.pdu", {
+            createExtendObject("info.pdu", {
                 type: 'state',
                 common: {
                     name: 'PDU size',
@@ -1283,4 +1293,3 @@ function SortByAddress(a, b) {
     var bd = parseFloat(b.Address);
     return ((ad < bd) ? -1 : ((ad > bd) ? 1 : 0));
 }
-

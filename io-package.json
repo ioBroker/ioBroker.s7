@@ -1,13 +1,18 @@
 {
   "common": {
     "name": "s7",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "news": {
-      "0.2.5": {
-        "en": "Fix button text: Import",
-        "de": "Korrigiere Knopftext: Import",
-        "ru": "Исправлен текст на кнопке импорт"
-      }
+        "0.2.6": {
+          "en": "Fix history handling",
+          "de": "Probleme bei History Nutzung behoben",
+          "ru": "Fix history handling"
+        },
+        "0.2.5": {
+          "en": "Fix button text: Import",
+          "de": "Korrigiere Knopftext: Import",
+          "ru": "Исправлен текст на кнопке импорт"
+        }
     },
     "title": "Siemens S7 Adapter",
     "desc": {

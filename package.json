@@ -1,16 +1,20 @@
 {
   "name": "iobroker.s7",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Siemens S7 over Snap7",
   "author": {
     "name": "smiling_Jack",
     "email": "smiling_Jack@ioBroker.net"
   },
   "contributors": [
-    {
-      "name": "smiling_Jack",
-      "email": "smiling_Jack@ioBroker.net"
-    }
+      {
+        "name": "smiling_Jack",
+        "email": "smiling_Jack@ioBroker.net"
+    },
+      {
+        "name": "Apollon77",
+        "email": "ingo@fischer-ka.de"
+      }
   ],
   "homepage": "https://github.com/ioBroker/ioBroker.s7",
   "license": "MIT",
