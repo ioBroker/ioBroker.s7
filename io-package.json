@@ -1,8 +1,13 @@
 {
   "common": {
     "name": "s7",
-    "version": "0.2.6",
+    "version": "0.3.0",
     "news": {
+        "0.3.0": {
+          "en": "Upgrade node-snap7 library to current version",
+          "de": "node-snap7 Library aktualisiert",
+          "ru": "Upgrade node-snap7 library to current version"
+        },
         "0.2.6": {
           "en": "Fix history handling",
           "de": "Probleme bei History Nutzung behoben",

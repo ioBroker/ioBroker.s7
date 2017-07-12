@@ -50,6 +50,9 @@ Python 2.x is required too. Not 3.x.
   Time offset for S7 time.
 
 # Changelog
+#0.3.0 [2017.07.12]
+* (Apollon77) Upgrade node-snap7 library to current version
+
 #0.2.6 [2017.05.19]
 * (Apollon77) Fix history handling
 

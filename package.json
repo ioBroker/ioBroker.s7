@@ -1,6 +1,6 @@
 {
   "name": "iobroker.s7",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "description": "Siemens S7 over Snap7",
   "author": {
     "name": "smiling_Jack",
@@ -31,7 +31,7 @@
     "url": "https://github.com/ioBroker/ioBroker.s7"
   },
   "optionalDependencies": {
-    "node-snap7": "^0.2.3"
+    "node-snap7": "^0.4.0"
   },
   "dependencies": {
     "async": "^1.4.2"
