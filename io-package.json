@@ -1,8 +1,13 @@
 {
   "common": {
     "name": "s7",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "news": {
+        "0.3.1": {
+          "en": "Fix DB bit offset bug if starting not from 0",
+          "de": "Korrigiere DB bit offset Fehler, falls fängt nicht vom 0 an",
+          "ru": "Исправлена ошибка, если DB стартует не с 0"
+        },
         "0.3.0": {
           "en": "Upgrade node-snap7 library to current version",
           "de": "node-snap7 Library aktualisiert",
