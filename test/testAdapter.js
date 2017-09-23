@@ -8,7 +8,7 @@ var states  = null;
 var onStateChanged = null;
 var onObjectChanged = null;
 var sendToID = 1;
-var Server = require(__dirname + '/lib/s7server.js');
+var Server = require(__dirname + '/lib/s7Server.js');
 var server;
 
 var adapterShortName = setup.adapterName.substring(setup.adapterName.indexOf('.') + 1);
