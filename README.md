@@ -50,7 +50,7 @@ Python 2.x is required too. Not 3.x.
   Time offset for S7 time.
 
 ## Changelog
-### 0.3.1 [2017.09.20]
+### 0.3.2 [2017.09.20]
 * (bluefox) Fix DB bit offset bug if starting not from 0
 
 ### 0.3.0 [2017.07.12]

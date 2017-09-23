@@ -1243,7 +1243,7 @@ var main = {
                                         db.id,
                                         buf[db.db],
                                         db.Type,
-                                        db.offsetByte - db.lsb,
+                                        db.offsetByte - main._db_size[0].lsb,
                                         db.offsetBit,
                                         db.Length    // length for string, array
                                     );
