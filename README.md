@@ -50,19 +50,22 @@ Python 2.x is required too. Not 3.x.
   Time offset for S7 time.
 
 ## Changelog
-### 0.3.2 [2017.09.20]
+### 1.0.0 (2017.09.25)
+* (bluefox) Activate save button if something was deleted
+
+### 0.3.2 (2017.09.20)
 * (bluefox) Fix DB bit offset bug if starting not from 0
 
-### 0.3.0 [2017.07.12]
+### 0.3.0 (2017.07.12)
 * (Apollon77) Upgrade node-snap7 library to current version
 
-### 0.2.6 [2017.05.19]
+### 0.2.6 (2017.05.19)
 * (Apollon77) Fix history handling
 
-### 0.2.5 [2016.12.09]
+### 0.2.5 (2016.12.09)
 * (bluefox) Fix button text: Import
 
-### 0.2.4 [2015.10.29]
+### 0.2.4 (2015.10.29)
 * (bluefox) add comment about python
 * (bluefox) implement string read and write
 * (bluefox) implement auto-increment of addresses.
@@ -72,41 +75,41 @@ Python 2.x is required too. Not 3.x.
 * (bluefox) implement import/export for inputs and outputs too.
 * (bluefox) add translation
 
-### 0.2.3 [2015.09.24]
+### 0.2.3 (2015.09.24)
 * (bluefox) add suppor of Logo!
 
-### 0.2.2 [2015.09.11]
+### 0.2.2 (2015.09.11)
 * (bluefox) add S7time
 * (bluefox) support rooms and roles
 * (bluefox) it works
 * (bluefox) update packets
 
-### 0.2.1 [2015.09.09]
+### 0.2.1 (2015.09.09)
 * (bluefox) fix creation of objects
 
-### 0.2.0 [2015.08.15]
+### 0.2.0 (2015.08.15)
 * (bluefox) improve performance and enable DB2 3.9 addresses.
 
-### 0.1.8 [2015.08.10]
+### 0.1.8 (2015.08.10)
 * (smiling_Jack) Bugfix send info states
 * (smiling_Jack) Remove unneeded conole.log
 
-### 0.1.7 [2015.08.06]
+### 0.1.7 (2015.08.06)
 * (smiling_Jack) Bugfix send to SPS
 * (smiling_Jack) Bugfix reconnect on connection lost
 
-### 0.1.6 [2015.07.31]
+### 0.1.6 (2015.07.31)
 * (smiling_Jack) Bugfix typo (Adress, Merkers)
 
-### 0.1.5 [2015.07.29]
+### 0.1.5 (2015.07.29)
 * (smiling_Jack) Bugfix translation Admin
 
-### 0.1.4 [2015.07.28]
+### 0.1.4 (2015.07.28)
 * (smiling_Jack) Add S5Time as Type
 * (smiling_Jack) Bugfix History
 * (smiling_Jack) Bugfix (fast value change)
 
-### 0.1.3 [2015.06.04]
+### 0.1.3 (2015.06.04)
 * (bluefox) translate admin
 * (bluefox) remove jshint warnings
 * (bluefox) add info.connected and rename info.connection to info.state

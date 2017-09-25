@@ -1,8 +1,13 @@
 {
   "common": {
     "name": "s7",
-    "version": "0.3.2",
+    "version": "1.0.0",
     "news": {
+        "1.0.0": {
+          "en": "Activate save button if something was deleted",
+          "de": "Aktiviere Speichern-Knopf beim löschen",
+          "ru": "Активировать кнопку сохранения при удалении чего либо"
+        },
         "0.3.2": {
           "en": "Fix DB bit offset bug if starting not from 0",
           "de": "Korrigiere DB bit offset Fehler, falls fängt nicht vom 0 an",
