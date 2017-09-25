@@ -232,7 +232,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
 
     after('Test ' + adapterShortName + ' adapter: Stop js-controller', function (done) {
         this.timeout(10000);
-        server.stop();
+        server && server.stop();
         server = null;
         setup.stopController(function (normalTerminated) {
             console.log('Adapter normal terminated: ' + normalTerminated);
