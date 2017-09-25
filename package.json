@@ -52,6 +52,6 @@
   "readmeFilename": "README.md",
   "main": "main.js",
   "scripts": {
-    "test": "sudo node node_modules/mocha/bin/mocha"
+    "test": "node node_modules/mocha/bin/mocha"
   }
 }
