@@ -1,77 +1,77 @@
 {
-  "common": {
-    "name": "s7",
-    "version": "1.0.0",
-    "news": {
-        "1.0.0": {
-          "en": "Activate save button if something was deleted",
-          "de": "Aktiviere Speichern-Knopf beim löschen",
-          "ru": "Активировать кнопку сохранения при удалении чего либо"
+    "common": {
+        "name": "s7",
+        "version": "1.0.0",
+        "news": {
+            "1.0.0": {
+                "en": "Activate save button if something was deleted",
+                "de": "Aktiviere Speichern-Knopf beim löschen",
+                "ru": "Активировать кнопку сохранения при удалении чего либо"
+            },
+            "0.3.2": {
+                "en": "Fix DB bit offset bug if starting not from 0",
+                "de": "Korrigiere DB bit offset Fehler, falls fängt nicht vom 0 an",
+                "ru": "Исправлена ошибка, если DB стартует не с 0"
+            },
+            "0.3.0": {
+                "en": "Upgrade node-snap7 library to current version",
+                "de": "node-snap7 Library aktualisiert",
+                "ru": "Upgrade node-snap7 library to current version"
+            },
+            "0.2.6": {
+                "en": "Fix history handling",
+                "de": "Probleme bei History Nutzung behoben",
+                "ru": "Fix history handling"
+            },
+            "0.2.5": {
+                "en": "Fix button text: Import",
+                "de": "Korrigiere Knopftext: Import",
+                "ru": "Исправлен текст на кнопке импорт"
+            }
         },
-        "0.3.2": {
-          "en": "Fix DB bit offset bug if starting not from 0",
-          "de": "Korrigiere DB bit offset Fehler, falls fängt nicht vom 0 an",
-          "ru": "Исправлена ошибка, если DB стартует не с 0"
+        "title": "Siemens S7 Adapter",
+        "desc": {
+            "en": "Siemens SIMATIC S7 connection over Snap7",
+            "de": "Siemens SIMATIC S7 Verbindung über Snap7",
+            "ru": "Siemens SIMATIC S7 соединение с помощью Snap7"
         },
-        "0.3.0": {
-          "en": "Upgrade node-snap7 library to current version",
-          "de": "node-snap7 Library aktualisiert",
-          "ru": "Upgrade node-snap7 library to current version"
-        },
-        "0.2.6": {
-          "en": "Fix history handling",
-          "de": "Probleme bei History Nutzung behoben",
-          "ru": "Fix history handling"
-        },
-        "0.2.5": {
-          "en": "Fix button text: Import",
-          "de": "Korrigiere Knopftext: Import",
-          "ru": "Исправлен текст на кнопке импорт"
+        "authors": [
+            "smiling_Jack <steffen.schorling@googlemail.com>"
+        ],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "mode": "daemon",
+        "loglevel": "info",
+        "icon": "S7.png",
+        "messagebox": true,
+        "keywords": [
+            "S7",
+            "SPS"
+        ],
+        "enabled": false,
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/S7.png",
+        "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
+        "type": "iot-systems",
+        "config": {
+            "minWidth": 1024,
+            "width": 1224
         }
     },
-    "title": "Siemens S7 Adapter",
-    "desc": {
-      "en": "Siemens SIMATIC S7 connection over Snap7",
-      "de": "Siemens SIMATIC S7 Verbindung über Snap7",
-      "ru": "Siemens SIMATIC S7 соединение с помощью Snap7"
-    },
-    "authors": [
-      "smiling_Jack <steffen.schorling@googlemail.com>"
-    ],
-    "license": "MIT",
-    "platform": "Javascript/Node.js",
-    "mode": "daemon",
-    "loglevel": "info",
-    "icon": "S7.png",
-    "messagebox": true,
-    "keywords": [
-      "S7",
-      "SPS"
-    ],
-    "enabled": false,
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/S7.png",
-    "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
-    "type": "hardware",
-    "config":{
-      "minWidth": 1024,
-      "width": 1224
+    "native": {
+        "params": {
+            "ip": "192.168.0.1",
+            "rack": "0",
+            "slot": "2",
+            "round": "2",
+            "poll": "1000",
+            "recon": "60000",
+            "pulsetime": "1000",
+            "localTsap": 0,
+            "remoteTsap": 0
+        },
+        "inputs": [],
+        "outputs": [],
+        "markers": [],
+        "dbs": []
     }
-  },
-  "native": {
-    "params": {
-      "ip": "192.168.0.1",
-      "rack": "0",
-      "slot": "2",
-      "round": "2",
-      "poll": "1000",
-      "recon": "60000",
-      "pulsetime": "1000",
-      "localTsap": 0,
-      "remoteTsap": 0
-    },
-    "inputs": [],
-    "outputs": [],
-    "markers": [],
-    "dbs": []
-  }
 }
