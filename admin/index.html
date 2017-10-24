@@ -326,7 +326,7 @@
         for (var i = 0; i < data[id].length; i++) {
             var p;
             if (id === 'dbs') {
-                p = data[id][i].Address.trim().match(/^DB(\d+)\s\+?(\d+)(.\d+)?$/);
+                p = data[id][i].Address.trim().match(/^DB(\d+)\s\+?(\d+)(.\d+)?$/i);
                 if (p) {
                     text += p[1] + delimiter + (p[2] || 0) + delimiter + (data[id][i].Type === 'BOOL' ? (p[3] || '0').replace('.', '') : '') + delimiter;
                 } else {
