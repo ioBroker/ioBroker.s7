@@ -646,7 +646,9 @@ var main = {
                         role:    main.ac.inputs[i].Role,
                         type:    (main.ac.inputs[i].Type === 'BOOL')   ? 'boolean' : 'number',
                         unit:    main.ac.inputs[i].Unit || ((main.ac.inputs[i].Type === 'S5TIME') ? 's' : main.ac.inputs[i].Unit),
-                        history: main.history
+                        history: main.history,
+                        read:    true,
+                        write:   main.ac.inputs[i].RW
                     },
                     native: {
                         cat:       'input',
@@ -702,7 +704,9 @@ var main = {
                         role:    main.ac.outputs[i].Role,
                         type:    (main.ac.outputs[i].Type === 'BOOL')   ? 'boolean' : 'number',
                         unit:    main.ac.outputs[i].Unit || ((main.ac.outputs[i].Type === 'S5TIME') ? 's' : main.ac.outputs[i].Unit),
-                        history: main.history
+                        history: main.history,
+                        read:    true,
+                        write:   main.ac.outputs[i].RW
                     },
                     native: {
                         cat:       'output',
@@ -758,7 +762,9 @@ var main = {
                         role:    main.ac.markers[i].Role,
                         type:    (main.ac.markers[i].Type === 'BOOL')   ? 'boolean' : 'number',
                         unit:    main.ac.markers[i].Unit || ((main.ac.markers[i].Type === 'S5TIME') ? 's' : main.ac.markers[i].Unit),
-                        history: main.history
+                        history: main.history,
+                        read:    true,
+                        write:   main.ac.markers[i].RW
                     },
                     native: {
                         cat:       'marker',
@@ -817,7 +823,9 @@ var main = {
                         role:    main.ac.dbs[i].Role,
                         type:    (main.ac.dbs[i].Type === 'BOOL')   ? 'boolean' : 'number',
                         unit:    main.ac.dbs[i].Unit || ((main.ac.dbs[i].Type === 'S5TIME') ? 's' : main.ac.dbs[i].Unit),
-                        history: main.history
+                        history: main.history,
+                        read:    true,
+                        write:   main.ac.dbs[i].RW
                     },
                     native: {
                         cat:       'db',

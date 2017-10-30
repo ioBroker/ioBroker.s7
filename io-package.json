@@ -1,8 +1,13 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.0.1",
+        "version": "1.0.2",
         "news": {
+            "1.0.2": {
+                "en": "Enhance object data to allow writing if available",
+                "de": "Objektdaten erweitert um Schreibzugriff zu erlauben wenn verfügbar",
+                "ru": "Enhance object data to allow writing if available"
+            },
             "1.0.1": {
                 "en": "Detect DB and db in addresses",
                 "de": "Detect DB und db in Adressen",
