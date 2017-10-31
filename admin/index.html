@@ -28,7 +28,7 @@
 
     .ui-tabs-panel {
         height: calc(100% - 70px);
-        padding: 0px !important;
+        padding: 0 !important;
     }
 
     .table_header {
@@ -83,6 +83,7 @@
     }*/
     .jsgrid-table td {
         padding: 0.2em 0.2em !important;
+        overflow: hidden;
     }
 
     .table_head_btn {
@@ -267,35 +268,35 @@
     }
     
     function load(settings, onchange) {
-        $('#btn_loadsymbole').button().click(function () {
-            $('#symol_import').trigger('click')
+        $('#btn_loadSymbols').button().click(function () {
+            $('#file_symbol_import').trigger('click')
         });
-        
+
         $('#btn_loaddb').button().click(function () {
-            $('#db_import').trigger('click')
+            $('#file_db_import').trigger('click')
         });
 
         $('.btn_toggle_pool').button().click(function (e, ui) {
             var grid = $(this).parent().data('grid');
             var $grid = $('#' + grid);
-            var data = $grid.jsGrid('option', 'data');
-            $.each(data, function () {
+            var localData = $grid.jsGrid('option', 'data');
+            $.each(localData, function () {
                 this.poll = !this.poll;
             });
 
-            $grid.jsGrid('option', 'data', data);
+            $grid.jsGrid('option', 'data', localData);
             onChange();
         });
 
         $('.btn_toggle_rw').button().click(function () {
             var grid = $(this).parent().data('grid');
             var $grid = $('#' + grid);
-            var data = $grid.jsGrid('option', 'data');
-            $.each(data, function () {
+            var localData = $grid.jsGrid('option', 'data');
+            $.each(localData, function () {
                 this.RW = !this.RW;
             });
 
-            $grid.jsGrid('option', 'data', data);
+            $grid.jsGrid('option', 'data', localData);
             onChange();
 
         });
@@ -303,13 +304,13 @@
         $('.btn_toggle_wp').button().click(function () {
             var grid = $(this).parent().data('grid');
             var $grid = $('#' + grid);
-            var data = $grid.jsGrid('option', 'data');
+            var localData = $grid.jsGrid('option', 'data');
 
-            $.each(data, function () {
+            $.each(localData, function () {
                 this.WP = !this.WP;
             });
 
-            $grid.jsGrid('option', 'data', data);
+            $grid.jsGrid('option', 'data', localData);
             onChange();
 
         });
@@ -535,10 +536,10 @@
                         });
                         return $result;
                     },
-                    onItemDeleted: function (obj) {
+                    onItemDeleted:   function (/* obj */) {
                         onchange();
                     },
-                    onItemUpdated: function (obj) {
+                    onItemUpdated:   function (obj) {
                         /* {grid, row, item, itemIndex, previousItem}*/
                         var changed = false;
                         if ((obj.item.RW || obj.item.WP) && !obj.item.poll) {
@@ -601,35 +602,35 @@
                                 obj.item.RW     = data[id][data[id].length - 1].RW;
                                 obj.item.WP     = data[id][data[id].length - 1].WP;
 
-                                for (var a = 0; a < data[id].length; a++) {
+                                for (var aa = 0; aa < data[id].length; aa++) {
                                     var len = 0;
-                                    var _db = data[id][a].Address.match(/^DB(\d+)\s*/);
+                                    var _db = data[id][aa].Address.match(/^DB(\d+)\s*/);
                                     if (!_db ||_db[1] != db) continue;
-                                    var address = data[id][a].Address.match(/^DB\d+\s\+?([\d.]+)$/);
+                                    var address = data[id][aa].Address.match(/^DB\d+\s\+?([\d.]+)$/);
                                     if (address) address = address[1];
 
-                                    if (data[id][a].Type === 'BOOL') {
+                                    if (data[id][aa].Type === 'BOOL') {
                                         len = 1/8;
                                         var parts_ = address.split('.');
                                         address = parseInt(parts_[0], 10) + ((parseInt(parts_[1], 10) || 0) / 8);
-                                    } else if (data[id][a].Type === 'BYTE') {
+                                    } else if (data[id][aa].Type === 'BYTE') {
                                         len = 1;
                                         address = parseInt(address, 10);
                                     } else
-                                    if (data[id][a].Type === 'WORD'  || data[id][a].Type === 'INT'  || data[id][a].Type === 'S5TIME') {
+                                    if (data[id][aa].Type === 'WORD'  || data[id][aa].Type === 'INT'  || data[id][aa].Type === 'S5TIME') {
                                         len = 2;
                                         address = parseInt(address, 10);
                                     } else
-                                    if (data[id][a].Type === 'DWORD' || data[id][a].Type === 'DINT' || data[id][a].Type === 'REAL') {
+                                    if (data[id][aa].Type === 'DWORD' || data[id][aa].Type === 'DINT' || data[id][aa].Type === 'REAL') {
                                         len = 4;
                                         address = parseInt(address, 10);
                                     } else
-                                    if (data[id][a].Type === 'S7TIME') {
+                                    if (data[id][aa].Type === 'S7TIME') {
                                         len = 8;
                                         address = parseInt(address, 10);
                                     } else
-                                    if (data[id][a].Type === 'ARRAY' || data[id][a].Type === 'STRING' || data[id][a].Type === 'S7STRING') {
-                                        len = data[id][a].Length;
+                                    if (data[id][aa].Type === 'ARRAY' || data[id][aa].Type === 'STRING' || data[id][aa].Type === 'S7STRING') {
+                                        len = data[id][aa].Length;
                                         address = parseInt(address, 10);
                                     }
                                     if (address + len > max) max = address + len;
@@ -684,7 +685,6 @@
                             }
                             obj.item.Type = 'BOOL';
                         }
-
 
                         onchange();
                     }
@@ -770,10 +770,12 @@
             .css({width: 24, height: 24})
             .click(function () {
                 if (window.confirm(_('All entries will be deleted. Are you sure?'))) {
-                    var id = $(this).data('table');
-                    if (data[id].length) {
-                        data[id].splice(0, data[id].length);
-                        $('#s7_' + id).jsGrid('render');
+                    var grid = $(this).parent().data('grid');
+                    var $grid = $('#' + grid);
+                    var localData = $grid.jsGrid('option', 'data');
+                    if (localData.length) {
+                        localData.splice(0, localData.length);
+                        $grid.jsGrid('render');
                         onchange();
                     }
                 }
@@ -810,21 +812,21 @@
         callback(obj);
     }
 
-    function symbol_import(e) {
-        $('#btn_loadsymbole').button('option', 'disabled', true);
+    function symbolImport(e) {
+        $('#btn_loadSymbols').button('option', 'disabled', true);
         var reader = new FileReader();
 
         reader.onload = function (e) {
-            var data = {
+            var localData = {
                 inputs:  [],
                 outputs: [],
                 markers: []
 //                counter: [],
 //                timer: [],
 //                dbs: []
-
             };
             var text = reader.result;
+
             text = text.split('126,');
             $.each(text, function () {
                 var typ = this.slice(23, 29).replace(/( )/g, '');
@@ -844,93 +846,263 @@
 
 //                    if (typ == 'E' || typ == 'EB' ||typ == 'EW' ||typ == 'ED'||typ == 'PEB'||typ == 'PEW'||typ == 'PED')data.inputs.push(d);
 //                    if (typ == 'A' || typ == 'AB' ||typ == 'AW' ||typ == 'AD'||typ == 'PAB'||typ == 'PAW'||typ == 'PAD')data.outputs.push(d);
-                if (typ === 'E' || typ === 'EB' || typ === 'EW' || typ === 'ED') data.inputs.push(d);
-                if (typ === 'A' || typ === 'AB' || typ === 'AW' || typ === 'AD') data.outputs.push(d);
-                if (typ === 'M' || typ === 'MB' || typ === 'MW' || typ === 'MD') data.markers.push(d);
+                if (typ === 'E' || typ === 'EB' || typ === 'EW' || typ === 'ED') localData.inputs.push(d);
+                if (typ === 'A' || typ === 'AB' || typ === 'AW' || typ === 'AD') localData.outputs.push(d);
+                if (typ === 'M' || typ === 'MB' || typ === 'MW' || typ === 'MD') localData.markers.push(d);
 //                if (typ == 'C')data.counter.push(d);
 //                if (typ == 'T')data.timer.push(d);
 //                if (typ == 'DB')data.dbs.push(d);
             });
 
-
             $.each($('.s7_grid'), function () {
-
                 if ($(this).attr('id') !== 's7_dbs') {
                     var id = $(this).attr('id');
-                    $('#' + id).jsGrid('option', 'data', data[id.split('_')[1]]);
+                    var subDb = localData[id.split('_')[1]];
+                    $('#' + id).jsGrid('option', 'data', subDb);
+                    data[id] = subDb;
                 }
             });
 
             onChange();
 
-            $('#symol_import').replaceWith($('#symol_import').clone());
-            $('#btn_loadsymbole').button('option', 'disabled', false);
+            $('#file_symbol_import').replaceWith($('#file_symbol_import').clone());
+            $('#btn_loadSymbols').button('option', 'disabled', false);
         };
 
         reader.readAsText(e[0], 'ISO-8859-1');
     }
 
-    function db_import(e) {
-        $('#btn_loaddb').button('option', 'disabled', true);
+    function dbImport(e) {
+        $('#btn_loaddb').button('disable');
 
         var reader = new FileReader();
 
         reader.onload = function (e) {
-            var db;
-            var data  = {};
-            var _data = [];
-            var text  = reader.result;
-            db = text.match(/(DB)[0-9]+\s-\s/g)[0].replace(' - ', '');
+            setTimeout(function () {
+                var text       = reader.result;
+                var $s7DBs     = $('#s7_dbs');
+                var $s7input   = $('#s7_inputs');
+                var $s7outputs = $('#s7_outputs');
+                var $s7markers = $('#s7_markers');
+                var changes  = {
+                    inputs: false,
+                    outputs: false,
+                    markers: false,
+                    dbs: false
+                };
+                var newParts = {
+                    inputs:     $s7input.jsGrid('option',   'data') || [],
+                    outputs:    $s7outputs.jsGrid('option', 'data') || [],
+                    markers:    $s7markers.jsGrid('option', 'data') || [],
+                    dbs:        $s7DBs.jsGrid('option',     'data') || []
+                };
 
-            var old_data = $('#s7_dbs').jsGrid('option', 'data');
-            var new_data = [];
+                if (text.indexOf('Leseanforderung') !== -1) {
+                    // Graphpic format
+                    var lines = text.replace(/\r\n/g, '\n').split('\n');
+                    var mapping = {
+                        'Name':             {attr: 'Name'},
+                        'Typ':              {attr: ''},
+                        'Operand':          {attr: 'Address',       process: function (f) {
+                            // DB 504.DBW 1462 => DB504 1462
+                            f = f.trim();
+                            var db     = f.match(/^DB (\d+)/);
+                            if (!db) {
+                                // M
+                                // MB
+                                var m = f.match(/^MB? (\d+)\.?(\d+)?$/);
+                                if (m) {
+                                    return 'M ' + parseInt(m[1], 10) + (m[2] !== undefined ? '.' + m[2] : '');
+                                } else {
+                                    m = f.match(/^AB? (\d+)\.?(\d+)?$/);
+                                    if (m) {
+                                        return 'OUT ' + parseInt(m[1], 10) + (m[2] !== undefined ? '.' + m[2] : '');
+                                    } else {
+                                        m = f.match(/^EB? (\d+)\.?(\d+)?$/);
+                                        if (m) {
+                                            return 'IN ' + parseInt(m[1], 10) + (m[2] !== undefined ? '.' + m[2] : '');
+                                        } else {
+                                            return f;
+                                        }
+                                    }
+                                }
+                            }
 
-            $.each(old_data, function () {
-                data[this.Address] = this
-            });
-            var struck = text.split('STRUCT')[1].split('=')[0].split('\n');
-
-            $.each(struck, function () {
-                if (this.length > 10) {
-                    var x = this.split(/\s+/g);
-                    x.shift();
-
-                    var data = {
-                        Address:      db + ' ' + x.shift(),
-                        Name:         x.shift(),
-                        Type:         x.shift(),
-                        dec:          x.shift(),
-                        Description:  x.join(' '),
-                        Unit:         '',
-                        Role:         '',
-                        Room:         '',
-                        poll:         true,
-                        RW:           false,
-                        WP:           false
+                            var offset = f.match(/(\d+).?(\d+)?$/);
+                            if (db && offset) {
+                                return 'DB' + db[1] + ' ' + offset[1] + (offset[2] !== undefined ? '.' + offset[2] : '');
+                            } else {
+                                return f;
+                            }
+                        } },
+                        'SPS-Format':       {attr: 'Type',          process: function (f) {return f;} },
+                        'Byteanzahl':       {attr: 'Length',        process: function (f) {return parseInt(f, 10);} },
+                        'Zugriff':          {attr: 'RW',            process: function (f) {return f !== 'read';} },
+                        'Leseanforderung':  {attr: 'poll',          process: function (f) {return f === 'zyklisch';} },
+                        'AktZeit (ms)':     {attr: ''},
+                        'Kommentar':        {attr: 'Description'},
+                        'Clients (Anzahl)': {attr: ''}
                     };
+                    // First line
+                    // "Name","Typ","Operand","SPS-Format","Byteanzahl","Zugriff","Leseanforderung","AktZeit (ms)","Kommentar","Clients (Anzahl)"
+                    var sFields = lines[0].split(',');
+                    // create mapping
+                    var fields = [];
+                    for (var m = 0; m < sFields.length; m++) {
+                        sFields[m] = sFields[m].replace(/"/g, '');
+                        fields.push(mapping[sFields[m]]);
+                    }
+                    for (var l = 1; l < lines.length; l++) {
+                        lines[l] = lines[l].trim();
+                        if (!lines[l]) continue;
+                        sFields = lines[l].trim().split(',');
+                        var obj = {
+                            Type:           'ARRAY',
+                            Unit:           '',
+                            Role:           '',
+                            Room:           '',
+                            poll:           true,
+                            RW:             false,
+                            WP:             false
+                        };
+                        for (var f = 0; f < fields.length; f++) {
+                            if (!fields[f].attr) continue;
+                            if (!sFields[f]) {
+                                console.log('error');
+                                break;
+                            }
+                            sFields[f] = sFields[f].replace(/"/g, '');
+                            obj[fields[f].attr] = fields[f].process ? fields[f].process(sFields[f]) : sFields[f];
 
-                    _data.push(data)
+                            if (obj.Name.match(/^@/)) {
+                                obj = null;
+                                break;
+                            }
+                        }
+                        if (obj) {
+                            if (obj.Type === 'BYTE' && obj.Length !== 1) {
+                                obj.Type = 'ARRAY';
+                            }
+                            if (obj.Type === 'CHAR') {
+                                obj.Type = 'STRING';
+                            }
+                            if (obj.Type === 'BYTE' || obj.Type === 'BOOL' || obj.Type === 'INT') {
+                                obj.Length = '';
+                            }
+                            var _attr;
+                            if (obj.Address.match(/^DB/)) {
+                                _attr = 'dbs';
+                            } else if (obj.Address.match(/^IN/)) {
+                                obj.Address = obj.Address.replace(/^IN\s?/, '');
+                                _attr = 'inputs';
+                            } else if (obj.Address.match(/^OUT/)) {
+                                _attr = 'outputs';
+                                obj.Address = obj.Address.replace(/^OUT\s?/, '');
+                            } else if (obj.Address.match(/^M/)) {
+                                _attr = 'markers';
+                                obj.Address = obj.Address.replace(/^M\s?/, '');
+                            } else {
+                                console.error('Unknown TYPE: ' + obj.Address);
+                                continue;
+                            }
+                            // try to find same address
+                            for (var aaa = 0; aaa < newParts[_attr].length; aaa++) {
+                                if (newParts[_attr][aaa].Address === obj.Address) {
+                                    newParts[_attr][aaa] = obj;
+                                    changes[_attr] = true;
+                                    obj = null;
+                                    break;
+                                }
+                            }
+                            if (obj) {
+                                changes[_attr] = true;
+                                newParts[_attr].push(obj);
+                            }
+                        }
+                    }
+                } else {
+                    var db = text.match(/(DB)[0-9]+\s-\s/g)[0].replace(' - ', '');
+
+                    var struck = text.split('STRUCT')[1].split('=')[0].split('\n');
+
+                    $.each(struck, function () {
+                        if (this.length > 10) {
+                            var x = this.split(/\s+/g);
+                            x.shift();
+
+                            var obj = {
+                                Address:        db + ' ' + x.shift(),
+                                Name:           x.shift(),
+                                Type:           x.shift(),
+                                dec:            x.shift(),
+                                Description:    x.join(' '),
+                                Unit:           '',
+                                Role:           '',
+                                Room:           '',
+                                poll:           true,
+                                RW:             false,
+                                WP:             false
+                            };
+
+                            // try to find same address
+                            for (var aaa = 0; aaa < newParts.dbs.length; aaa++) {
+                                if (newParts.dbs[aaa].Address === obj.Address) {
+                                    newParts.dbs[aaa] = obj;
+                                    changes.dbs = true;
+                                    obj = null;
+                                    break;
+                                }
+                            }
+                            if (obj) {
+                                changes.dbs = true;
+                                newParts.dbs.push(obj);
+                            }
+                        }
+                    });
                 }
-            });
+                for (var attr in newParts) {
+                    if (!newParts.hasOwnProperty(attr)) continue;
+                    newParts[attr].sort(function (a, b) {
+                        var aDB = a.Address.match(/^D?B?\s?(\d+)/);
+                        var bDB = b.Address.match(/^D?B?\s?(\d+)/);
+                        if (!aDB) return -1;
+                        if (!bDB) return 1;
+                        if (parseInt(aDB[1], 10) > parseInt(bDB[1], 10)) return 1;
+                        if (parseInt(aDB[1], 10) < parseInt(bDB[1], 10)) return -1;
+                        var aOffset = a.Address.match(/\s(\d+).?(\d+)?$/);
+                        var bOffset = b.Address.match(/\s(\d+).?(\d+)?$/);
+                        if (!aOffset) return -1;
+                        if (!bOffset) return 1;
+                        if (parseInt(aOffset[1], 10) > parseInt(bOffset[1], 10)) return 1;
+                        if (parseInt(aOffset[1], 10) < parseInt(bOffset[1], 10)) return -1;
+                        if (aOffset[2] === undefined && bOffset[2] !== undefined) return 1;
+                        if (bOffset[2] === undefined && aOffset[2] !== undefined) return -1;
+                        if (aOffset[2] === undefined && bOffset[2] === undefined) return 0;
+                        if (parseInt(aOffset[2], 10) > parseInt(bOffset[2], 10)) return 1;
+                        if (parseInt(aOffset[2], 10) < parseInt(bOffset[1], 10)) return -1;
+                        return 0;
+                    });
+                }
+                if (changes.dbs) {
+                    $s7DBs.jsGrid('option',     'data', newParts.dbs);
+                }
+                if (changes.inputs) {
+                    $s7input.jsGrid('option',   'data', newParts.inputs);
+                }
+                if (changes.outputs) {
+                    $s7outputs.jsGrid('option', 'data', newParts.outputs);
+                }
+                if (changes.markers) {
+                    $s7markers.jsGrid('option', 'data', newParts.markers);
+                }
 
-            $.each(_data, function () {
-                data[this.Address] = this;
-            });
-
-            $.each(data, function () {
-                new_data.push(this);
-            });
-
-
-            $('#s7_dbs').jsGrid('option', 'data', new_data);
-
-            $('#db_import').replaceWith($('#db_import').clone());
-            $('#btn_loaddb').button('option', 'disabled', false);
-            onChange();
+                $('#file_db_import').replaceWith($('#file_db_import').clone());
+                $('#btn_loaddb').button('enable');
+                onChange();
+            }, 200);
         };
 
         reader.readAsText(e[0], 'ISO-8859-1');
-
     }
 </script>
 
@@ -955,53 +1127,53 @@
                 <td colspan="2" class="translate">PLC Connection:</td>
             </tr>
             <tr>
-                <td style="width: 200px"><label  class="translate" for="s7params_ip">PLC IP Address:</label></td>
+                <td style="width: 200px"><label class="translate" for="s7params_ip">PLC IP Address:</label></td>
                 <td style="width: 200px"><input class="s7_params" id="s7params_ip"/></td>
             </tr>
             <tr>
-                <td class="translate">S7 LOGO!:</td>
+                <td><label class="translate" for="s7logo">S7 LOGO!:</label></td>
                 <td><input id="s7logo" type="checkbox"/></td>
             </tr>
             <tr class="realS7">
-                <td class="translate">PLC Rack:</td>
+                <td><label class="translate" for="s7params_rack">PLC Rack:</label></td>
                 <td><input class="s7_params" id="s7params_rack"/></td>
             </tr>
             <tr class="realS7">
-                <td class="translate">PLC Slot:</td>
+                <td><label class="translate" for="s7params_slot">PLC Slot:</label></td>
                 <td><input class="s7_params" id="s7params_slot"/></td>
             </tr>
             <tr class="logoS7">
-                <td class="translate">Local TSAP:</td>
+                <td><label class="translate" for="s7params_localTSAP0">Local TSAP:</label></td>
                 <td><input id="s7params_localTSAP0" maxsize="2" size="2"/><input id="s7params_localTSAP1" maxsize="2" size="2"/> <input class="s7_params" id="s7params_localTSAP" type="hidden"/></td>
             </tr>
             <tr class="logoS7">
-                <td class="translate">Remote TSAP:</td>
+                <td><label class="translate" for="s7params_remoteTSAP0">Remote TSAP:</label></td>
                 <td><input id="s7params_remoteTSAP0" maxsize="2" size="2"/><input id="s7params_remoteTSAP1" maxsize="2" size="2"/> <input class="s7_params" id="s7params_remoteTSAP" type="hidden"/></td>
             </tr>
         </table>
 
         <table class="ui-widget-content" style="z-index: 2;margin-top: 20px;border-collapse: collapse; display: inline; border: 1px solid black;height: 130px;">
             <tr>
-                <td style="text-align: center" colspan="3" class="ui-widget-header" class="translate">General</td>
+                <td style="text-align: center" colspan="3" class="ui-widget-header translate">General</td>
             </tr>
 
             <tr>
-                <td style="width: 184px" class="translate">Round Real to:</td>
+                <td style="width: 184px" class="translate"><label class="translate" for="s7params_round">Round Real to:</label></td>
                 <td style="text-align: center"><input style="margin-right: 5px;text-align: right" type="text" class="s7_params" id="s7params_round"/></td>
                 <td></td>
             </tr>
             <tr>
-                <td class="translate">Poll delay:</td>
+                <td><label class="translate" for="s7params_poll">Poll delay:</label></td>
                 <td  style="text-align: center"><input style="margin-right: 5px;text-align: right" class="s7_params" id="s7params_poll"/></td>
                 <td style="padding-right: 20px">ms</td>
             </tr>
             <tr>
-                <td class="translate">Reconnect time:</td>
+                <td><label class="translate" for="s7params_recon">Reconnect time:</label></td>
                 <td style="text-align: center"><input style="margin-right: 5px;text-align: right" type="text" class="s7_params" id="s7params_recon"/></td>
                 <td>ms</td>
             </tr>
             <tr>
-                <td class="translate">Pulse time:</td>
+                <td><label class="translate" for="s7params_pulsetime">Pulse time:</label></td>
                 <td style="text-align: center"><input style="margin-right: 5px;text-align: right" type="text" class="s7_params" id="s7params_pulsetime"/></td>
                 <td>ms</td>
             </tr>
@@ -1014,11 +1186,11 @@
             </tr>
             <tr>
                 <td style="padding: 10px;width: 180px; text-align: center">
-                    <button id="btn_loadsymbole" class="translateB">Load Symbols</button>
-                    <input style="display: none" onchange="symbol_import(this.files)" type="file" accept=".asc" id="symol_import"/></td>
+                    <button id="btn_loadSymbols" class="translateB">Load Symbols</button>
+                    <input style="display: none" onchange="symbolImport(this.files)" type="file" accept=".asc" id="file_symbol_import"/></td>
                 <td style="padding: 10px;width: 180px; text-align: center">
                     <button id="btn_loaddb" class="translateB">Add DB</button>
-                    <input style="display: none" onchange="db_import(this.files)" type="file" accept=".prn" id="db_import"/></td>
+                    <input style="display: none" onchange="dbImport(this.files)" type="file" accept=".prn, .csv" id="file_db_import"/></td>
             </tr>
         </table>
     </div>

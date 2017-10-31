@@ -4,9 +4,9 @@
         "version": "1.0.2",
         "news": {
             "1.0.2": {
-                "en": "Enhance object data to allow writing if available",
-                "de": "Objektdaten erweitert um Schreibzugriff zu erlauben wenn verfügbar",
-                "ru": "Enhance object data to allow writing if available"
+                "en": "Enhance object data to allow writing if available\nAdd export from Graphpic",
+                "de": "Objektdaten erweitert um Schreibzugriff zu erlauben wenn verfügbar\nExport aus Graphpic hinzugefügt",
+                "ru": "Усовершенствование данных объекта, позволяющих записывать, если можно\nДобавлен экспорт из Graphpic"
             },
             "1.0.1": {
                 "en": "Detect DB and db in addresses",
@@ -54,6 +54,9 @@
         "loglevel": "info",
         "icon": "S7.png",
         "messagebox": true,
+        "docs": {
+            "en": "docs/en/s7.md"
+        },
         "keywords": [
             "S7",
             "SPS"

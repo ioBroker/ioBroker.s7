@@ -52,6 +52,7 @@ Python 2.x is required too. Not 3.x.
 ## Changelog
 ### 1.0.2 (2017.10.30)
 * (Apollon77) Enhance object data to allow writing if available
+* (bluefox) Add export from Graphpic
 
 ### 1.0.1 (2017.10.24)
 * (bluefox) Detect DB and db in addresses
