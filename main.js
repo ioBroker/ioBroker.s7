@@ -381,7 +381,6 @@ var main = {
     db_size:     {},
     _db_size:    [],
 
-    history:     '',
     unit:        '',
     error_count: 0,
 
@@ -619,26 +618,6 @@ var main = {
                     });
                 }
 
-                /*if (main.old_objects[adapter.namespace + '.' + main.ac.inputs[i].id]) {
-                    main.history = main.old_objects[adapter.namespace + '.' + main.ac.inputs[i].id].common.history || {
-                            enabled:     false,
-                            changesOnly: true,
-                            minLength:   480,
-                            maxLength:   960,
-                            retention:   604800,
-                            debounce:    10000
-                        };
-                } else {
-                    main.history = {
-                        enabled:      false,
-                        changesOnly:  true,
-                        minLength:    480,
-                        maxLength:    960,
-                        retention:    604800,
-                        debounc:      10000
-                    };
-                }*/
-
                 createExtendObject(main.ac.inputs[i].id, {
                     type: 'state',
                     common: {
@@ -646,7 +625,6 @@ var main = {
                         role:    main.ac.inputs[i].Role,
                         type:    (main.ac.inputs[i].Type === 'BOOL')   ? 'boolean' : 'number',
                         unit:    main.ac.inputs[i].Unit || ((main.ac.inputs[i].Type === 'S5TIME') ? 's' : main.ac.inputs[i].Unit),
-                        history: main.history,
                         read:    true,
                         write:   main.ac.inputs[i].RW
                     },
@@ -678,25 +656,6 @@ var main = {
                     });
                 }
 
-                /*if (main.old_objects[adapter.namespace + '.' + main.ac.outputs[i].id]) {
-                    main.history = main.old_objects[adapter.namespace + '.' + main.ac.outputs[i].id].common.history || {
-                            'enabled':     false,
-                            'changesOnly': true,
-                            'minLength':   480,
-                            'maxLength':   960,
-                            'retention':   604800,
-                            'debounce':    10000
-                        };
-                } else {
-                    main.history = {
-                        'enabled':     false,
-                        'changesOnly': true,
-                        'minLength':   480,
-                        'maxLength':   960,
-                        'retention':   604800,
-                        'debounce':    10000
-                    };
-                }*/
                 createExtendObject(main.ac.outputs[i].id, {
                     type: 'state',
                     common: {
@@ -704,7 +663,6 @@ var main = {
                         role:    main.ac.outputs[i].Role,
                         type:    (main.ac.outputs[i].Type === 'BOOL')   ? 'boolean' : 'number',
                         unit:    main.ac.outputs[i].Unit || ((main.ac.outputs[i].Type === 'S5TIME') ? 's' : main.ac.outputs[i].Unit),
-                        history: main.history,
                         read:    true,
                         write:   main.ac.outputs[i].RW
                     },
@@ -736,25 +694,6 @@ var main = {
                     });
                 }
 
-                /*if (main.old_objects[adapter.namespace + '.' + main.ac.markers[i].id]) {
-                    main.history = main.old_objects[adapter.namespace + '.' + main.ac.markers[i].id].common.history || {
-                            enabled:     false,
-                            changesOnly: true,
-                            minLength:   480,
-                            maxLength:   960,
-                            retention:   604800,
-                            debounce:    10000
-                        };
-                } else {
-                    main.history = {
-                        enabled:     false,
-                        changesOnly: true,
-                        minLength:   480,
-                        maxLength:   960,
-                        retention:   604800,
-                        debounce:    10000
-                    };
-                }*/
                 createExtendObject(main.ac.markers[i].id, {
                     type: 'state',
                     common: {
@@ -762,7 +701,6 @@ var main = {
                         role:    main.ac.markers[i].Role,
                         type:    (main.ac.markers[i].Type === 'BOOL')   ? 'boolean' : 'number',
                         unit:    main.ac.markers[i].Unit || ((main.ac.markers[i].Type === 'S5TIME') ? 's' : main.ac.markers[i].Unit),
-                        history: main.history,
                         read:    true,
                         write:   main.ac.markers[i].RW
                     },
@@ -796,26 +734,6 @@ var main = {
             }
 
             for (i = 0; main.ac.dbs.length > i; i++) {
-                /*if (main.old_objects[adapter.namespace + '.' + main.ac.dbs[i].id]) {
-                    main.history = main.old_objects[adapter.namespace + '.' + main.ac.dbs[i].id].common.history || {
-                            enabled:     false,
-                            changesOnly: true,
-                            minLength:   480,
-                            maxLength:   960,
-                            retention:   604800,
-                            debounce:    10000
-                        };
-                } else {
-                    main.history = {
-                        enabled:     false,
-                        changesOnly: true,
-                        minLength:   480,
-                        maxLength:   960,
-                        retention:   604800,
-                        debounce:    10000
-                    };
-                }*/
-
                 createExtendObject(main.ac.dbs[i].id, {
                     type: 'state',
                     common: {
@@ -823,7 +741,6 @@ var main = {
                         role:    main.ac.dbs[i].Role,
                         type:    (main.ac.dbs[i].Type === 'BOOL')   ? 'boolean' : 'number',
                         unit:    main.ac.dbs[i].Unit || ((main.ac.dbs[i].Type === 'S5TIME') ? 's' : main.ac.dbs[i].Unit),
-                        history: main.history,
                         read:    true,
                         write:   main.ac.dbs[i].RW
                     },
