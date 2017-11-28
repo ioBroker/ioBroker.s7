@@ -834,7 +834,9 @@ var main = {
             adapter.setState('info.connection', false, true);
 
             for (var key in main.db_size) {
-                main._db_size.push(main.db_size[key]);
+                if (main.db_size.hasOwnProperty(key)) {
+                    main._db_size.push(main.db_size[key]);
+                }
             }
 
             // clear unused states
@@ -1164,22 +1166,34 @@ var main = {
                             for (var n = 0; main.dbs.length > n; n++) {
                                 try {
                                     var db = main.dbs[n];
+                                    var offset = db.offsetByte - main._db_size[n].lsb;
                                     main.write(
                                         db.id,
                                         buf[db.db],
                                         db.Type,
-                                        db.offsetByte - main._db_size[0].lsb,
+                                        offset,
                                         db.offsetBit,
                                         db.Length    // length for string, array
                                     );
                                 } catch (err) {
                                     adapter.log.error('Writing DB. Code #' + err);
+                                    var info = {
+                                        dbID:           db.id,
+                                        db:             db.db,
+                                        dbType:         db.Type,
+                                        dbOffsetByte:   db.offsetByte,
+                                        dbOffsetBit:    db.offsetBit,
+                                        dbLength:       db.Length,
+                                        _dbLsb:         main._db_size[n].lsb,
+                                        n:              n,
+                                        bufLength:      buf[db.db].length
+                                    };
+                                    adapter.log.error('Writing DB: ' + JSON.stringify(info));
                                 }
                             }
                             callback(null);
                         }
                     });
-
                 }
             },
 
