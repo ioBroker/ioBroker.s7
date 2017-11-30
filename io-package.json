@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.0.2",
+        "version": "1.0.4",
         "news": {
-            "1.0.3": {
+            "1.0.4": {
                 "en": "Reading of DB (range error) fixed",
                 "de": "Lesen von DB (range error) behobent",
                 "ru": "чтение DB (ошибка диапазона) исправлено"

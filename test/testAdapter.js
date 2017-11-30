@@ -7,7 +7,7 @@ var setup  = require(__dirname + '/lib/setup');
 var objects = null;
 var states  = null;
 var onStateChanged = null;
-var onObjectChanged = null;
+// var onObjectChanged = null;
 var sendToID = 1;
 var Server = require(__dirname + '/lib/s7Server.js');
 var server;

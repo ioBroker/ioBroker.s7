@@ -781,6 +781,7 @@ var main = {
             }
 
 
+            // store all DBs that must be polled
             for (i = 0; main.ac.dbs.length > i; i++) {
                 if (main.ac.dbs[i].poll) {
                     main.dbs.push(main.ac.dbs[i]);
@@ -845,7 +846,7 @@ var main = {
             function clear() {
                 for (var id in main.old_objects) {
                     if (main.new_objects.indexOf(id) === -1) {
-                        adapter.delObject(id, function () {
+                        adapter.delObject(id, function (/* err */) {
 
                         });
                     }
@@ -902,7 +903,7 @@ var main = {
         var val   = 0;
 
         if (type === 'BOOL') {
-            val = ((buff[offsetByte] >> offsetBit) & 1) ? true : false;
+            val = !!((buff[offsetByte] >> offsetBit) & 1);
 
             if (ackObjects[id] === undefined || ackObjects[id].val != val) {
                 ackObjects[id] = {val: val};
@@ -1149,7 +1150,6 @@ var main = {
                     var buf = {};
 
                     async.each(main._db_size, function (db, callback) {
-                        // Why not db.lsb ?
                         s7client.DBRead(db.dbId, db.lsb, db.msb - db.lsb, function (err, res) {
                             if (err) {
                                 callback(err);
@@ -1165,8 +1165,8 @@ var main = {
                         } else {
                             for (var n = 0; main.dbs.length > n; n++) {
                                 try {
-                                    var db = main.dbs[n];
-                                    var offset = db.offsetByte - main._db_size[n].lsb;
+                                    var db     = main.dbs[n];
+                                    var offset = db.offsetByte - main.db_size[db.db].lsb;
                                     main.write(
                                         db.id,
                                         buf[db.db],
@@ -1184,7 +1184,7 @@ var main = {
                                         dbOffsetByte:   db.offsetByte,
                                         dbOffsetBit:    db.offsetBit,
                                         dbLength:       db.Length,
-                                        _dbLsb:         main._db_size[n].lsb,
+                                        dbLsb:          main.db_size[db.db].lsb,
                                         n:              n,
                                         bufLength:      buf[db.db].length
                                     };
