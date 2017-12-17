@@ -164,21 +164,21 @@
         delimiter = delimiter || '\t';
         var text;
         if (id === 'dbs') {
-            text = 'DB'     + delimiter + 'Byte' + delimiter + 'Bit' + delimiter;
+            text = 'DB'     + delimiter + 'Byte'    + delimiter + 'Bit' + delimiter;
         } else {
-            text = 'Byte' + delimiter + 'Bit' + delimiter;
+            text = 'Byte'   + delimiter + 'Bit'     + delimiter;
         }
         text +=
-        'Name' + delimiter +
-        'Description' + delimiter +
-        'Type' + delimiter +
-        'Length' + delimiter +
-        'Unit' + delimiter +
-        'Role' + delimiter +
-        'Room' + delimiter +
-        'poll' + delimiter +
-        'RW' + delimiter +
-        'WP' + '\n';
+            'Name'          + delimiter +
+            'Description'   + delimiter +
+            'Type'          + delimiter +
+            'Length'        + delimiter +
+            'Unit'          + delimiter +
+            'Role'          + delimiter +
+            'Room'          + delimiter +
+            'poll'          + delimiter +
+            'RW'            + delimiter +
+            'WP'            + '\n';
 
         for (var i = 0; i < data[id].length; i++) {
             var p;
@@ -249,19 +249,22 @@
                     obj.Address = parts[0].trim();
                 }
             }
-            obj.Name = parts[2].trim() || '';
+            obj.Name        = parts[2].trim() || '';
             obj.Description = parts[3].trim() || '';
-            obj.Type = parts[4].trim() || '';
-            obj.Length = parts[5].trim() || '';
-            obj.Unit = parts[6].trim() || '';
-            obj.Role = parts[7].trim() || '';
-            obj.Room = parts[8].trim() || '';
-            obj.poll = parts[9].trim() || '';
-            obj.RW = parts[10].trim() || '';
-            obj.WP = parts[11].trim() || '';
-            obj.poll = (obj.poll.toLowerCase() === 'true' || obj.poll === '1' || obj.poll === '+');
-            obj.RW   = (obj.RW.toLowerCase()   === 'true' || obj.RW   === '1' || obj.RW   === '+');
-            obj.WP   = (obj.WP.toLowerCase()   === 'true' || obj.WP   === '1' || obj.WP   === '+');
+            obj.Type        = parts[4].trim() || '';
+            obj.Length      = parts[5].trim() || '';
+            if (obj.Length !== '') {
+                obj.Length = parseInt(obj.Length, 10);
+            }
+            obj.Unit        = parts[6].trim() || '';
+            obj.Role        = parts[7].trim() || '';
+            obj.Room        = parts[8].trim() || '';
+            obj.poll        = parts[9].trim() || '';
+            obj.RW          = parts[10].trim() || '';
+            obj.WP          = parts[11].trim() || '';
+            obj.poll        = (obj.poll.toLowerCase() === 'true' || obj.poll === '1' || obj.poll === '+');
+            obj.RW          = (obj.RW.toLowerCase()   === 'true' || obj.RW   === '1' || obj.RW   === '+');
+            obj.WP          = (obj.WP.toLowerCase()   === 'true' || obj.WP   === '1' || obj.WP   === '+');
             data[id].push(obj);
         }
         $('#s7_' + id).jsGrid('render');
@@ -1021,9 +1024,11 @@
                         }
                     }
                 } else {
-                    var db = text.match(/(DB)[0-9]+\s-\s/g)[0].replace(' - ', '');
-
-                    var struck = text.split('STRUCT')[1].split('=')[0].split('\n');
+					var mm = text.match(/(DB)[0-9]+\s-\s/g);
+                    var db = mm ? mm[0].replace(' - ', '') : '';
+					var vv = text.split('STRUCT');
+					
+                    var struck = vv[1] ? vv[1].split('=')[0].split('\n') : [];
 
                     $.each(struck, function () {
                         if (this.length > 10) {

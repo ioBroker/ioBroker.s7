@@ -1,8 +1,16 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.0.4",
+        "version": "1.0.5",
         "news": {
+            "1.0.5": {
+                "en": "Error by the DB import is fixed",
+                "de": "Fehler beim DB-Import ist behoben",
+                "ru": "Исправлена ошибка при импорте DB",
+                "pt": "O erro pela importação do banco de dados é corrigido",
+                "nl": "Fout bij de DB-import staat vast",
+                "fr": "Erreur par l'importation de la base de données est fixée"
+            },
             "1.0.4": {
                 "en": "Reading of DB (range error) fixed",
                 "de": "Lesen von DB (range error) behobent",

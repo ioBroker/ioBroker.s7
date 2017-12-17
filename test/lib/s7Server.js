@@ -14,7 +14,7 @@ function Server() {
     for (var i = 0; i < db1.length; i++) {
         db1[i] = i;
     }
-    var db2 = new Buffer(2000);
+    var db2 = new Buffer(65535);
     for (var j = 0; j < db2.length; j++) {
         db2[j] = j;
     }

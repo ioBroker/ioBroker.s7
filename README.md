@@ -50,6 +50,9 @@ Python 2.x is required too. Not 3.x.
   Time offset for S7 time.
 
 ## Changelog
+### 1.0.5 (2017.12.17)
+* (bluefox) Error by the DB import is fixed
+
 ### 1.0.4 (2017.11.30)
 * (bluefox) Fix read of DB (range error)
 

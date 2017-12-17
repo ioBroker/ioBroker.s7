@@ -4,7 +4,7 @@
 'use strict';
 
 var utils     = require(__dirname + '/lib/utils');
-var adapter   = utils.adapter('s7');
+var adapter   = new utils.Adapter('s7');
 var async     = require('async');
 var snap7     = require('node-snap7');
 var s7client  = snap7 ? new snap7.S7Client() : null;
@@ -434,7 +434,7 @@ var main = {
                         main.ac.inputs[i].len = 8;
                     } else
                     if (main.ac.inputs[i].Type === 'ARRAY' || main.ac.inputs[i].Type === 'STRING' || main.ac.inputs[i].Type === 'S7STRING') {
-                        main.ac.inputs[i].len = main.ac.inputs[i].Length;
+                        main.ac.inputs[i].len = parseInt(main.ac.inputs[i].Length, 10);
                     }
                 }
                 main.input_lsb  = main.ac.inputs[0].offsetByte;
@@ -461,7 +461,7 @@ var main = {
                         main.ac.outputs[i].len = 8;
                     } else
                     if (main.ac.outputs[i].Type === 'ARRAY' || main.ac.outputs[i].Type === 'STRING' || main.ac.outputs[i].Type === 'S7STRING') {
-                        main.ac.outputs[i].len = main.ac.outputs[i].Length;
+                        main.ac.outputs[i].len = parseInt(main.ac.outputs[i].Length, 10);
                     }
                 }
                 main.output_lsb  = main.ac.outputs[0].offsetByte;
@@ -488,7 +488,7 @@ var main = {
                         main.ac.markers[i].len = 8;
                     } else
                     if (main.ac.markers[i].Type === 'ARRAY' || main.ac.markers[i].Type === 'STRING' || main.ac.markers[i].Type === 'S7STRING') {
-                        main.ac.markers[i].len = main.ac.markers[i].Length;
+                        main.ac.markers[i].len = parseInt(main.ac.markers[i].Length, 10);
                     }
                 }
                 main.marker_lsb  = main.ac.markers[0].offsetByte;
@@ -550,7 +550,7 @@ var main = {
                         main.ac.dbs[i].len = 8;
                     } else
                     if (main.ac.dbs[i].Type === 'ARRAY' || main.ac.dbs[i].Type === 'STRING' || main.ac.dbs[i].Type === 'S7STRING') {
-                        main.ac.dbs[i].len = main.ac.dbs[i].Length;
+                        main.ac.dbs[i].len = parseInt(main.ac.dbs[i].Length, 10);
                     }
 
                     // find size of DB
@@ -1201,7 +1201,7 @@ var main = {
                 if (err) {
                     main.error_count++;
 
-                    adapter.log.warn('Poll error count : ' + main.error_count + ' code: ' + err);
+                    adapter.log.warn('Poll error count: ' + main.error_count + ' code: ' + err);
                     adapter.setState('info.connection', false, true);
 
                     if (main.error_count < 6 && s7client.Connected()) {
