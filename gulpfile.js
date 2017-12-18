@@ -13,6 +13,15 @@ function getAppName() {
     return parts[parts.length - 1].split('.')[0].toLowerCase();
 }
 */
+var languages =  {
+    en: {},
+    de: {},
+    ru: {},
+    pt: {},
+    nl: {},
+    fr: {},
+    it: {}
+};
 
 function lang2data(lang, isFlat) {
     var str = isFlat ? '' : '{\n';
@@ -21,10 +30,10 @@ function lang2data(lang, isFlat) {
         if (lang.hasOwnProperty(w)) {
             count++;
             if (isFlat) {
-                str += (lang[w] === '------XXXXXXXXX------' ? (isFlat[w] || w) : lang[w]) + '\n';
+                str += (lang[w] === '' ? (isFlat[w] || w) : lang[w]) + '\n';
             } else {
                 var key = '  "' + w.replace(/"/g, '\\"') + '": ';
-                str += padRight(key, 42) +  '"' + lang[w].replace(/"/g, '\\"') + '",\n';
+                str += key + '"' + lang[w].replace(/"/g, '\\"') + '",\n';
             }
         }
     }
@@ -105,19 +114,12 @@ function writeWordJs(data, src) {
     }
 }
 
-const EMPTY = '------XXXXXXXXX------';
+const EMPTY = '';
 
 function words2languages(src) {
     var fs = require('fs');
 
-    var langs =  {
-        'en': {},
-        'de': {},
-        'ru': {},
-        'pt': {},
-        'nl': {},
-        'fr': {}
-    };
+    var langs = Object.assign({}, languages);
     var data = readWordJs(src);
     if (data) {
         for (var word in data) {
@@ -139,6 +141,7 @@ function words2languages(src) {
             fs.mkdirSync(src + 'i18n/');
         }
         for (var l in langs) {
+            if (!langs.hasOwnProperty(l)) continue;
             var keys = Object.keys(langs[l]);
             keys.sort();
             var obj = {};
@@ -158,14 +161,7 @@ function words2languages(src) {
 function words2languagesFlat(src) {
     var fs = require('fs');
 
-    var langs =  {
-        'en': {},
-        'de': {},
-        'ru': {},
-        'pt': {},
-        'nl': {},
-        'fr': {}
-    };
+    var langs = Object.assign({}, languages);
     var data = readWordJs(src);
     if (data) {
         for (var word in data) {
@@ -186,6 +182,7 @@ function words2languagesFlat(src) {
         var keys = Object.keys(langs.en);
         keys.sort();
         for (var l in langs) {
+            if (!langs.hasOwnProperty(l)) continue;
             var obj = {};
             for (var k = 0; k < keys.length; k++) {
                 obj[keys[k]] = langs[l][keys[k]];
@@ -196,6 +193,7 @@ function words2languagesFlat(src) {
             fs.mkdirSync(src + 'i18n/');
         }
         for (var ll in langs) {
+            if (!langs.hasOwnProperty(ll)) continue;
             if (!fs.existsSync(src + 'i18n/' + ll)) {
                 fs.mkdirSync(src + 'i18n/' + ll);
             }
@@ -212,7 +210,7 @@ function languagesFlat2words(src) {
     var dirs = fs.readdirSync(src + 'i18n/');
     var langs = {};
     var bigOne = {};
-    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr'];
+    var order = Object.keys(languages);
     dirs.sort(function (a, b) {
         var posA = order.indexOf(a);
         var posB = order.indexOf(b);
@@ -281,7 +279,7 @@ function languages2words(src) {
     var dirs = fs.readdirSync(src + 'i18n/');
     var langs = {};
     var bigOne = {};
-    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr'];
+    var order = Object.keys(languages);
     dirs.sort(function (a, b) {
         var posA = order.indexOf(a);
         var posB = order.indexOf(b);
@@ -317,7 +315,7 @@ function languages2words(src) {
     // read actual words.js
     var aWords = readWordJs();
 
-    var temporaryIgnore = ['pt', 'fr', 'nl'];
+    var temporaryIgnore = ['pt', 'fr', 'nl', 'it'];
     if (aWords) {
         // Merge words together
         for (var w in aWords) {

@@ -35,6 +35,105 @@ var objects    = {};
 var enums      = {};
 var infoRegExp = new RegExp(adapter.namespace.replace('.', '\\.') + '\\.info\\.');
 
+var errorCodes = {
+    0x00000001: "errTCPSocketCreation",
+    0x00000002: "errTCPConnectionTimeout",
+    0x00000003: "errTCPConnectionFailed",
+    0x00000004: "errTCPReceiveTimeout",
+    0x00000005: "errTCPDataReceive",
+    0x00000006: "errTCPSendTimeout",
+    0x00000007: "errTCPDataSend",
+    0x00000008: "errTCPConnectionReset",
+    0x00000009: "errTCPNotConnected",
+    0x00002751: "errTCPUnreachableHost",
+    0x00010000: "errIsoConnect",
+    0x00030000: "errIsoInvalidPDU",
+    0x00040000: "errIsoInvalidDataSize",
+    0x00100000: "errCliNegotiatingPDU",
+    0x00200000: "errCliInvalidParams",
+    0x00300000: "errCliJobPending",
+    0x00400000: "errCliTooManyItems",
+    0x00500000: "errCliInvalidWordLen",
+    0x00600000: "errCliPartialDataWritten",
+    0x00700000: "errCliSizeOverPDU",
+    0x00800000: "errCliInvalidPlcAnswer",
+    0x00900000: "errCliAddressOutOfRange",
+    0x00A00000: "errCliInvalidTransportSize",
+    0x00B00000: "errCliWriteDataSizeMismatch",
+    0x00C00000: "errCliItemNotAvailable",
+    0x00D00000: "errCliInvalidValue",
+    0x00E00000: "errCliCannotStartPLC",
+    0x00F00000: "errCliAlreadyRun",
+    0x01000000: "errCliCannotStopPLC",
+    0x01100000: "errCliCannotCopyRamToRom",
+    0x01200000: "errCliCannotCompress",
+    0x01300000: "errCliAlreadyStop",
+    0x01400000: "errCliFunNotAvailable",
+    0x01500000: "errCliUploadSequenceFailed",
+    0x01600000: "errCliInvalidDataSizeRecvd",
+    0x01700000: "errCliInvalidBlockType",
+    0x01800000: "errCliInvalidBlockNumber",
+    0x01900000: "errCliInvalidBlockSize",
+    0x01D00000: "errCliNeedPassword",
+    0x01E00000: "errCliInvalidPassword",
+    0x01F00000: "errCliNoPasswordToSetOrClear",
+    0x02000000: "errCliJobTimeout",
+    0x02100000: "errCliPartialDataRead",
+    0x02200000: "errCliBufferTooSmall",
+    0x02300000: "errCliFunctionRefused",
+    0x02400000: "errCliDestroying",
+    0x02500000: "errCliInvalidParamNumber",
+    0x02600000: "errCliCannotChangeParam",
+    0x02700000: "errCliFunctionNotImplemented"
+};
+
+var sysErrors = {
+    10004: "EINTR",
+    10009: "EBADF",
+    10013: "EACCES",
+    10014: "EFAULT",
+    10022: "EINVAL",
+    10024: "EMFILE",
+    10035: "EWOULDBLOCK",
+    10036: "EINPROGRESS",
+    10037: "EALREADY",
+    10038: "ENOTSOCK",
+    10039: "EDESTADDRREQ",
+    10040: "EMSGSIZE",
+    10041: "EPROTOTYPE",
+    10042: "ENOPROTOOPT",
+    10043: "EPROTONOSUPPORT",
+    10044: "ESOCKTNOSUPPORT",
+    10045: "EOPNOTSUPP",
+    10046: "EPFNOSUPPORT",
+    10047: "EAFNOSUPPORT",
+    10048: "EADDRINUSE",
+    10049: "EADDRNOTAVAIL",
+    10050: "ENETDOWN",
+    10051: "ENETUNREACH",
+    10052: "ENETRESET",
+    10053: "ECONNABORTED",
+    10054: "ECONNRESET",
+    10055: "ENOBUFS",
+    10056: "EISCONN",
+    10057: "ENOTCONN",
+    10058: "ESHUTDOWN",
+    10059: "ETOOMANYREFS",
+    10060: "ETIMEDOUT",
+    10061: "ECONNREFUSED",
+    10062: "ELOOP",
+    10063: "ENAMETOOLONG",
+    10064: "EHOSTDOWN",
+    10065: "EHOSTUNREACH",
+    10091: "SYSNOTREADY",
+    10092: "VERNOTSUPPORTED",
+    10093: "NOTINITIALISED",
+    11001: "HOST_NOT_FOUND",
+    11002: "TRY_AGAIN",
+    11003: "NO_RECOVERY",
+    11004: "NO_DATA"
+};
+
 adapter.on('stateChange', function (id, state) {
     if (state && !state.ack && id && !infoRegExp.test(id)) {
         if (objects[id]) {
@@ -870,7 +969,7 @@ var main = {
             s7client.Connect(function (err) {
 
                 if (err) {
-                    adapter.log.error('Connection failed. Code #' + err);
+                    adapter.log.error('Connection failed. Code #' + err + (sysErrors[err] ? '(' + sysErrors[err] + ')' : ''));
                     adapter.setState('info.connection', false, true);
                     return setTimeout(main.start, main.acp.recon);
                 }
@@ -885,7 +984,7 @@ var main = {
             s7client.ConnectTo(main.acp.ip, main.acp.rack, main.acp.slot, function (err) {
 
                 if (err) {
-                    adapter.log.error('Connection failed. Code #' + err);
+                    adapter.log.error('Connection failed. Code #' + err + (sysErrors[err] ? '(' + sysErrors[err] + ')' : ''));
                     adapter.setState('info.connection', false, true);
                     return setTimeout(main.start, main.acp.recon);
                 }
@@ -905,43 +1004,43 @@ var main = {
         if (type === 'BOOL') {
             val = !!((buff[offsetByte] >> offsetBit) & 1);
 
-            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type === 'BYTE') {
             val = buff[offsetByte];
-            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type === 'WORD') {
             val = buff.readUInt16BE(offsetByte);
-            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type === 'DWORD') {
             val = buff.readUInt32BE(offsetByte);
-            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type === 'INT') {
             val = buff.readInt16BE(offsetByte);
-            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type === 'DINT') {
             val = buff.readInt32BE(offsetByte);
-            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
         } else if (type === 'STRING') {
             val = buff.toString('ascii', offsetByte, len);
-            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
@@ -949,7 +1048,7 @@ var main = {
             var max = buff[offsetByte];
             len = buff[offsetByte + 1];
             val = buff.toString('ascii', offsetByte + 2, len);
-            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
@@ -959,7 +1058,7 @@ var main = {
                 result.push(buff[offsetByte + i]);
             }
             val = JSON.stringify(result);
-            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
             }
@@ -967,7 +1066,7 @@ var main = {
             val = buff.readFloatBE(offsetByte);
             var _val = parseFloat(Math.round(val * main.round) / main.round);
 
-            if (ackObjects[id] === undefined || ackObjects[id].val != _val) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== _val) {
                 ackObjects[id] = {val: _val};
                 adapter.setState(id, _val, true);
             }
@@ -1001,7 +1100,7 @@ var main = {
 
             val = ((val >> 8) & 0xF) * 100 + ((val >> 4) & 0xF) * 10 + (val & 0xF);
 
-            if (ackObjects[id] === undefined || ackObjects[id].val != val) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val * factor, true);
             }
@@ -1054,7 +1153,7 @@ var main = {
             y = (((y >> 4) & 0xF) * 10 + (y & 0xF)) * 10 + ((buff[offsetByte + 7] >> 4) & 0xF);
             d.setUTCMilliseconds(y);
 
-            if (ackObjects[id] === undefined || ackObjects[id].val != d.getTime()) {
+            if (ackObjects[id] === undefined || ackObjects[id].val !== d.getTime()) {
                 ackObjects[id] = {val: d.getTime()};
                 adapter.setState(id, ackObjects[id].val, true);
             }
@@ -1068,6 +1167,7 @@ var main = {
                     if (main.input_msb) {
                         s7client.EBRead(main.input_lsb, main.input_msb - main.input_lsb, function (err, res) {
                             if (err) {
+                                adapter.log.warn('EBRead error[' + main.input_lsb + ' - ' + main.input_msb + ']: code: 0x' + parseInt(err, 10).toString(16) + (errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''));
                                 callback(err);
                             } else {
                                 for (var n = 0; main.inputs.length > n; n++) {
@@ -1095,6 +1195,7 @@ var main = {
                     if (main.output_msb) {
                         s7client.ABRead(main.output_lsb, main.output_msb - main.output_lsb, function (err, res) {
                             if (err) {
+                                adapter.log.warn('ABRead error[' + main.output_lsb + ' - ' + main.output_msb + ']: code: 0x' + parseInt(err, 10).toString(16) + (errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''));
                                 callback(err);
                             } else {
                                 for (var n = 0; main.outputs.length > n; n++) {
@@ -1122,6 +1223,7 @@ var main = {
                     if (main.marker_msb) {
                         s7client.MBRead(main.marker_lsb, main.marker_msb - main.marker_lsb, function (err, res) {
                             if (err) {
+                                adapter.log.warn('MBRead error[' + main.marker_lsb + ' - ' + main.marker_msb + ']: code: 0x' + parseInt(err, 10).toString(16) + (errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''));
                                 callback(err);
                             } else {
                                 for (var n = 0; main.markers.length > n; n++) {
@@ -1152,6 +1254,7 @@ var main = {
                     async.each(main._db_size, function (db, callback) {
                         s7client.DBRead(db.dbId, db.lsb, db.msb - db.lsb, function (err, res) {
                             if (err) {
+                                adapter.log.warn('DBRead error[DB ' + db.dbId + ':' + db.lsb + ' - ' + db.msb + ']: code: 0x' + parseInt(err, 10).toString(16) + (errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''));
                                 callback(err);
                             } else {
                                 buf[db.db] = res;
@@ -1159,7 +1262,6 @@ var main = {
                             }
                         });
                     }, function (err, res) {
-
                         if (err) {
                             callback(err);
                         } else {
@@ -1201,7 +1303,7 @@ var main = {
                 if (err) {
                     main.error_count++;
 
-                    adapter.log.warn('Poll error count: ' + main.error_count + ' code: ' + err);
+                    adapter.log.warn('Poll error count: ' + main.error_count + ' code: 0x' + parseInt(err, 10).toString(16) + (errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''));
                     adapter.setState('info.connection', false, true);
 
                     if (main.error_count < 6 && s7client.Connected()) {

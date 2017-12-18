@@ -1,8 +1,17 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.0.5",
+        "version": "1.0.6",
         "news": {
+            "1.0.6": {
+              "en": "The error codes are decoded into the readable text",
+              "de": "Die Fehlercodes werden in den lesbaren Text decodiert",
+              "ru": "Коды ошибок декодируются в читаемый текст",
+              "pt": "Os códigos de erro são decodificados no texto legível",
+              "nl": "De foutcodes worden gedecodeerd in de leesbare tekst",
+              "fr": "Les codes d'erreur sont décodés dans le texte lisible",
+              "it": "I codici di errore sono decodificati nel testo leggibile"
+            },
             "1.0.5": {
                 "en": "Error by the DB import is fixed",
                 "de": "Fehler beim DB-Import ist behoben",

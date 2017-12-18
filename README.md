@@ -50,6 +50,9 @@ Python 2.x is required too. Not 3.x.
   Time offset for S7 time.
 
 ## Changelog
+### 1.0.6 (2017.12.18)
+* (bluefox) Decode error codes
+
 ### 1.0.5 (2017.12.17)
 * (bluefox) Error by the DB import is fixed
 
