@@ -1,8 +1,18 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.0.6",
+        "version": "1.1.0",
         "news": {
+            "1.1.0": {
+                "en": "Fix strings\nfix names if they have more than one space",
+                "de": "Strings korrigieren\nKorrigiere Namen, wenn sie mehr als einen Lehrzeichen haben",
+                "ru": "исправлены строки\nисправлены имена, если они имеют более одного пробела",
+                "pt": "Corrigir cordas\ncorrigir nomes se eles tiverem mais de um espaço",
+                "nl": "Snaren repareren\nrepareer namen als ze meer dan één spatie hebben",
+                "fr": "Corriger les chaînes\nfixer les noms s'ils ont plus d'un espace",
+                "it": "Correggi le stringhe\ncorreggere i nomi se hanno più di uno spazio",
+                "es": "Corregir cadenas\ncorregir nombres si tienen más de un espacio"
+            },
             "1.0.6": {
               "en": "The error codes are decoded into the readable text",
               "de": "Die Fehlercodes werden in den lesbaren Text decodiert",
@@ -61,14 +71,20 @@
                 "ru": "Исправлен текст на кнопке импорт"
             }
         },
-        "title": "Siemens S7 Adapter",
-        "desc": {
-            "en": "Siemens SIMATIC S7 connection over Snap7",
-            "de": "Siemens SIMATIC S7 Verbindung über Snap7",
-            "ru": "Siemens SIMATIC S7 соединение с помощью Snap7"
+        "title": "Siemens Simatic S7",
+        "desc":  {
+            "en": "Siemens SIMATIC S7 connection via Snap7",
+            "de": "Siemens SIMATIC S7-Anbindung über Snap7",
+            "ru": "Подключение Siemens SIMATIC S7 через Snap7",
+            "pt": "Conexão Siemens SIMATIC S7 via Snap7",
+            "nl": "Siemens SIMATIC S7-verbinding via Snap7",
+            "fr": "Connexion Siemens SIMATIC S7 via Snap7",
+            "it": "Collegamento Siemens SIMATIC S7 tramite Snap7",
+            "es": "Conexión Siemens SIMATIC S7 a través de Snap7"
         },
         "authors": [
-            "smiling_Jack <steffen.schorling@googlemail.com>"
+            "smiling_Jack <steffen.schorling@googlemail.com>",
+            "bluefox <dogafox@gmail.com>"
         ],
         "license": "MIT",
         "platform": "Javascript/Node.js",

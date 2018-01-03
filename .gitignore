@@ -1,2 +1,6 @@
-/.idea
-/node_modules
+.idea
+node_modules
+tmp
+.git
+admin/i18n/flat.txt
+admin/i18n/*/flat.txt

@@ -1,5 +1,12 @@
-var snap7 = require('node-snap7');
-
+var snap7   = require('node-snap7');
+var iconvTo;
+var iconvToL;
+try {
+    var Iconv   = require('iconv').Iconv;
+    iconvTo = new Iconv('UTF-8', 'ISO-8859-1');
+} catch (e) {
+    iconvToL = require('iconv-lite');
+}
 
 function Server() {
     this.s7server = new snap7.S7Server();
@@ -14,10 +21,20 @@ function Server() {
     for (var i = 0; i < db1.length; i++) {
         db1[i] = i;
     }
+    /*var str;
+    if (iconvTo) {
+        str = iconvTo.convert('My üäöstring');
+    } else {
+        str = iconvToL.encode('My üäöstring', 'iso-8859-1');
+    }
+    db1[4] = 32;
+    db1[5] = str.byteLength;
+    str.copy(db1, 6);
+
     var db2 = new Buffer(65535);
     for (var j = 0; j < db2.length; j++) {
         db2[j] = j;
-    }
+    }*/
 
     this.start = function (bind) {
         this.s7server.RegisterArea(this.s7server.srvAreaDB, 1, db1);

@@ -9,6 +9,20 @@ var async     = require('async');
 var snap7     = require('node-snap7');
 var s7client  = snap7 ? new snap7.S7Client() : null;
 var connected = false;
+var iconvFrom;
+var iconvTo;
+var iconvToL;
+var encoding = 'iso-8859-1';
+
+try {
+    var Iconv  = require('iconv').Iconv;
+    iconvFrom  = new Iconv(encoding, 'UTF-8');
+    iconvTo    = new Iconv('UTF-8', encoding);
+} catch (e) {
+    iconvFrom = null;
+    iconvTo   = null;
+    iconvToL  = require('iconv-lite');
+}
 
 var nextPoll;
 var ackObjects = {};
@@ -33,105 +47,105 @@ var pulseList  = {};
 var sendBuffer = {};
 var objects    = {};
 var enums      = {};
-var infoRegExp = new RegExp(adapter.namespace.replace('.', '\\.') + '\\.info\\.');
+var infoRegExp = new RegExp(adapter.namespace.replace(/\./g, '\\.') + '\\.info\\.');
 
 var errorCodes = {
-    0x00000001: "errTCPSocketCreation",
-    0x00000002: "errTCPConnectionTimeout",
-    0x00000003: "errTCPConnectionFailed",
-    0x00000004: "errTCPReceiveTimeout",
-    0x00000005: "errTCPDataReceive",
-    0x00000006: "errTCPSendTimeout",
-    0x00000007: "errTCPDataSend",
-    0x00000008: "errTCPConnectionReset",
-    0x00000009: "errTCPNotConnected",
-    0x00002751: "errTCPUnreachableHost",
-    0x00010000: "errIsoConnect",
-    0x00030000: "errIsoInvalidPDU",
-    0x00040000: "errIsoInvalidDataSize",
-    0x00100000: "errCliNegotiatingPDU",
-    0x00200000: "errCliInvalidParams",
-    0x00300000: "errCliJobPending",
-    0x00400000: "errCliTooManyItems",
-    0x00500000: "errCliInvalidWordLen",
-    0x00600000: "errCliPartialDataWritten",
-    0x00700000: "errCliSizeOverPDU",
-    0x00800000: "errCliInvalidPlcAnswer",
-    0x00900000: "errCliAddressOutOfRange",
-    0x00A00000: "errCliInvalidTransportSize",
-    0x00B00000: "errCliWriteDataSizeMismatch",
-    0x00C00000: "errCliItemNotAvailable",
-    0x00D00000: "errCliInvalidValue",
-    0x00E00000: "errCliCannotStartPLC",
-    0x00F00000: "errCliAlreadyRun",
-    0x01000000: "errCliCannotStopPLC",
-    0x01100000: "errCliCannotCopyRamToRom",
-    0x01200000: "errCliCannotCompress",
-    0x01300000: "errCliAlreadyStop",
-    0x01400000: "errCliFunNotAvailable",
-    0x01500000: "errCliUploadSequenceFailed",
-    0x01600000: "errCliInvalidDataSizeRecvd",
-    0x01700000: "errCliInvalidBlockType",
-    0x01800000: "errCliInvalidBlockNumber",
-    0x01900000: "errCliInvalidBlockSize",
-    0x01D00000: "errCliNeedPassword",
-    0x01E00000: "errCliInvalidPassword",
-    0x01F00000: "errCliNoPasswordToSetOrClear",
-    0x02000000: "errCliJobTimeout",
-    0x02100000: "errCliPartialDataRead",
-    0x02200000: "errCliBufferTooSmall",
-    0x02300000: "errCliFunctionRefused",
-    0x02400000: "errCliDestroying",
-    0x02500000: "errCliInvalidParamNumber",
-    0x02600000: "errCliCannotChangeParam",
-    0x02700000: "errCliFunctionNotImplemented"
+    0x00000001: 'errTCPSocketCreation',
+    0x00000002: 'errTCPConnectionTimeout',
+    0x00000003: 'errTCPConnectionFailed',
+    0x00000004: 'errTCPReceiveTimeout',
+    0x00000005: 'errTCPDataReceive',
+    0x00000006: 'errTCPSendTimeout',
+    0x00000007: 'errTCPDataSend',
+    0x00000008: 'errTCPConnectionReset',
+    0x00000009: 'errTCPNotConnected',
+    0x00002751: 'errTCPUnreachableHost',
+    0x00010000: 'errIsoConnect',
+    0x00030000: 'errIsoInvalidPDU',
+    0x00040000: 'errIsoInvalidDataSize',
+    0x00100000: 'errCliNegotiatingPDU',
+    0x00200000: 'errCliInvalidParams',
+    0x00300000: 'errCliJobPending',
+    0x00400000: 'errCliTooManyItems',
+    0x00500000: 'errCliInvalidWordLen',
+    0x00600000: 'errCliPartialDataWritten',
+    0x00700000: 'errCliSizeOverPDU',
+    0x00800000: 'errCliInvalidPlcAnswer',
+    0x00900000: 'errCliAddressOutOfRange',
+    0x00A00000: 'errCliInvalidTransportSize',
+    0x00B00000: 'errCliWriteDataSizeMismatch',
+    0x00C00000: 'errCliItemNotAvailable',
+    0x00D00000: 'errCliInvalidValue',
+    0x00E00000: 'errCliCannotStartPLC',
+    0x00F00000: 'errCliAlreadyRun',
+    0x01000000: 'errCliCannotStopPLC',
+    0x01100000: 'errCliCannotCopyRamToRom',
+    0x01200000: 'errCliCannotCompress',
+    0x01300000: 'errCliAlreadyStop',
+    0x01400000: 'errCliFunNotAvailable',
+    0x01500000: 'errCliUploadSequenceFailed',
+    0x01600000: 'errCliInvalidDataSizeRecvd',
+    0x01700000: 'errCliInvalidBlockType',
+    0x01800000: 'errCliInvalidBlockNumber',
+    0x01900000: 'errCliInvalidBlockSize',
+    0x01D00000: 'errCliNeedPassword',
+    0x01E00000: 'errCliInvalidPassword',
+    0x01F00000: 'errCliNoPasswordToSetOrClear',
+    0x02000000: 'errCliJobTimeout',
+    0x02100000: 'errCliPartialDataRead',
+    0x02200000: 'errCliBufferTooSmall',
+    0x02300000: 'errCliFunctionRefused',
+    0x02400000: 'errCliDestroying',
+    0x02500000: 'errCliInvalidParamNumber',
+    0x02600000: 'errCliCannotChangeParam',
+    0x02700000: 'errCliFunctionNotImplemented'
 };
 
 var sysErrors = {
-    10004: "EINTR",
-    10009: "EBADF",
-    10013: "EACCES",
-    10014: "EFAULT",
-    10022: "EINVAL",
-    10024: "EMFILE",
-    10035: "EWOULDBLOCK",
-    10036: "EINPROGRESS",
-    10037: "EALREADY",
-    10038: "ENOTSOCK",
-    10039: "EDESTADDRREQ",
-    10040: "EMSGSIZE",
-    10041: "EPROTOTYPE",
-    10042: "ENOPROTOOPT",
-    10043: "EPROTONOSUPPORT",
-    10044: "ESOCKTNOSUPPORT",
-    10045: "EOPNOTSUPP",
-    10046: "EPFNOSUPPORT",
-    10047: "EAFNOSUPPORT",
-    10048: "EADDRINUSE",
-    10049: "EADDRNOTAVAIL",
-    10050: "ENETDOWN",
-    10051: "ENETUNREACH",
-    10052: "ENETRESET",
-    10053: "ECONNABORTED",
-    10054: "ECONNRESET",
-    10055: "ENOBUFS",
-    10056: "EISCONN",
-    10057: "ENOTCONN",
-    10058: "ESHUTDOWN",
-    10059: "ETOOMANYREFS",
-    10060: "ETIMEDOUT",
-    10061: "ECONNREFUSED",
-    10062: "ELOOP",
-    10063: "ENAMETOOLONG",
-    10064: "EHOSTDOWN",
-    10065: "EHOSTUNREACH",
-    10091: "SYSNOTREADY",
-    10092: "VERNOTSUPPORTED",
-    10093: "NOTINITIALISED",
-    11001: "HOST_NOT_FOUND",
-    11002: "TRY_AGAIN",
-    11003: "NO_RECOVERY",
-    11004: "NO_DATA"
+    10004: 'EINTR',
+    10009: 'EBADF',
+    10013: 'EACCES',
+    10014: 'EFAULT',
+    10022: 'EINVAL',
+    10024: 'EMFILE',
+    10035: 'EWOULDBLOCK',
+    10036: 'EINPROGRESS',
+    10037: 'EALREADY',
+    10038: 'ENOTSOCK',
+    10039: 'EDESTADDRREQ',
+    10040: 'EMSGSIZE',
+    10041: 'EPROTOTYPE',
+    10042: 'ENOPROTOOPT',
+    10043: 'EPROTONOSUPPORT',
+    10044: 'ESOCKTNOSUPPORT',
+    10045: 'EOPNOTSUPP',
+    10046: 'EPFNOSUPPORT',
+    10047: 'EAFNOSUPPORT',
+    10048: 'EADDRINUSE',
+    10049: 'EADDRNOTAVAIL',
+    10050: 'ENETDOWN',
+    10051: 'ENETUNREACH',
+    10052: 'ENETRESET',
+    10053: 'ECONNABORTED',
+    10054: 'ECONNRESET',
+    10055: 'ENOBUFS',
+    10056: 'EISCONN',
+    10057: 'ENOTCONN',
+    10058: 'ESHUTDOWN',
+    10059: 'ETOOMANYREFS',
+    10060: 'ETIMEDOUT',
+    10061: 'ECONNREFUSED',
+    10062: 'ELOOP',
+    10063: 'ENAMETOOLONG',
+    10064: 'EHOSTDOWN',
+    10065: 'EHOSTUNREACH',
+    10091: 'SYSNOTREADY',
+    10092: 'VERNOTSUPPORTED',
+    10093: 'NOTINITIALISED',
+    11001: 'HOST_NOT_FOUND',
+    11002: 'TRY_AGAIN',
+    11003: 'NO_RECOVERY',
+    11004: 'NO_DATA'
 };
 
 adapter.on('stateChange', function (id, state) {
@@ -239,7 +253,7 @@ function send() {
         buf = new Buffer(4);
         buf.writeFloatBE(parseFloat(val), 0);
     } else if (type === 'STRING' || type === 'ARRAY') {
-        buf = new Buffer(data.native.len);
+
         if (typeof val === 'string' && val[0] === '{') {
             try {
                 val = JSON.parse(val);
@@ -247,27 +261,44 @@ function send() {
 
             }
         }
-        var s;
-        for (s = 0; s < val.length && s < data.native.len; s++) {
-            buf[s] = val[s];
-        }
-        // zero end string
-        if (type === 'STRING') {
-            if (s >= data.native.len) s--;
-            buf[s] = 0;
+        buf = new Buffer(data.native.len);
+        if ((iconvTo || iconvToL) && type === 'STRING' && typeof val === 'string') {
+            var buffer1 = iconvTo ? iconvTo.convert(val) : iconvToL.encode(val, encoding);
+            buffer1.copy(buf, 0, 0, buffer1.byteLength > data.native.len ? data.native.len : buffer1.byteLength);
+        } else {
+
+            var s1;
+            for (s1 = 0; s1 < val.length && s1 < data.native.len; s1++) {
+                buf[s1] = val[s1];
+            }
+            // zero end string
+            if (type === 'STRING') {
+                if (s1 >= data.native.len) s1--;
+                buf[s1] = 0;
+            }
         }
     } else if (type === 'S7STRING') {
         buf = new Buffer(data.native.len + 2);
-        var s;
         buf[0] = data.native.len;
-        for (s = 0; s < val.length && s < data.native.len; s++) {
-            buf[s + 2] = val[s];
+        if ((iconvTo || iconvToL) && typeof val === 'string') {
+            var buffer2 = iconvTo ? iconvTo.convert(val) : iconvToL.encode(val, encoding);
+            buffer2.copy(buf, 2, 0, buffer2.byteLength > data.native.len ? data.native.len : buffer2.byteLength);
+            if (buffer2.byteLength < data.native.len) {
+                // zero end
+                buf[2 + buffer2.byteLength] = 0;
+            }
+            buf[1] = buffer2.byteLength;
+        } else {
+            var s2;
+            for (s2 = 0; s2 < val.length && s2 < data.native.len; s2++) {
+                buf[s2 + 2] = val[s2];
+            }
+            // zero end string
+            if (s2 < data.native.len - 1) {
+                buf[s2] = 0;
+            }
+            buf[1] = s2;
         }
-        // zero end string
-        if (s < data.native.len - 1) {
-            buf[s] = 0;
-        }
-        buf[1] = s;
     }
 
     var addr;
@@ -456,6 +487,20 @@ function createExtendObject(id, objData, callback) {
     });
 }
 
+var convertS7type = {
+    BOOL:       'boolean',
+    BYTE:       'number',
+    WORD:       'number',
+    DWORD:      'number',
+    INT:        'number',
+    DINT:       'number',
+    STRING:     'string',
+    S7STRING:   'string',
+    S5TIME:     'number',
+    ARRAY:      'array',
+    S7TIME:     'number'
+};
+
 var main = {
     old_objects: [],
     new_objects: [],
@@ -516,11 +561,11 @@ var main = {
 
             if (main.ac.inputs.length > 0) {
                 for (i = main.ac.inputs.length - 1; i >= 0; i--) {
-                    main.ac.inputs[i].Address = main.ac.inputs[i].Address.replace('+', '');
+                    main.ac.inputs[i].Address = main.ac.inputs[i].Address.replace(/\+/g, '');
                     parts = main.ac.inputs[i].Address.split('.');
                     main.ac.inputs[i].offsetByte = parseInt(parts[0], 10);
                     main.ac.inputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
-                    main.ac.inputs[i].id = 'Inputs.' + main.ac.inputs[i].offsetByte + '.' + (main.ac.inputs[i].Name.replace('.', '_').replace(' ', '_') || main.ac.inputs[i].offsetBit);
+                    main.ac.inputs[i].id = 'Inputs.' + main.ac.inputs[i].offsetByte + '.' + (main.ac.inputs[i].Name.replace(/[.\s]+/g, '_') || main.ac.inputs[i].offsetBit);
 
                     main.ac.inputs[i].len = 1;
                     if (main.ac.inputs[i].Type === 'WORD'  || main.ac.inputs[i].Type === 'INT'  || main.ac.inputs[i].Type === 'S5TIME') {
@@ -543,11 +588,11 @@ var main = {
 
             if (main.ac.outputs.length > 0) {
                 for (i = main.ac.outputs.length - 1; i >= 0; i--) {
-                    main.ac.outputs[i].Address = main.ac.outputs[i].Address.replace('+', '');
+                    main.ac.outputs[i].Address = main.ac.outputs[i].Address.replace(/\+/g, '');
                     parts = main.ac.outputs[i].Address.split('.');
                     main.ac.outputs[i].offsetByte = parseInt(parts[0], 10);
                     main.ac.outputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
-                    main.ac.outputs[i].id = 'Outputs.' + main.ac.outputs[i].offsetByte + '.' + (main.ac.outputs[i].Name.replace('.', '_').replace(' ', '_') || main.ac.outputs[i].offsetBit);
+                    main.ac.outputs[i].id = 'Outputs.' + main.ac.outputs[i].offsetByte + '.' + (main.ac.outputs[i].Name.replace(/[.\s]+/g, '_') || main.ac.outputs[i].offsetBit);
 
                     main.ac.outputs[i].len = 1;
                     if (main.ac.outputs[i].Type === 'WORD'  || main.ac.outputs[i].Type === 'INT'  || main.ac.outputs[i].Type === 'S5TIME') {
@@ -570,11 +615,11 @@ var main = {
 
             if (main.ac.markers.length > 0) {
                 for (i = main.ac.markers.length - 1; i >= 0; i--) {
-                    main.ac.markers[i].Address = main.ac.markers[i].Address.replace('+', '');
+                    main.ac.markers[i].Address = main.ac.markers[i].Address.replace(/\+/g, '');
                     parts = main.ac.markers[i].Address.split('.');
                     main.ac.markers[i].offsetByte = parseInt(parts[0], 10);
                     main.ac.markers[i].offsetBit  = parseInt(parts[1] || 0, 10);
-                    main.ac.markers[i].id = 'Markers.' + main.ac.markers[i].offsetByte + '.' + (main.ac.markers[i].Name.replace('.', '_').replace(' ', '_') || main.ac.markers[i].offsetBit);
+                    main.ac.markers[i].id = 'Markers.' + main.ac.markers[i].offsetByte + '.' + (main.ac.markers[i].Name.replace(/[.\s]+/g, '_') || main.ac.markers[i].offsetBit);
 
                     main.ac.markers[i].len = 1;
                     if (main.ac.markers[i].Type === 'WORD'  || main.ac.markers[i].Type === 'INT'  || main.ac.markers[i].Type === 'S5TIME') {
@@ -617,8 +662,8 @@ var main = {
 
                     main.ac.dbs[i].db     = parts[0].trim().toUpperCase();
                     main.ac.dbs[i].dbId   = parseInt(main.ac.dbs[i].db.substring(2), 10);
-                    main.ac.dbs[i].offset = parts[1].replace('+', '');
-                    main.ac.dbs[i].id     = 'DBs.' + main.ac.dbs[i].db + '.' + ((main.ac.dbs[i].Name.replace('.', '_').replace(' ', '_')) || main.ac.dbs[i].offset.replace('.', '_'));
+                    main.ac.dbs[i].offset = parts[1].replace(/\+/g, '');
+                    main.ac.dbs[i].id     = 'DBs.' + main.ac.dbs[i].db + '.' + ((main.ac.dbs[i].Name.replace(/[.\s]+/g, '_')) || main.ac.dbs[i].offset.replace(/[.\s]+/g, '_'));
 
                     parts = main.ac.dbs[i].offset.split('.');
                     main.ac.dbs[i].offsetByte = parseInt(parts[0], 10);
@@ -722,7 +767,7 @@ var main = {
                     common: {
                         name:    main.ac.inputs[i].Description,
                         role:    main.ac.inputs[i].Role,
-                        type:    (main.ac.inputs[i].Type === 'BOOL')   ? 'boolean' : 'number',
+                        type:    convertS7type[main.ac.inputs[i].Type],
                         unit:    main.ac.inputs[i].Unit || ((main.ac.inputs[i].Type === 'S5TIME') ? 's' : main.ac.inputs[i].Unit),
                         read:    true,
                         write:   main.ac.inputs[i].RW
@@ -760,7 +805,7 @@ var main = {
                     common: {
                         name:    main.ac.outputs[i].Description,
                         role:    main.ac.outputs[i].Role,
-                        type:    (main.ac.outputs[i].Type === 'BOOL')   ? 'boolean' : 'number',
+                        type:    convertS7type[main.ac.outputs[i].Type],
                         unit:    main.ac.outputs[i].Unit || ((main.ac.outputs[i].Type === 'S5TIME') ? 's' : main.ac.outputs[i].Unit),
                         read:    true,
                         write:   main.ac.outputs[i].RW
@@ -798,7 +843,7 @@ var main = {
                     common: {
                         name:    main.ac.markers[i].Description,
                         role:    main.ac.markers[i].Role,
-                        type:    (main.ac.markers[i].Type === 'BOOL')   ? 'boolean' : 'number',
+                        type:    convertS7type[main.ac.markers[i].Type],
                         unit:    main.ac.markers[i].Unit || ((main.ac.markers[i].Type === 'S5TIME') ? 's' : main.ac.markers[i].Unit),
                         read:    true,
                         write:   main.ac.markers[i].RW
@@ -838,7 +883,7 @@ var main = {
                     common: {
                         name:    main.ac.dbs[i].Description,
                         role:    main.ac.dbs[i].Role,
-                        type:    (main.ac.dbs[i].Type === 'BOOL')   ? 'boolean' : 'number',
+                        type:    convertS7type[main.ac.dbs[i].Type],
                         unit:    main.ac.dbs[i].Unit || ((main.ac.dbs[i].Type === 'S5TIME') ? 's' : main.ac.dbs[i].Unit),
                         read:    true,
                         write:   main.ac.dbs[i].RW
@@ -902,7 +947,7 @@ var main = {
                 common: {
                     name: 'Poll time',
                     type: 'number',
-                    role: '',
+                    role: 'value',
                     unit: 'ms'
                 },
                 native: {}
@@ -924,7 +969,7 @@ var main = {
                 type: 'state',
                 common: {
                     name: 'PDU size',
-                    role: '',
+                    role: 'value',
                     type: 'number'
                 },
                 native: {}
@@ -1039,7 +1084,18 @@ var main = {
                 adapter.setState(id, val, true);
             }
         } else if (type === 'STRING') {
-            val = buff.toString('ascii', offsetByte, len);
+            if (iconvFrom || iconvToL) {
+                if (len > 255) len = 255;
+                var str1 = Buffer.allocUnsafe(len);
+                buff.copy(str1, 0, offsetByte, offsetByte + len);
+                if (iconvFrom) {
+                    val = iconvFrom.convert(str1);
+                } else {
+                    val = iconvToL.decode(str1, encoding);
+                }
+            } else {
+                val = buff.toString('ascii', offsetByte, offsetByte + len);
+            }
             if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
@@ -1047,7 +1103,20 @@ var main = {
         } else if (type === 'S7STRING') {
             var max = buff[offsetByte];
             len = buff[offsetByte + 1];
-            val = buff.toString('ascii', offsetByte + 2, len);
+            if (max > 512) max = 512;
+            if (len > max) len = max;
+            if (iconvFrom || iconvToL) {
+                var str2 = Buffer.allocUnsafe(len);
+                buff.copy(str2, 0, offsetByte + 2, offsetByte + 2 + len);
+
+                if (iconvFrom) {
+                    val = iconvFrom.convert(str2);
+                } else {
+                    val = iconvToL.decode(str2, encoding);
+                }
+            } else {
+                val = buff.toString('ascii', offsetByte + 2, offsetByte + 2 + len);
+            }
             if (ackObjects[id] === undefined || ackObjects[id].val !== val) {
                 ackObjects[id] = {val: val};
                 adapter.setState(id, val, true);
