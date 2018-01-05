@@ -1009,6 +1009,7 @@ var main = {
     start: function () {
 
         if (!s7client) return;
+        adapter.log.info(' LOG localTsap=' + main.acp.localTsap + ' / remoteTsap=' + main.acp.remoteTsap);
         if (main.acp.localTsap && main.acp.remoteTsap) {
             adapter.log.info(' Connect in LOGO! mode to ' + main.acp.localTsap + ' / ' + main.acp.remoteTsap);
             s7client.SetConnectionParams(main.acp.ip, main.acp.localTsap, main.acp.remoteTsap); // C++
