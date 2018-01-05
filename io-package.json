@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.1.0",
+        "version": "1.1.1",
         "news": {
-            "1.1.0": {
+            "1.1.1": {
                 "en": "Fix strings\nfix names if they have more than one space",
                 "de": "Strings korrigieren\nKorrigiere Namen, wenn sie mehr als einen Lehrzeichen haben",
                 "ru": "исправлены строки\nисправлены имена, если они имеют более одного пробела",

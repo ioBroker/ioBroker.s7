@@ -50,7 +50,7 @@ Python 2.x is required too. Not 3.x.
   Time offset for S7 time.
 
 ## Changelog
-### 1.1.0 (2018.01.03)
+### 1.1.1 (2018.01.05)
 * (bluefox) Fix strings
 * (bluefox) fix names if they have more than one space
 

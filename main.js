@@ -14,11 +14,11 @@ var iconvTo;
 var iconvToL;
 var encoding = 'iso-8859-1';
 
-try {
+/*try {
     var Iconv  = require('iconv').Iconv;
     iconvFrom  = new Iconv(encoding, 'UTF-8');
     iconvTo    = new Iconv('UTF-8', encoding);
-} catch (e) {
+} catch (e)*/ {
     iconvFrom = null;
     iconvTo   = null;
     iconvToL  = require('iconv-lite');
