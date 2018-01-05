@@ -1010,6 +1010,7 @@ var main = {
 
         if (!s7client) return;
         if (main.acp.localTsap && main.acp.remoteTsap) {
+            adapter.log.info(' Connect in LOGO! mode to ' + main.acp.localTsap + ' / ' + main.acp.remoteTsap);
             s7client.SetConnectionParams(main.acp.ip, main.acp.localTsap, main.acp.remoteTsap); // C++
             s7client.Connect(function (err) {
 
@@ -1026,6 +1027,7 @@ var main = {
                 main.poll();
             });
         } else {
+            adapter.log.info(' Connect in S7 mode to ' + main.acp.rack + ' / ' + main.acp.slot);
             s7client.ConnectTo(main.acp.ip, main.acp.rack, main.acp.slot, function (err) {
 
                 if (err) {
