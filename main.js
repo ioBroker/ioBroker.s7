@@ -1019,6 +1019,7 @@ var main = {
                     adapter.setState('info.connection', false, true);
                     return setTimeout(main.start, main.acp.recon);
                 }
+                adapter.log.info(' Connected in LOGO! mode');
 
                 connected = true;
                 adapter.setState('info.connection', true, true);
@@ -1035,6 +1036,7 @@ var main = {
                     adapter.setState('info.connection', false, true);
                     return setTimeout(main.start, main.acp.recon);
                 }
+                adapter.log.info(' Connected in S7 mode');
 
                 connected = true;
                 adapter.setState('info.connection', true, true);
