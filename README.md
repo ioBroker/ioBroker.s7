@@ -47,7 +47,7 @@ Under windows is Visual Studio 2013 (Community Edition is enough) or later is re
 Python 2.x is required too. Not 3.x.
 
 ## TODO
-  Time offset for S7 time.
+* Time offset for S7 time.
 
 ## Changelog
 ### 1.1.1 (2018.01.05)
