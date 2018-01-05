@@ -117,8 +117,8 @@
             "poll": "1000",
             "recon": "60000",
             "pulsetime": "1000",
-            "localTsap": 0,
-            "remoteTsap": 0
+            "localTSAP": 0,
+            "remoteTSAP": 0
         },
         "inputs": [],
         "outputs": [],

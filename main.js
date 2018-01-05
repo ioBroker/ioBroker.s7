@@ -1009,10 +1009,10 @@ var main = {
     start: function () {
 
         if (!s7client) return;
-        adapter.log.info(' LOG localTsap=' + main.acp.localTsap + ' / remoteTsap=' + main.acp.remoteTsap);
-        if (main.acp.localTsap && main.acp.remoteTsap) {
-            adapter.log.info(' Connect in LOGO! mode to ' + main.acp.localTsap + ' / ' + main.acp.remoteTsap);
-            s7client.SetConnectionParams(main.acp.ip, main.acp.localTsap, main.acp.remoteTsap); // C++
+        adapter.log.info('LOG localTSAP=' + main.acp.localTSAP + ' / remoteTSAP=' + main.acp.remoteTSAP);
+        if (main.acp.localTSAP && main.acp.remoteTSAP) {
+            adapter.log.info(' Connect in LOGO! mode to ' + main.acp.localTSAP + ' / ' + main.acp.remoteTSAP);
+            s7client.SetConnectionParams(main.acp.ip, main.acp.localTSAP, main.acp.remoteTSAP); // C++
             s7client.Connect(function (err) {
 
                 if (err) {

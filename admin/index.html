@@ -269,7 +269,7 @@
         }
         $('#s7_' + id).jsGrid('render');
     }
-    
+
     function load(settings, onchange) {
         $('#btn_loadSymbols').button().click(function () {
             $('#file_symbol_import').trigger('click')
@@ -369,8 +369,8 @@
                 recon:      60000,
                 pulstime:   1000,
                 round:      2,
-                localTsap:  0,
-                remoteTsap: 0
+                localTSAP:  0,
+                remoteTSAP: 0
             }
         };
 
@@ -705,7 +705,7 @@
                     $editRow.insertAfter($row);
                     $row.data('JSGridEditRow', $editRow);
                 };
-                
+
                 // add custom titles
                 $('.jsgrid-header-sortable').each(function () {
                     if ($(this).text() === _('poll')) {
@@ -796,7 +796,7 @@
         $.each($('.s7_grid'), function () {
             var id = $(this).attr('id');
             var key = id.split('_')[1];
-            
+
             if ($(this).data('JSGrid')._editingRow) {
                 $(this).jsGrid('updateItem');
             }
@@ -1027,7 +1027,7 @@
 					var mm = text.match(/(DB)[0-9]+\s-\s/g);
                     var db = mm ? mm[0].replace(' - ', '') : '';
 					var vv = text.split('STRUCT');
-					
+
                     var struck = vv[1] ? vv[1].split('=')[0].split('\n') : [];
 
                     $.each(struck, function () {
