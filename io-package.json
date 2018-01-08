@@ -1,8 +1,18 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.1.1",
+        "version": "1.1.2",
         "news": {
+            "1.1.2": {
+                "en": "Fix strings",
+                "de": "Strings korrigieren",
+                "ru": "исправлены строки",
+                "pt": "Corrigir cordas",
+                "nl": "Snaren repareren",
+                "fr": "Corriger les chaînes",
+                "it": "Correggi le stringhe",
+                "es": "Corregir cadenas"
+            },
             "1.1.1": {
                 "en": "Fix LOGO! support",
                 "de": "LOGO! Unterstützung korrigiert",
