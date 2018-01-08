@@ -4,6 +4,16 @@
         "version": "1.1.1",
         "news": {
             "1.1.1": {
+                "en": "Fix LOGO! support",
+                "de": "LOGO! Unterstützung korrigiert",
+                "ru": "Исправьте LOGO! поддержка",
+                "pt": "Corrigir LOGO!",
+                "nl": "LOGO! repareren",
+                "fr": "Corriger les LOGO!",
+                "it": "Correggi le LOGO!",
+                "es": "Corregir LOGO!"
+            },
+            "1.1.0": {
                 "en": "Fix strings\nfix names if they have more than one space",
                 "de": "Strings korrigieren\nKorrigiere Namen, wenn sie mehr als einen Lehrzeichen haben",
                 "ru": "исправлены строки\nисправлены имена, если они имеют более одного пробела",

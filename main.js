@@ -1009,9 +1009,8 @@ var main = {
     start: function () {
 
         if (!s7client) return;
-        adapter.log.info('LOG localTSAP=' + main.acp.localTSAP + ' / remoteTSAP=' + main.acp.remoteTSAP);
         if (main.acp.localTSAP && main.acp.remoteTSAP) {
-            adapter.log.info(' Connect in LOGO! mode to ' + main.acp.localTSAP + ' / ' + main.acp.remoteTSAP);
+            adapter.log.info('Connect in LOGO! mode to ' + main.acp.localTSAP + ' / ' + main.acp.remoteTSAP);
             s7client.SetConnectionParams(main.acp.ip, main.acp.localTSAP, main.acp.remoteTSAP); // C++
             s7client.Connect(function (err) {
 
@@ -1020,7 +1019,7 @@ var main = {
                     adapter.setState('info.connection', false, true);
                     return setTimeout(main.start, main.acp.recon);
                 }
-                adapter.log.info(' Connected in LOGO! mode');
+                adapter.log.info('Successfully connected in LOGO! mode');
 
                 connected = true;
                 adapter.setState('info.connection', true, true);
@@ -1029,7 +1028,7 @@ var main = {
                 main.poll();
             });
         } else {
-            adapter.log.info(' Connect in S7 mode to ' + main.acp.rack + ' / ' + main.acp.slot);
+            adapter.log.info('Connect in S7 mode to ' + main.acp.rack + ' / ' + main.acp.slot);
             s7client.ConnectTo(main.acp.ip, main.acp.rack, main.acp.slot, function (err) {
 
                 if (err) {
@@ -1037,7 +1036,7 @@ var main = {
                     adapter.setState('info.connection', false, true);
                     return setTimeout(main.start, main.acp.recon);
                 }
-                adapter.log.info(' Connected in S7 mode');
+                adapter.log.info('Successfully connected in S7 mode');
 
                 connected = true;
                 adapter.setState('info.connection', true, true);

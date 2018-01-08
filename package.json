@@ -35,7 +35,8 @@
     "url": "https://github.com/ioBroker/ioBroker.s7"
   },
   "optionalDependencies": {
-    "node-snap7": "^0.4.0"
+    "node-snap7": "^0.4.1",
+    "iconv": "^2.3.0"
   },
   "dependencies": {
     "iconv-lite": "0.4.19",
