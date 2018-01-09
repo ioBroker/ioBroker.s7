@@ -156,10 +156,10 @@ describe('Test ' + adapterShortName + ' adapter', function() {
             //config.native.dbtype   = 'sqlite';
 
             setup.setAdapterConfig(config.common, config.native);
-            if (/^win/.test(process.platform) || /^darwin/.test(process.platform)) {
+            //if (/^win/.test(process.platform) || /^darwin/.test(process.platform)) {
                 server = new Server();
                 server.start();
-            }
+            //}
 
             setup.startController(true, function(id, obj) {}, function (id, state) {
                     if (onStateChanged) onStateChanged(id, state);
