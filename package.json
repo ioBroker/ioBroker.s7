@@ -37,7 +37,7 @@
   "optionalDependencies": {
   },
   "dependencies": {
-    "node-snap7": "^0.4.1",
+    "node-snap7": "^0.4.0",
     "iconv-lite": "0.4.19",
     "async": "^1.4.2"
   },
