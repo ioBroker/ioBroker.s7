@@ -27,18 +27,21 @@ function Server() {
     } else {
         str = iconvToL.encode('My üäöstring', 'iso-8859-1');
     }
+    */
     db1[4] = 32;
     db1[5] = str.byteLength;
+    /*
     str.copy(db1, 6);
-    */
+
     var db2 = new Buffer(65535);
     for (var j = 0; j < db2.length; j++) {
         db2[j] = j;
     }
+    */
 
     this.start = function (bind) {
         this.s7server.RegisterArea(this.s7server.srvAreaDB, 1, db1);
-        this.s7server.RegisterArea(this.s7server.srvAreaDB, 2, db2);
+        //this.s7server.RegisterArea(this.s7server.srvAreaDB, 2, db2);
         // Start the server
         this.s7server.StartTo(bind || '127.0.0.1');
     }.bind(this);
@@ -46,7 +49,7 @@ function Server() {
     this.stop = function () {
         this.s7server.Stop();
         this.s7server.UnregisterArea(this.s7server.srvAreaDB, 1);
-        this.s7server.UnregisterArea(this.s7server.srvAreaDB, 2);
+        //this.s7server.UnregisterArea(this.s7server.srvAreaDB, 2);
     }.bind(this);
 
     return this;
