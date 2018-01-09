@@ -29,7 +29,7 @@ function Server() {
     }
     */
     db1[4] = 32;
-    db1[5] = str.byteLength;
+    db1[5] = 6;// str.byteLength;
     /*
     str.copy(db1, 6);
 
