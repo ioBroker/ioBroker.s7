@@ -30,11 +30,11 @@ function Server() {
     db1[4] = 32;
     db1[5] = str.byteLength;
     str.copy(db1, 6);
-
+    */
     var db2 = new Buffer(65535);
     for (var j = 0; j < db2.length; j++) {
         db2[j] = j;
-    }*/
+    }
 
     this.start = function (bind) {
         this.s7server.RegisterArea(this.s7server.srvAreaDB, 1, db1);
@@ -57,5 +57,3 @@ if (module && module.parent) {
     var server = new Server();
     server.start();
 }
-
-
