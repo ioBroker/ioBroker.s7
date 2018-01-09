@@ -16,7 +16,7 @@ before_script:
   - npm install winston@2.3.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
 script:
-  - sudo node node_modules/mocha/bin/mocha --exit
+  - sudo $(which npm) test
 addons:
   apt:
     sources:
