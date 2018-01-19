@@ -56,9 +56,6 @@ You can use 4 time offset modes for S7TIME:
 ## S5TIME 
 S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_Datentyps_S5TIME_Zeitdauer.htm
 
-## TODO
-* Time offset for S7 time.
-
 ## Changelog
 ### 1.1.3 (2018.01.19)
 * (bluefox) The time offset was added
