@@ -138,24 +138,24 @@
 
         var val1 = (val >> 8).toString(16);
         if (val1.length === 1) val1 = '0' + val1;
-        $('#' + input + '0').val(val1).change(function () {
+        $('#' + input + '0').val(val1).on('change', function () {
             var v = $(this).val();
             if (v.toString().length > 2) $(this).val(v.substring(0,2));
             onChange();
 
             $('#' + input).val(((parseInt($('#' + input + '0').val(), 16) & 0xFF) << 8) + (parseInt($('#' + input + '1').val(), 16) & 0xFF));
-        }).keyup(function() {
+        }).on('keyup', function() {
             $(this).trigger('change');
         });
 
         val1 = (val & 0xFF).toString(16);
         if (val1.length === 1) val1 = '0' + val1;
-        $('#' + input + '1').val(val1).change(function () {
+        $('#' + input + '1').val(val1).on('change', function () {
             var v = $(this).val();
             if (v.toString().length > 2) $(this).val(v.substring(0,2));
             $('#' + input).val(((parseInt($('#' + input + '0').val(), 16) & 0xFF) << 8) + (parseInt($('#' + input + '1').val(), 16) & 0xFF));
             onChange();
-        }).keyup(function() {
+        }).on('keyup', function() {
             $(this).trigger('change');
         })
     }
@@ -271,15 +271,24 @@
     }
 
     function load(settings, onchange) {
-        $('#btn_loadSymbols').button().click(function () {
+        var $btn = $('#btn_loadSymbols');
+        $btn.button({
+            label: _($btn.data('title')) || ''
+        }).on('click', function () {
             $('#file_symbol_import').trigger('click')
         });
 
-        $('#btn_loaddb').button().click(function () {
+        $btn = $('#btn_loaddb');
+        $btn.button({
+            label: _($btn.data('title')) || ''
+        }).on('click', function () {
             $('#file_db_import').trigger('click')
         });
 
-        $('.btn_toggle_pool').button().click(function (e, ui) {
+        $btn = $('.btn_toggle_pool');
+        $btn.button({
+            label: _($btn.data('title')) || ''
+        }).on('click', function (e, ui) {
             var grid = $(this).parent().data('grid');
             var $grid = $('#' + grid);
             var localData = $grid.jsGrid('option', 'data');
@@ -291,7 +300,11 @@
             onChange();
         });
 
-        $('.btn_toggle_rw').button().click(function () {
+
+        $btn = $('.btn_toggle_rw');
+        $btn.button({
+            label: _($btn.data('title')) || ''
+        }).on('click', function () {
             var grid = $(this).parent().data('grid');
             var $grid = $('#' + grid);
             var localData = $grid.jsGrid('option', 'data');
@@ -301,10 +314,12 @@
 
             $grid.jsGrid('option', 'data', localData);
             onChange();
-
         });
 
-        $('.btn_toggle_wp').button().click(function () {
+        $btn = $('.btn_toggle_wp');
+        $btn.button({
+            label: _($btn.data('title')) || ''
+        }).on('click', function () {
             var grid = $(this).parent().data('grid');
             var $grid = $('#' + grid);
             var localData = $grid.jsGrid('option', 'data');
@@ -390,14 +405,25 @@
                 tsap2input(id);
             }
 
-            $(this).change(function () {
+            $(this).on('change', function () {
                 onchange();
-            }).keyup(function () {
+            }).on('keyup', function () {
                 $(this).trigger('change');
             });
         });
 
-        $('#s7logo').change(function () {
+        $('#s7params_timeFormat').on('change', function () {
+            var val = $(this).val();
+            if (val === 'summer' || val === 'offset') {
+                $('.time-offset').show();
+                $('#s7params_timeOffset').val(0);
+            } else {
+                $('.time-offset').hide();
+            }
+        }).trigger('change');
+
+        var $logo = $('#s7logo');
+        $logo.on('change', function () {
             onchange();
             if ($(this).prop('checked')) {
                 $('.logoS7').show();
@@ -417,7 +443,7 @@
         });
 
         if (data.params.remoteTSAP || data.params.localTSAP) {
-            $('#s7logo').prop('checked', true);
+            $logo.prop('checked', true);
             $('.logoS7').show();
             $('.realS7').hide();
         } else {
@@ -727,7 +753,7 @@
         })
             .attr('title', _('Export to CSV'))
             .css({width: 24, height: 24})
-            .click(function () {
+            .on('click', function () {
                 var id = $(this).data('table');
                 // build text
                 var text = getExport(data, id);
@@ -736,7 +762,7 @@
                 document.execCommand('copy');
             });
 
-        $('#export-dlg').click(function () {
+        $('#export-dlg').on('click', function () {
             $(this).hide();
         });
 
@@ -746,7 +772,7 @@
         })
                 .attr('title', _('Import from CSV'))
                 .css({width: 24, height: 24})
-                .click(function () {
+                .on('click', function () {
                     $('#import_textarea').val('').focus();
                     $('#import-dlg').show().data('table', $(this).data('table'));
                 });
@@ -754,14 +780,14 @@
         $('#import_button_ok').button({
             icons: {primary: 'ui-icon-check'},
             text: _('Export')
-        }).click(function () {
+        }).on('click', function () {
             getImport(data, $('#import-dlg').hide().data('table'), $('#import_textarea').val());
             onchange();
         });
         $('#import_button_cancel').button({
             icons: {primary: 'ui-icon-close'},
             text: _('Close')
-        }).click(function () {
+        }).on('click', function () {
             $('#import-dlg').hide();
         });
 
@@ -771,7 +797,7 @@
         })
             .attr('title', _('Delete all entries'))
             .css({width: 24, height: 24})
-            .click(function () {
+            .on('click', function () {
                 if (window.confirm(_('All entries will be deleted. Are you sure?'))) {
                     var grid = $(this).parent().data('grid');
                     var $grid = $('#' + grid);
@@ -867,8 +893,8 @@
             });
 
             onChange();
-
-            $('#file_symbol_import').replaceWith($('#file_symbol_import').clone());
+            var $file = $('#file_symbol_import');
+            $file.replaceWith($file.clone());
             $('#btn_loadSymbols').button('option', 'disabled', false);
         };
 
@@ -1100,8 +1126,8 @@
                 if (changes.markers) {
                     $s7markers.jsGrid('option', 'data', newParts.markers);
                 }
-
-                $('#file_db_import').replaceWith($('#file_db_import').clone());
+                var $file = $('#file_db_import');
+                $file.replaceWith($file.clone());
                 $('#btn_loaddb').button('enable');
                 onChange();
             }, 200);
@@ -1157,30 +1183,44 @@
             </tr>
         </table>
 
-        <table class="ui-widget-content" style="z-index: 2;margin-top: 20px;border-collapse: collapse; display: inline; border: 1px solid black;height: 130px;">
+        <table class="ui-widget-content" style="z-index: 2;margin-top: 20px;border-collapse: collapse; display: inline; border: 1px solid black;">
             <tr>
                 <td style="text-align: center" colspan="3" class="ui-widget-header translate">General</td>
             </tr>
 
             <tr>
-                <td style="width: 184px"><label class="translate" for="s7params_round">Round Real to:</label></td>
-                <td style="text-align: center"><input style="margin-right: 5px;text-align: right" type="text" class="s7_params" id="s7params_round"/></td>
+                <td><label class="translate" for="s7params_round" style="padding-right: 10px">Round Real to:</label></td>
+                <td><input style="margin-right: 5px;text-align: right" class="s7_params" id="s7params_round"/></td>
                 <td></td>
             </tr>
             <tr>
                 <td><label class="translate" for="s7params_poll">Poll delay:</label></td>
-                <td  style="text-align: center"><input style="margin-right: 5px;text-align: right" class="s7_params" id="s7params_poll"/></td>
+                <td><input style="margin-right: 5px;text-align: right" class="s7_params" id="s7params_poll"/></td>
                 <td style="padding-right: 20px">ms</td>
             </tr>
             <tr>
                 <td><label class="translate" for="s7params_recon">Reconnect time:</label></td>
-                <td style="text-align: center"><input style="margin-right: 5px;text-align: right" type="text" class="s7_params" id="s7params_recon"/></td>
+                <td><input style="margin-right: 5px;text-align: right" class="s7_params" id="s7params_recon"/></td>
                 <td>ms</td>
             </tr>
             <tr>
                 <td><label class="translate" for="s7params_pulsetime">Pulse time:</label></td>
-                <td style="text-align: center"><input style="margin-right: 5px;text-align: right" type="text" class="s7_params" id="s7params_pulsetime"/></td>
+                <td><input style="margin-right: 5px;text-align: right" class="s7_params" id="s7params_pulsetime"/></td>
                 <td>ms</td>
+            </tr>
+            <tr>
+                <td><label class="translate" for="s7params_timeFormat">S7 Time mode:</label></td>
+                <td colspan="2"><select style="margin-right: 5px;text-align: right" class="s7_params" id="s7params_timeFormat">
+                    <option value="" class="translate">Local time</option>
+                    <option value="utc" class="translate">UTC</option>
+                    <option value="summer" class="translate">Offset (with day saving time)</option>
+                    <option value="offset" class="translate">Offset (no day saving time)</option>
+                </select></td>
+            </tr>
+            <tr class="time-offset">
+                <td><label class="translate" for="s7params_timeOffset">Time offset:</label></td>
+                <td><input style="margin-right: 5px;text-align: right" class="s7_params" id="s7params_timeOffset"/></td>
+                <td><span class="translate">minutes</span></td>
             </tr>
         </table>
 
@@ -1191,44 +1231,44 @@
             </tr>
             <tr>
                 <td style="padding: 10px;width: 180px; text-align: center">
-                    <button id="btn_loadSymbols" class="translateB">Load Symbols</button>
+                    <button id="btn_loadSymbols"  data-title="Load Symbols"></button>
                     <input style="display: none" onchange="symbolImport(this.files)" type="file" accept=".asc" id="file_symbol_import"/></td>
                 <td style="padding: 10px;width: 180px; text-align: center">
-                    <button id="btn_loaddb" class="translateB">Add DB</button>
+                    <button id="btn_loaddb"  data-title="Add DB"></button>
                     <input style="display: none" onchange="dbImport(this.files)" type="file" accept=".prn, .csv" id="file_db_import"/></td>
             </tr>
         </table>
     </div>
     <div id="s7_tab_i" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_inputs">
-            <button class="btn_delete_all translateB" data-table="inputs"></button>
-            <button class="btn_export translateB" data-table="inputs"></button>
-            <button class="btn_import translateB" data-table="inputs"></button>
-            <button class="btn_toggle_pool translateB translateT" title="Polling">Toggle poll</button>
-            <button class="btn_toggle_rw translateB translateT"   title="Write access">Toggle RW</button>
-            <button class="btn_toggle_wp translateB translateT"   title="write as Pulse">Toggle WP</button>
+            <button class="btn_delete_all" data-table="inputs"></button>
+            <button class="btn_export" data-table="inputs"></button>
+            <button class="btn_import" data-table="inputs"></button>
+            <button class="btn_toggle_pool translateT" data-title="Toggle poll" title="Polling"></button>
+            <button class="btn_toggle_rw translateT"   data-title="Toggle RW"   title="Write access"></button>
+            <button class="btn_toggle_wp translateT"   data-title="Toggle WP"   title="write as Pulse"></button>
         </div>
         <div id="s7_inputs" class="s7_grid"></div>
     </div>
     <div id="s7_tab_o" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_outputs">
-            <button class="btn_delete_all translateB" data-table="outputs"></button>
-            <button class="btn_export translateB" data-table="outputs"></button>
-            <button class="btn_import translateB" data-table="outputs"></button>
-            <button class="btn_toggle_pool translateB" title="Polling">Toggle poll</button>
-            <button class="btn_toggle_rw translateB" title="Write access">Toggle RW</button>
-            <button class="btn_toggle_wp translateB" title="write as Pulse">Toggle WP</button>
+            <button class="btn_delete_all "     data-table="outputs"></button>
+            <button class="btn_export "         data-table="outputs"></button>
+            <button class="btn_import "         data-table="outputs"></button>
+            <button class="btn_toggle_pool "    data-title="Toggle poll"    title="Polling"></button>
+            <button class="btn_toggle_rw "      data-title="Toggle RW"      title="Write access"></button>
+            <button class="btn_toggle_wp "      data-title="Toggle WP"      title="write as Pulse"></button>
         </div>
         <div id="s7_outputs" class="s7_grid"></div>
     </div>
     <div id="s7_tab_m" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_markers">
-            <button class="btn_delete_all translateB" data-table="markers"></button>
-            <button class="btn_export translateB" data-table="markers"></button>
-            <button class="btn_import translateB" data-table="markers"></button>
-            <button class="btn_toggle_pool translateB" title="Polling">Toggle poll</button>
-            <button class="btn_toggle_rw translateB" title="Write access">Toggle RW</button>
-            <button class="btn_toggle_wp translateB" title="write as Pulse">Toggle WP</button>
+            <button class="btn_delete_all "     data-table="markers"></button>
+            <button class="btn_export "         data-table="markers"></button>
+            <button class="btn_import "         data-table="markers"></button>
+            <button class="btn_toggle_pool "     data-title="Toggle poll"   title="Polling"></button>
+            <button class="btn_toggle_rw "       data-title="Toggle RW"     title="Write access"></button>
+            <button class="btn_toggle_wp "       data-title="Toggle WP"     title="write as Pulse"></button>
         </div>
         <div id="s7_markers" class="s7_grid"></div>
     </div>
@@ -1242,12 +1282,12 @@
     <!--</div>-->
     <div id="s7_tab_d" class="s7_tab">
         <div class="table_head_btn" data-grid="s7_dbs">
-            <button class="btn_delete_all translateB" data-table="dbs"></button>
-            <button class="btn_export translateB" data-table="dbs"></button>
-            <button class="btn_import translateB" data-table="dbs"></button>
-            <button class="btn_toggle_pool translateB" title="Polling">Toggle poll</button>
-            <button class="btn_toggle_rw translateB"   title="Write access">Toggle RW</button>
-            <button class="btn_toggle_wp translateB"   title="write as Pulse">Toggle WP</button>
+            <button class="btn_delete_all " data-table="dbs"></button>
+            <button class="btn_export " data-table="dbs"></button>
+            <button class="btn_import " data-table="dbs"></button>
+            <button class="btn_toggle_pool " data-title="Toggle poll" title="Polling"></button>
+            <button class="btn_toggle_rw "   data-title="Toggle RW" title="Write access"></button>
+            <button class="btn_toggle_wp "   data-title="Toggle WP" title="write as Pulse"></button>
         </div>
         <div id="s7_dbs" class="s7_grid"></div>
     </div>
@@ -1257,8 +1297,8 @@
     </div>
     <div id="import-dlg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;display: none; z-index: 100">
         <textarea id="import_textarea" style="width: 100%; height: calc(100% - 40px)"></textarea>
-        <button id="import_button_ok"    style="position: absolute; bottom: 10px; right: 120px;" class="translateB">Import</button>
-        <button id="import_button_cancel" style="position: absolute; bottom: 10px; right: 10px;" class="translateB">Close</button>
+        <button id="import_button_ok"       style="position: absolute; bottom: 10px; right: 120px;" title="Import"></button>
+        <button id="import_button_cancel"   style="position: absolute; bottom: 10px; right: 10px;"  title="Close"></button>
     </div>
 </div>
 

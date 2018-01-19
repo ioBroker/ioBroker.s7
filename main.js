@@ -196,7 +196,7 @@ function prepareWrite(id, state) {
                         delete pulseList[id];
                     }, main.acp.poll * 1.5);
 
-                }, adapter.config.params.pulsetime);
+                }, main.acp.pulsetime);
 
                 writeHelper(id, state);
             }
@@ -462,13 +462,15 @@ function syncEnums(enumGroup, id, newEnumName, callback) {
     // try to find this id in enums
     var found = false;
     for (var e in enums[enumGroup]) {
-        if (enums[enumGroup][e].common &&
-            enums[enumGroup][e].common.members &&
-            enums[enumGroup][e].common.members.indexOf(id) !== -1) {
-            if (enums[enumGroup][e]._id !== newEnumName) {
-                removeFromEnum(enums[enumGroup][e]._id, id);
-            } else {
-                found = true;
+        if (enums[enumGroup].hasOwnProperty(e)) {
+            if (enums[enumGroup][e].common &&
+                enums[enumGroup][e].common.members &&
+                enums[enumGroup][e].common.members.indexOf(id) !== -1) {
+                if (enums[enumGroup][e]._id !== newEnumName) {
+                    removeFromEnum(enums[enumGroup][e]._id, id);
+                } else {
+                    found = true;
+                }
             }
         }
     }
@@ -485,6 +487,12 @@ function createExtendObject(id, objData, callback) {
             adapter.setObjectNotExists(id, objData, callback);
         }
     });
+}
+
+function isDST(time) {
+    var jan = new Date(time.getFullYear(), 0, 1);
+    var jul = new Date(time.getFullYear(), 6, 1);
+    return Math.min(jan.getTimezoneOffset(), jul.getTimezoneOffset()) - time.getTimezoneOffset();
 }
 
 var convertS7type = {
@@ -538,14 +546,15 @@ var main = {
         main.acp.recon = parseInt(main.acp.recon, 10) || 60000;
 
         if (main.acp.round) {
-            main.round = parseInt(main.acp.round) || 2;
+            main.round = parseInt(main.acp.round, 10) || 2;
         } else {
             main.round = 2;
         }
 
         main.round = Math.pow(10, main.round);
 
-        adapter.config.params.pulsetime = parseInt(adapter.config.params.pulsetime || 1000);
+        main.acp.pulsetime  = parseInt(main.acp.pulsetime, 10) || 1000;
+        main.acp.timeOffset = parseInt(main.acp.timeOffset, 10) || 0;
 
         adapter.getForeignObjects(adapter.namespace + '.*', function (err, list) {
 
@@ -1225,6 +1234,14 @@ var main = {
             // 21 = 0x15 => 2015
             y = (((y >> 4) & 0xF) * 10 + (y & 0xF)) * 10 + ((buff[offsetByte + 7] >> 4) & 0xF);
             d.setUTCMilliseconds(y);
+
+            if (main.acp.timeFormat === 'utc') {
+                d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
+            } else if (main.acp.timeFormat === 'summer') {
+                d.setMinutes(d.getMinutes() - main.acp.timeOffset + isDST(d));
+            } else if (main.acp.timeFormat === 'offset') {
+                d.setMinutes(d.getMinutes() - main.acp.timeOffset);
+            }
 
             if (ackObjects[id] === undefined || ackObjects[id].val !== d.getTime()) {
                 ackObjects[id] = {val: d.getTime()};

@@ -46,10 +46,23 @@ sudo apt-get install build-essential
 Under windows is Visual Studio 2013 (Community Edition is enough) or later is required to get it run.
 Python 2.x is required too. Not 3.x.
 
+## Time offset
+You can use 4 time offset modes for S7TIME:
+- Local: the time value will be not modified
+- UTC: local time offset will be added to received time. E.g. for Germany: -60 Minutes in winter and -120 Minutes in summer.
+- Set offset (use summer/winter): Given offset in minutes will be subtracted from received time and in summer additionally 60 minutes will be subtracted.
+- Set offset (no summer/winter): Just the given offset in minutes will be subtracted from received time. No matter in winter or in summer.
+
+## S5TIME 
+S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_Datentyps_S5TIME_Zeitdauer.htm
+
 ## TODO
 * Time offset for S7 time.
 
 ## Changelog
+### 1.1.3 (2018.01.19)
+* (bluefox) The time offset was added
+
 ### 1.1.1 (2018.01.05)
 * (Apollon77) Fix LOGO! support
 

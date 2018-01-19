@@ -1,8 +1,19 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.1.2",
+        "version": "1.1.3",
         "news": {
+            "1.1.3": {
+                "en": "The time offset was added",
+                "de": "Der Zeitversatz wurde hinzugefügt",
+                "ru": "Добавлен временной сдвиг",
+                "pt": "O compensador de tempo foi adicionado",
+                "nl": "De tijdverschuiving is toegevoegd",
+                "fr": "Le décalage horaire a été ajouté",
+                "it": "L'offset temporale è stato aggiunto",
+                "es": "La compensación de tiempo se agregó",
+                "pl": "Przesunięcie czasu zostało dodane"
+            },
             "1.1.2": {
                 "en": "Fix strings",
                 "de": "Strings korrigieren",
@@ -100,7 +111,8 @@
             "nl": "Siemens SIMATIC S7-verbinding via Snap7",
             "fr": "Connexion Siemens SIMATIC S7 via Snap7",
             "it": "Collegamento Siemens SIMATIC S7 tramite Snap7",
-            "es": "Conexión Siemens SIMATIC S7 a través de Snap7"
+            "es": "Conexión Siemens SIMATIC S7 a través de Snap7",
+            "pl": "Połączenie Siemens SIMATIC S7 za pomocą Snap7"
         },
         "authors": [
             "smiling_Jack <steffen.schorling@googlemail.com>",
@@ -138,7 +150,9 @@
             "recon": "60000",
             "pulsetime": "1000",
             "localTSAP": 0,
-            "remoteTSAP": 0
+            "remoteTSAP": 0,
+            "timeFormat": "",
+            "timeOffset": 0
         },
         "inputs": [],
         "outputs": [],
