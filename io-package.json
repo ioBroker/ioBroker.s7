@@ -1,8 +1,19 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.1.3",
+        "version": "1.1.4",
         "news": {
+            "1.1.4": {
+                "en": "Support for nodejs 10 on windows",
+                "de": "Unterstützung für Nodejs 10 unter Windows",
+                "ru": "Поддержка nodejs 10 на окнах",
+                "pt": "Suporte para o nodejs 10 no windows",
+                "nl": "Ondersteuning voor nodejs 10 op Windows",
+                "fr": "Prise en charge de nodejs 10 sur Windows",
+                "it": "Supporto per nodejs 10 su Windows",
+                "es": "Soporte para nodejs 10 en windows",
+                "pl": "Obsługa nodejs 10 w oknach"
+            },
             "1.1.3": {
                 "en": "The time offset was added",
                 "de": "Der Zeitversatz wurde hinzugefügt",
