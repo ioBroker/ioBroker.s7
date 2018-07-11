@@ -53,10 +53,13 @@ You can use 4 time offset modes for S7TIME:
 - Set offset (use summer/winter): Given offset in minutes will be subtracted from received time and in summer additionally 60 minutes will be subtracted.
 - Set offset (no summer/winter): Just the given offset in minutes will be subtracted from received time. No matter in winter or in summer.
 
-## S5TIME 
+## S5TIME
 S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_Datentyps_S5TIME_Zeitdauer.htm
 
 ## Changelog
+### 1.1.4 (2018.07.10)
+* (Apollon77) Support for nodejs 10 on windows
+
 ### 1.1.3 (2018.01.19)
 * (bluefox) The time offset was added
 
