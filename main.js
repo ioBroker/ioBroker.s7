@@ -3,7 +3,7 @@
 
 'use strict';
 
-var utils     = require(__dirname + '/lib/utils');
+var utils = require('@iobroker/adapter-core');
 var adapter   = new utils.Adapter('s7');
 var async     = require('async');
 var snap7     = require('node-snap7');
