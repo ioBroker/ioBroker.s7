@@ -38,14 +38,14 @@
   "dependencies": {
     "node-snap7": "^1.0.1",
     "iconv-lite": "0.4.19",
-    "async": "^1.4.2"
+    "async": "^1.4.2",
+    "@iobroker/adapter-core": "^1.0.3"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
     "mocha": "^4.1.0",
     "chai": "^4.1.2",
-    "nan": "2.4.0",
-    "@iobroker/adapter-core": "^1.0.3"
+    "nan": "2.4.0"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.s7/issues"
