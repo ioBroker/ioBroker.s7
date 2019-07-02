@@ -1,6 +1,5 @@
 ![Logo](admin/S7.png)
 # iobroker.s7
-=================
 
 ![Number of Installations](http://iobroker.live/badges/s7-installed.svg) ![Number of Installations](http://iobroker.live/badges/s7-stable.svg) [![NPM version](http://img.shields.io/npm/v/iobroker.s7.svg)](https://www.npmjs.com/package/iobroker.s7)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.s7.svg)](https://www.npmjs.com/package/iobroker.s7)
