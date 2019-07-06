@@ -1,8 +1,19 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.1.4",
+        "version": "1.1.5",
         "news": {
+            "1.1.5": {
+                "en": "Support for nodejs 12",
+                "de": "Unterstützung für Nodejs 12",
+                "ru": "Поддержка nodejs 12",
+                "pt": "Suporte para o nodejs 12",
+                "nl": "Ondersteuning voor nodejs 12",
+                "fr": "Prise en charge de nodejs 12",
+                "it": "Supporto per nodejs 12",
+                "es": "Soporte para nodejs 12",
+                "pl": "Obsługa nodejs 12"
+            },
             "1.1.4": {
                 "en": "Support for nodejs 10 on windows",
                 "de": "Unterstützung für Nodejs 10 unter Windows",
