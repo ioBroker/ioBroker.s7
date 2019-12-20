@@ -157,8 +157,10 @@ describe('Test ' + adapterShortName + ' adapter', function() {
 
             setup.setAdapterConfig(config.common, config.native);
             //if (/^win/.test(process.platform) || /^darwin/.test(process.platform)) {
+            let bindIp = '127.0.0.1';
+            if (/^darwin/.test(process.platform)) bindIp = '0.0.0.0';
                 server = new Server();
-                server.start();
+                server.start(bindIp);
             //}
 
             setup.startController(true, function(id, obj) {}, function (id, state) {
