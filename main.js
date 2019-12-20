@@ -1394,6 +1394,7 @@ var main = {
                     main.error_count++;
 
                     adapter.log.warn('Poll error count: ' + main.error_count + ' code: 0x' + parseInt(err, 10).toString(16) + (errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''));
+                    adapter.log.warn('Poll error Last-Error Info: ' + s7client.LastError() + ': ' + s7client.ErrorText(s7client.LastError()));
                     adapter.setState('info.connection', false, true);
 
                     if (main.error_count < 6 && s7client.Connected()) {
@@ -1401,7 +1402,7 @@ var main = {
 
                     } else {
                         connected = false;
-                        adapter.log.error('try reconnection');
+                        adapter.log.error('try reconnection: ' + s7client.Disconnect());
                         adapter.setState('info.connection', false, true);
                         setTimeout(main.start, main.acp.recon);
                     }
