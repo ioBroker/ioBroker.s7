@@ -1397,12 +1397,12 @@ var main = {
                     adapter.log.warn('Poll error Last-Error Info: ' + s7client.LastError() + ': ' + s7client.ErrorText(s7client.LastError()));
                     adapter.setState('info.connection', false, true);
 
-                    if (main.error_count < 6 && s7client.Connected()) {
+                    if (main.error_count < 6 && s7client.Connected() && err !== 0xa006e) {
                         setTimeout(main.poll, main.acp.poll);
-
                     } else {
                         connected = false;
-                        adapter.log.error('try reconnection: ' + s7client.Disconnect());
+                        const disconnectSucceess = s7client.Disconnect();
+                        adapter.log.error('try reconnection: Disconnect successfull: ' + disconnectSucceess);
                         adapter.setState('info.connection', false, true);
                         setTimeout(main.start, main.acp.recon);
                     }
