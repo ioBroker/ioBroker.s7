@@ -56,6 +56,9 @@ You can use 4 time offset modes for S7TIME:
 S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_Datentyps_S5TIME_Zeitdauer.htm
 
 ## Changelog
+### 1.1.6 (2019.12.27)
+* (Apollon77) reconnection handling on timeouts optimized
+
 ### 1.1.4 (2018.07.10)
 * (Apollon77) Support for nodejs 10 on windows
 

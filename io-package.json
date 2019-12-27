@@ -1,18 +1,19 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.1.5",
+        "version": "1.1.6",
         "news": {
-            "1.1.5": {
-                "en": "Support for nodejs 12",
-                "de": "Unterstützung für Nodejs 12",
-                "ru": "Поддержка nodejs 12",
-                "pt": "Suporte para o nodejs 12",
-                "nl": "Ondersteuning voor nodejs 12",
-                "fr": "Prise en charge de nodejs 12",
-                "it": "Supporto per nodejs 12",
-                "es": "Soporte para nodejs 12",
-                "pl": "Obsługa nodejs 12"
+            "1.1.6": {
+                "en": "reconnection handling on timeouts optimized, support for nodejs 12",
+                "de": "Wiederverbindungsbehandlung bei Timeouts optimiert, Unterstützung für NodeJS 12",
+                "ru": "Оптимизация обработки переподключений, поддержка nodejs 12",
+                "pt": "manipulação de reconexão em tempos limite otimizados, suporte para nodejs 12",
+                "nl": "reconnection handling op timeouts geoptimaliseerd, ondersteuning voor nodejs 12",
+                "fr": "gestion de la reconnexion sur les délais d'attente optimisée, prise en charge de nodejs 12",
+                "it": "gestione della riconnessione su timeout ottimizzata, supporto per nodejs 12",
+                "es": "manejo de reconexión en tiempos de espera optimizados, soporte para nodejs 12",
+                "pl": "obsługa ponownego łączenia zoptymalizowana pod kątem przekroczeń limitów, obsługa nodejs 12",
+                "zh-cn": "优化了超时时的重新连接处理，支持nodejs 12"
             },
             "1.1.4": {
                 "en": "Support for nodejs 10 on windows",
