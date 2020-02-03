@@ -542,7 +542,10 @@ var main = {
         main.acp       = adapter.config.params;
         main.acp.poll  = parseInt(main.acp.poll,  10) || 1000; // default is 1 second
         main.acp.rack  = parseInt(main.acp.rack,  10) || 0;
-        main.acp.slot  = parseInt(main.acp.slot,  10) || 2;
+        main.acp.slot  = parseInt(main.acp.slot,  10);
+        if (!main.acp.slot && main.acp.slot !== 0) {
+            main.acp.slot = 2;
+        }
         main.acp.recon = parseInt(main.acp.recon, 10) || 60000;
 
         if (main.acp.round) {

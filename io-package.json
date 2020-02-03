@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.1.6",
+        "version": "1.1.7",
         "news": {
+            "1.1.7": {
+                "en": "also allow to use slot 0",
+                "de": "Lassen Sie auch Slot 0 zu",
+                "ru": "также разрешить использовать слот 0",
+                "pt": "também permitem usar o slot 0",
+                "nl": "ook toestaan om slot 0 te gebruiken",
+                "fr": "permet également d'utiliser l'emplacement 0",
+                "it": "consentire anche di utilizzare lo slot 0",
+                "es": "también permite usar la ranura 0",
+                "pl": "pozwalają również na użycie slotu 0",
+                "zh-cn": "也允许使用插槽0"
+            },
             "1.1.6": {
                 "en": "reconnection handling on timeouts optimized, support for nodejs 12",
                 "de": "Wiederverbindungsbehandlung bei Timeouts optimiert, Unterstützung für NodeJS 12",
