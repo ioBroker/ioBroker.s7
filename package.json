@@ -39,12 +39,12 @@
     "node-snap7": "^1.0.3",
     "iconv-lite": "0.4.19",
     "async": "^1.4.2",
-    "@iobroker/adapter-core": "^1.0.3"
+    "@iobroker/adapter-core": "^2.4.0"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "mocha": "^4.1.0",
-    "chai": "^4.1.2",
+    "gulp": "^4.0.2",
+    "mocha": "^7.1.2",
+    "chai": "^4.2.0",
     "nan": "2.4.0"
   },
   "bugs": {

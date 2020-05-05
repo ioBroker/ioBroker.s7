@@ -395,4 +395,4 @@ gulp.task('updateReadme', function (done) {
     done();
 });
 
-gulp.task('default', ['updatePackages', 'updateReadme']);
+gulp.task('default', gulp.series('updatePackages', 'updateReadme'));
