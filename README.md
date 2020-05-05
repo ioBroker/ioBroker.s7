@@ -57,7 +57,7 @@ S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_D
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 1.1.8 (2020-05-05)
 * (Steff42) Make sure objects ids/names are strings
 
 ### 1.1.6 (2019.12.27)

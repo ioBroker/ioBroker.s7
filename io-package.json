@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.1.7",
+        "version": "1.1.8",
         "news": {
+            "1.1.8": {
+                "en": "Make sure objects ids/names are strings",
+                "de": "Stellen Sie sicher, dass Objekt-IDs / -Namen Zeichenfolgen sind",
+                "ru": "Убедитесь, что идентификаторы / имена объектов являются строками",
+                "pt": "Verifique se os IDs / nomes dos objetos são cadeias",
+                "nl": "Zorg ervoor dat objecten ids / namen strings zijn",
+                "fr": "Assurez-vous que les identifiants / noms des objets sont des chaînes",
+                "it": "Assicurarsi che gli ID / nomi degli oggetti siano stringhe",
+                "es": "Asegúrese de que los identificadores / nombres de los objetos sean cadenas",
+                "pl": "Upewnij się, że identyfikatory / nazwy obiektów są łańcuchami",
+                "zh-cn": "确保对象ID /名称是字符串"
+            },
             "1.1.7": {
                 "en": "also allow to use slot 0",
                 "de": "Lassen Sie auch Slot 0 zu",
@@ -80,13 +92,13 @@
                 "es": "Corregir cadenas\ncorregir nombres si tienen más de un espacio"
             },
             "1.0.6": {
-              "en": "The error codes are decoded into the readable text",
-              "de": "Die Fehlercodes werden in den lesbaren Text decodiert",
-              "ru": "Коды ошибок декодируются в читаемый текст",
-              "pt": "Os códigos de erro são decodificados no texto legível",
-              "nl": "De foutcodes worden gedecodeerd in de leesbare tekst",
-              "fr": "Les codes d'erreur sont décodés dans le texte lisible",
-              "it": "I codici di errore sono decodificati nel testo leggibile"
+                "en": "The error codes are decoded into the readable text",
+                "de": "Die Fehlercodes werden in den lesbaren Text decodiert",
+                "ru": "Коды ошибок декодируются в читаемый текст",
+                "pt": "Os códigos de erro são decodificados no texto legível",
+                "nl": "De foutcodes worden gedecodeerd in de leesbare tekst",
+                "fr": "Les codes d'erreur sont décodés dans le texte lisible",
+                "it": "I codici di errore sono decodificati nel testo leggibile"
             },
             "1.0.5": {
                 "en": "Error by the DB import is fixed",
@@ -138,7 +150,7 @@
             }
         },
         "title": "Siemens Simatic S7",
-        "desc":  {
+        "desc": {
             "en": "Siemens SIMATIC S7 connection via Snap7",
             "de": "Siemens SIMATIC S7-Anbindung über Snap7",
             "ru": "Подключение Siemens SIMATIC S7 через Snap7",
