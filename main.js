@@ -768,7 +768,7 @@ var main = {
                     adapter.setObject('Inputs.' + main.ac.inputs[i].offsetByte, {
                         type: 'channel',
                         common: {
-                            name: main.ac.inputs[i].offsetByte
+                            name: main.ac.inputs[i].offsetByte.toString()
                         },
                         native: {}
                     });
@@ -806,7 +806,7 @@ var main = {
                     adapter.setObject('Outputs.' + main.ac.outputs[i].offsetByte, {
                         type: 'channel',
                         common: {
-                            name: main.ac.outputs[i].offsetByte
+                            name: main.ac.outputs[i].offsetByte.toString()
                         },
                         native: {}
                     });
@@ -844,7 +844,7 @@ var main = {
                     adapter.setObject('Markers.' + main.ac.markers[i].offsetByte, {
                         type: 'channel',
                         common: {
-                            name: main.ac.markers[i].offsetByte
+                            name: main.ac.markers[i].offsetByte.toString()
                         },
                         native: {}
                     });
