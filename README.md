@@ -57,6 +57,10 @@ S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_D
 
 ## Changelog
 
+### 1.1.9 (2020-08-02)
+* (Apollon77) Fix object access issue
+* (Apollon77) update node-snap7 library
+
 ### 1.1.8 (2020-05-05)
 * (Steff42) Make sure objects ids/names are strings
 

@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.1.8",
+        "version": "1.1.9",
         "news": {
+            "1.1.9": {
+                "en": "update node-snap7 library and error case prevented",
+                "de": "Aktualisierung der Node-Snap7-Bibliothek und Fehlerfall verhindert",
+                "ru": "обновление библиотеки node-snap7 и предотвращение ошибок",
+                "pt": "atualização da biblioteca node-snap7 e impedimento de maiúsculas e minúsculas",
+                "nl": "update node-snap7 bibliotheek en foutgeval voorkomen",
+                "fr": "mise à jour de la bibliothèque node-snap7 et évitement des cas d'erreur",
+                "it": "aggiornamento libreria node-snap7 e caso di errore impedito",
+                "es": "actualizar la biblioteca node-snap7 y el caso de error evitado",
+                "pl": "aktualizacja biblioteki node-snap7 i zapobieganie przypadkom błędu",
+                "zh-cn": "更新node-snap7库并防止错误情况"
+            },
             "1.1.8": {
                 "en": "Make sure objects ids/names are strings",
                 "de": "Stellen Sie sicher, dass Objekt-IDs / -Namen Zeichenfolgen sind",

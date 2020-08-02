@@ -172,7 +172,7 @@ function writeHelper(id, state) {
 }
 
 function prepareWrite(id, state) {
-    if (objects[id].native.rw) {
+    if (objects[id] && objects[id].native && objects[id].native.rw) {
 
         if (!objects[id].native.wp) {
 
