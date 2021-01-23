@@ -888,7 +888,7 @@
                     var id = $(this).attr('id');
                     var subDb = localData[id.split('_')[1]];
                     $('#' + id).jsGrid('option', 'data', subDb);
-                    data[id] = subDb;
+                    localData[id] = subDb;
                 }
             });
 
