@@ -197,6 +197,12 @@
         "config": {
             "minWidth": 1024,
             "width": 1224
+        },
+        "compact": true,
+        "plugins": {
+            "sentry": {
+                "dsn": "https://d7dff297e602417087d181577d34482f@sentry.iobroker.net/113"
+            }
         }
     },
     "native": {

@@ -3,19 +3,19 @@
 
 'use strict';
 
-var utils = require('@iobroker/adapter-core');
-var adapter   = new utils.Adapter('s7');
-var async     = require('async');
-var snap7     = require('node-snap7');
-var s7client  = snap7 ? new snap7.S7Client() : null;
-var connected = false;
-var iconvFrom;
-var iconvTo;
-var iconvToL;
-var encoding = 'iso-8859-1';
+const utils       = require('@iobroker/adapter-core');
+const adapterName = require('./package.json').name.split('.').pop();
+const async       = require('async');
+const snap7       = require('node-snap7');
+let s7client      = snap7 ? new snap7.S7Client() : null;
+let connected     = null;
+let iconvFrom;
+let iconvTo;
+let iconvToL;
+const encoding = 'iso-8859-1';
 
 /*try {
-    var Iconv  = require('iconv').Iconv;
+    const Iconv  = require('iconv').Iconv;
     iconvFrom  = new Iconv(encoding, 'UTF-8');
     iconvTo    = new Iconv('UTF-8', encoding);
 } catch (e)*/ {
@@ -24,32 +24,17 @@ var encoding = 'iso-8859-1';
     iconvToL  = require('iconv-lite');
 }
 
-var nextPoll;
-var ackObjects = {};
+let nextPoll;
+let reconTimer;
+let adapter;
+let infoRegExp;
+const ackObjects = {};
+const pulseList  = {};
+const sendBuffer = {};
+const objects    = {};
+const enums      = {};
 
-process.on('SIGINT', function () {
-    if (adapter && adapter.setState) {
-        adapter.setState('info.connection', false, true);
-        adapter.setState('info.pdu',        '',    true);
-        adapter.setState('info.poll_time',  '',    true);
-    }
-    if (nextPoll)  {
-        clearTimeout(nextPoll);
-    }
-});
-
-adapter.on('ready', function () {
-    adapter.setState('info.connection', false, true);
-    main.main();
-});
-
-var pulseList  = {};
-var sendBuffer = {};
-var objects    = {};
-var enums      = {};
-var infoRegExp = new RegExp(adapter.namespace.replace(/\./g, '\\.') + '\\.info\\.');
-
-var errorCodes = {
+const errorCodes = {
     0x00000001: 'errTCPSocketCreation',
     0x00000002: 'errTCPConnectionTimeout',
     0x00000003: 'errTCPConnectionFailed',
@@ -101,7 +86,7 @@ var errorCodes = {
     0x02700000: 'errCliFunctionNotImplemented'
 };
 
-var sysErrors = {
+const sysErrors = {
     10004: 'EINTR',
     10009: 'EBADF',
     10013: 'EACCES',
@@ -148,20 +133,61 @@ var sysErrors = {
     11004: 'NO_DATA'
 };
 
-adapter.on('stateChange', function (id, state) {
-    if (state && !state.ack && id && !infoRegExp.test(id)) {
-        if (objects[id]) {
-            prepareWrite(id, state);
-        } else {
-            adapter.getObject(id, function (err, data) {
-                if (!err) {
-                    objects[id] = data;
-                    prepareWrite(id, state);
-                }
-            });
-        }
+process.on('SIGINT', () => onUnload());
+
+function onUnload(cb) {
+    if (adapter && adapter.setState) {
+        updateConnection(false);
     }
-});
+    nextPoll && clearTimeout(nextPoll);
+    nextPoll = null;
+    reconTimer && clearTimeout(reconTimer);
+    reconTimer = null;
+    if (s7client) {
+        try {
+            s7client.Connected() && s7client.Disconnect();
+        } catch (e) {
+
+        }
+
+        s7client = null;
+    }
+    cb && cb();
+}
+
+function startAdapter(options) {
+    options = options || {};
+    Object.assign(options, {
+        name: adapterName,
+    });
+    adapter = new utils.Adapter(options);
+
+    adapter.on('ready', () => {
+        infoRegExp = new RegExp(adapter.namespace.replace(/\./g, '\\.') + '\\.info\\.');
+        updateConnection(false);
+        main.main();
+    });
+
+    adapter.on('stateChange', (id, state) => {
+        if (state && !state.ack && id && !infoRegExp.test(id)) {
+            if (objects[id]) {
+                prepareWrite(id, state);
+            } else {
+                adapter.getObject(id, (err, data) => {
+                    if (!err) {
+                        objects[id] = data;
+                        prepareWrite(id, state);
+                    }
+                });
+            }
+        }
+    });
+
+    adapter.on('unload', cb =>
+        onUnload(cb));
+
+    return adapter;
+}
 
 function writeHelper(id, state) {
     sendBuffer[id] = state.val;
@@ -175,21 +201,19 @@ function prepareWrite(id, state) {
     if (objects[id] && objects[id].native && objects[id].native.rw) {
 
         if (!objects[id].native.wp) {
-
             writeHelper(id, state);
-            setTimeout(function () {
-                adapter.setState(id, ackObjects[id.substring(adapter.namespace.length + 1)].val, true);
-            }, main.acp.poll * 1.5);
+            setTimeout(() =>
+                adapter.setState(id, ackObjects[id.substring(adapter.namespace.length + 1)].val, true), main.acp.poll * 1.5);
 
         } else {
             if (pulseList[id] === undefined) {
-                var _id = id.substring(adapter.namespace.length + 1);
+                const _id = id.substring(adapter.namespace.length + 1);
                 pulseList[id] = ackObjects[_id] ? ackObjects[_id].val : !state.val;
 
-                setTimeout(function () {
+                setTimeout(() => {
                     writeHelper(id, {val: pulseList[id]});
 
-                    setTimeout(function () {
+                    setTimeout(() => {
                         if (ackObjects[_id]) {
                             adapter.setState(id, ackObjects[_id].val, true);
                         }
@@ -202,55 +226,53 @@ function prepareWrite(id, state) {
             }
         }
     } else {
-        setTimeout(function () {
-            adapter.setState(id, ackObjects[id.substring(adapter.namespace.length + 1)].val, true);
-        }, 0);
+        setTimeout(() =>
+            adapter.setState(id, ackObjects[id.substring(adapter.namespace.length + 1)].val, true), 0);
     }
 }
 
 function send() {
+    const id = Object.keys(sendBuffer)[0];
 
-    var id = Object.keys(sendBuffer)[0];
-
-    var type = objects[id].native.type;
-    var val  = sendBuffer[id];
-    var data = objects[id];
+    const type = objects[id].native.type;
+    let val  = sendBuffer[id];
+    const data = objects[id];
 
     if (!s7client) {
         return next('s7client not exists');
     }
-    var buf;
+    let buf;
 
     if (type === 'BOOL') {
         if (val === true || val === 1 || val === 'true' || val === '1') {
-            buf = new Buffer([1]);
+            buf = Buffer.from([1]);
         } else {
-            buf = new Buffer([0]);
+            buf = Buffer.from([0]);
         }
 
     } else if (type === 'BYTE') {
-        buf = new Buffer(1);
+        buf = Buffer.alloc(1);
         buf[0] = parseInt(val, 10) & 0xFF;
 
     } else if (type === 'WORD') {
         val = parseInt(val, 10);
-        buf = new Buffer(2);
+        buf = Buffer.alloc(2);
         buf.writeUInt16BE(parseInt(val, 10), 0, 2);
 
     } else if (type === 'DWORD') {
-        buf = new Buffer(4);
+        buf = Buffer.alloc(4);
         buf.writeUInt32BE(parseInt(val, 10), 0, 4);
 
     } else if (type === 'INT') {
-        buf = new Buffer(2);
+        buf = Buffer.alloc(2);
         buf.writeInt16BE(parseInt(val, 10), 0, 2);
 
     } else if (type === 'DINT') {
-        buf = new Buffer(4);
+        buf = Buffer.alloc(4);
         buf.writeInt32BE(parseInt(val, 10), 0, 4);
 
     } else if (type === 'REAL') {
-        buf = new Buffer(4);
+        buf = Buffer.alloc(4);
         buf.writeFloatBE(parseFloat(val), 0);
     } else if (type === 'STRING' || type === 'ARRAY') {
 
@@ -261,27 +283,29 @@ function send() {
 
             }
         }
-        buf = new Buffer(data.native.len);
+        buf = Buffer.alloc(data.native.len);
         if ((iconvTo || iconvToL) && type === 'STRING' && typeof val === 'string') {
-            var buffer1 = iconvTo ? iconvTo.convert(val) : iconvToL.encode(val, encoding);
+            const buffer1 = iconvTo ? iconvTo.convert(val) : iconvToL.encode(val, encoding);
             buffer1.copy(buf, 0, 0, buffer1.byteLength > data.native.len ? data.native.len : buffer1.byteLength);
         } else {
 
-            var s1;
+            let s1;
             for (s1 = 0; s1 < val.length && s1 < data.native.len; s1++) {
                 buf[s1] = val[s1];
             }
             // zero end string
             if (type === 'STRING') {
-                if (s1 >= data.native.len) s1--;
+                if (s1 >= data.native.len) {
+                    s1--;
+                }
                 buf[s1] = 0;
             }
         }
     } else if (type === 'S7STRING') {
-        buf = new Buffer(data.native.len + 2);
+        buf = Buffer.alloc(data.native.len + 2);
         buf[0] = data.native.len;
         if ((iconvTo || iconvToL) && typeof val === 'string') {
-            var buffer2 = iconvTo ? iconvTo.convert(val) : iconvToL.encode(val, encoding);
+            const buffer2 = iconvTo ? iconvTo.convert(val) : iconvToL.encode(val, encoding);
             buffer2.copy(buf, 2, 0, buffer2.byteLength > data.native.len ? data.native.len : buffer2.byteLength);
             if (buffer2.byteLength < data.native.len) {
                 // zero end
@@ -289,7 +313,7 @@ function send() {
             }
             buf[1] = buffer2.byteLength;
         } else {
-            var s2;
+            let s2;
             for (s2 = 0; s2 < val.length && s2 < data.native.len; s2++) {
                 buf[s2 + 2] = val[s2];
             }
@@ -301,106 +325,86 @@ function send() {
         }
     }
 
-    var addr;
+    let addr;
 
     if (data.native.cat === 'db') {
 
         if (type === 'BOOL') {
             addr = data.native.address * 8 + data.native.offsetBit;
-            s7client.WriteArea(s7client.S7AreaDB, data.native.dbId, addr, 1, s7client.S7WLBit, buf, function (err) {
-                next(err);
-            });
+            s7client.WriteArea(s7client.S7AreaDB, data.native.dbId, addr, 1, s7client.S7WLBit, buf, err =>
+                next(err));
         } else if (type === 'BYTE') {
-            s7client.DBWrite(data.native.dbId, data.native.address, 1, buf, function (err) {
-                next(err);
-            });
+            s7client.DBWrite(data.native.dbId, data.native.address, 1, buf, err =>
+                next(err));
         } else if (type === 'INT' || type === 'WORD') {
-            s7client.DBWrite(data.native.dbId, data.native.address, 2, buf, function (err) {
-                next(err);
-            });
+            s7client.DBWrite(data.native.dbId, data.native.address, 2, buf, err =>
+                next(err));
         } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-            s7client.DBWrite(data.native.dbId, data.native.address, 4, buf, function (err) {
-                next(err);
-            });
+            s7client.DBWrite(data.native.dbId, data.native.address, 4, buf, err =>
+                next(err));
         } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-            s7client.DBWrite(data.native.dbId, data.native.address, data.native.len, buf, function (err) {
-                next(err);
-            });
+            s7client.DBWrite(data.native.dbId, data.native.address, data.native.len, buf, err =>
+                next(err));
         }
     }
 
     if (data.native.cat === 'input') {
         if (type === 'BOOL') {
             addr = data.native.address * 8 + data.native.offsetBit;
-            s7client.WriteArea(s7client.S7AreaPE, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
-                next(err);
-            });
+            s7client.WriteArea(s7client.S7AreaPE, 0, addr, 1, s7client.S7WLBit, buf, err =>
+                next(err));
         } else if (type === 'BYTE') {
-            s7client.EBWrite(data.native.address, data.native.address, 1, buf, function (err) {
-                next(err);
-            });
+            s7client.EBWrite(data.native.address, data.native.address, 1, buf, err =>
+                next(err));
         } else if (type === 'INT' || type === 'WORD') {
-            s7client.EBWrite(data.native.address, data.native.address, 2, buf, function (err) {
-                next(err);
-            });
+            s7client.EBWrite(data.native.address, data.native.address, 2, buf, err =>
+                next(err));
         } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-            s7client.EBWrite(data.native.address, data.native.address, 4, buf, function (err) {
-                next(err);
-            });
+            s7client.EBWrite(data.native.address, data.native.address, 4, buf, err =>
+                next(err));
         } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-            s7client.EBWrite(data.native.address, data.native.address, data.native.len, buf, function (err) {
-                next(err);
-            });
+            s7client.EBWrite(data.native.address, data.native.address, data.native.len, buf, err =>
+                next(err));
         }
     }
     if (data.native.cat === 'output') {
 
         if (type === 'BOOL') {
             addr = data.native.address * 8 + data.native.offsetBit;
-            s7client.WriteArea(s7client.S7AreaPA, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
-                next(err);
-            });
+            s7client.WriteArea(s7client.S7AreaPA, 0, addr, 1, s7client.S7WLBit, buf, err =>
+                next(err));
         } else if (type === 'BYTE') {
-            s7client.ABWrite(data.native.address, data.native.address, 1, buf, function (err) {
-                next(err);
-            });
+            s7client.ABWrite(data.native.address, data.native.address, 1, buf, err =>
+                next(err));
         } else if (type === 'INT' || type === 'WORD') {
-            s7client.ABWrite(data.native.address, data.native.address, 2, buf, function (err) {
-                next(err);
-            });
+            s7client.ABWrite(data.native.address, data.native.address, 2, buf, err =>
+                next(err));
         } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-            s7client.ABWrite(data.native.address, data.native.address, 4, buf, function (err) {
-                next(err);
-            });
+            s7client.ABWrite(data.native.address, data.native.address, 4, buf, err =>
+                next(err));
         } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-            s7client.ABWrite(data.native.address, data.native.address, data.native.len, buf, function (err) {
-                next(err);
-            });
+            s7client.ABWrite(data.native.address, data.native.address, data.native.len, buf, err =>
+                next(err));
         }
     }
     if (data.native.cat === 'marker') {
 
         if (type === 'BOOL') {
             addr = data.native.address * 8 + data.native.offsetBit;
-            s7client.WriteArea(s7client.S7AreaMK, 0, addr, 1, s7client.S7WLBit, buf, function (err) {
-                next(err);
-            });
+            s7client.WriteArea(s7client.S7AreaMK, 0, addr, 1, s7client.S7WLBit, buf, err =>
+                next(err));
         } else if (type === 'BYTE') {
-            s7client.MBWrite(data.native.address, 1, buf, function (err) {
-                next(err);
-            });
+            s7client.MBWrite(data.native.address, 1, buf, err =>
+                next(err));
         } else if (type === 'INT' || type === 'WORD') {
-            s7client.MBWrite(data.native.address, 2, buf, function (err) {
-                next(err);
-            });
+            s7client.MBWrite(data.native.address, 2, buf, err =>
+                next(err));
         } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-            s7client.MBWrite(data.native.address, 4, buf, function (err) {
-                next(err);
-            });
+            s7client.MBWrite(data.native.address, 4, buf, err =>
+                next(err));
         } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-            s7client.MBWrite(data.native.address, data.native.len, buf, function (err) {
-                next(err);
-            });
+            s7client.MBWrite(data.native.address, data.native.len, buf, err =>
+                next(err));
         }
     }
 
@@ -416,56 +420,54 @@ function send() {
 }
 
 function addToEnum(enumName, id, callback) {
-    adapter.getForeignObject(enumName, function (err, obj) {
+    adapter.getForeignObject(enumName, (err, obj) => {
         if (!err && obj) {
-            var pos = obj.common.members.indexOf(id);
+            const pos = obj.common.members.indexOf(id);
             if (pos === -1) {
                 obj.common.members.push(id);
-                adapter.setForeignObject(obj._id, obj, function (err) {
-                    if (callback) callback(err);
-                });
+                adapter.setForeignObject(obj._id, obj, err =>
+                    callback && callback(err));
             } else {
-                if (callback) callback(err);
+                callback && callback(err);
             }
         } else {
-            if (callback) callback(err);
+            callback && callback(err);
         }
     });
 }
 
 function removeFromEnum(enumName, id, callback) {
-    adapter.getForeignObject(enumName, function (err, obj) {
+    adapter.getForeignObject(enumName, (err, obj) => {
         if (!err && obj) {
-            var pos = obj.common.members.indexOf(id);
+            const pos = obj.common.members.indexOf(id);
             if (pos !== -1) {
                 obj.common.members.splice(pos, 1);
-                adapter.setForeignObject(obj._id, obj, function (err) {
-                    if (callback) callback(err);
-                });
+                adapter.setForeignObject(obj._id, obj, err =>
+                    callback && callback(err));
             } else {
-                if (callback) callback(err);
+                callback && callback(err);
             }
         } else {
-            if (callback) callback(err);
+            callback && callback(err);
         }
     });
 }
 
 function syncEnums(enumGroup, id, newEnumName, callback) {
     if (!enums[enumGroup]) {
-        adapter.getEnum(enumGroup, function (err, _enums) {
+        adapter.getEnum(enumGroup, (err, _enums) => {
             enums[enumGroup] = _enums;
             syncEnums(enumGroup, id, newEnumName, callback);
         });
         return;
     }
     // try to find this id in enums
-    var found = false;
-    for (var e in enums[enumGroup]) {
+    let found = false;
+    for (const e in enums[enumGroup]) {
         if (enums[enumGroup].hasOwnProperty(e)) {
             if (enums[enumGroup][e].common &&
                 enums[enumGroup][e].common.members &&
-                enums[enumGroup][e].common.members.indexOf(id) !== -1) {
+                enums[enumGroup][e].common.members.includes(id)) {
                 if (enums[enumGroup][e]._id !== newEnumName) {
                     removeFromEnum(enums[enumGroup][e]._id, id);
                 } else {
@@ -480,7 +482,7 @@ function syncEnums(enumGroup, id, newEnumName, callback) {
 }
 
 function createExtendObject(id, objData, callback) {
-    adapter.getObject(id, function (err, oldObj) {
+    adapter.getObject(id, (err, oldObj) => {
         if (!err && oldObj) {
             adapter.extendObject(id, objData, callback);
         } else {
@@ -490,28 +492,45 @@ function createExtendObject(id, objData, callback) {
 }
 
 function isDST(time) {
-    var jan = new Date(time.getFullYear(), 0, 1);
-    var jul = new Date(time.getFullYear(), 6, 1);
+    const jan = new Date(time.getFullYear(), 0, 1);
+    const jul = new Date(time.getFullYear(), 6, 1);
     return Math.min(jan.getTimezoneOffset(), jul.getTimezoneOffset()) - time.getTimezoneOffset();
 }
 
-var convertS7type = {
-    BOOL:       'boolean',
-    BYTE:       'number',
-    WORD:       'number',
-    DWORD:      'number',
-    INT:        'number',
-    DINT:       'number',
-    STRING:     'string',
-    S7STRING:   'string',
-    S5TIME:     'number',
-    ARRAY:      'array',
-    S7TIME:     'number'
+const convertS7type = {
+    BOOL:     'boolean',
+    BYTE:     'number',
+    WORD:     'number',
+    DWORD:    'number',
+    INT:      'number',
+    DINT:     'number',
+    STRING:   'string',
+    S7STRING: 'string',
+    S5TIME:   'number',
+    ARRAY:    'array',
+    S7TIME:   'number'
 };
 
-var main = {
-    old_objects: [],
-    new_objects: [],
+function deleteStates(list, cb) {
+    if (!list || !list.length) {
+        cb && cb();
+    } else {
+        adapter.delObject(list.pop(), () =>
+            setImmediate(() =>
+                deleteStates(list, cb)));
+    }
+}
+
+function updateConnection(_connected) {
+    if (connected !== _connected) {
+        connected = _connected;
+        adapter.setState('info.connection', connected, true);
+    }
+}
+
+const main = {
+    oldObjects: [],
+    newObjects: [],
     round:       2,
 
     inputs:      [],
@@ -534,9 +553,9 @@ var main = {
     _db_size:    [],
 
     unit:        '',
-    error_count: 0,
+    errorCount: 0,
 
-    main: function () {
+    main: () => {
 
         main.ac        = adapter.config;
         main.acp       = adapter.config.params;
@@ -559,17 +578,17 @@ var main = {
         main.acp.pulsetime  = parseInt(main.acp.pulsetime, 10) || 1000;
         main.acp.timeOffset = parseInt(main.acp.timeOffset, 10) || 0;
 
-        adapter.getForeignObjects(adapter.namespace + '.*', function (err, list) {
+        adapter.getForeignObjects(adapter.namespace + '.*', (err, list) => {
 
-            main.old_objects = list;
+            main.oldObjects = list;
 
             main.ac.inputs.sort(sortByAddress);
             main.ac.outputs.sort(sortByAddress);
             main.ac.markers.sort(sortByAddress);
             main.ac.dbs.sort(sortByAddress);
 
-            var parts;
-            var i;
+            let parts;
+            let i;
 
             if (main.ac.inputs.length > 0) {
                 for (i = main.ac.inputs.length - 1; i >= 0; i--) {
@@ -577,7 +596,7 @@ var main = {
                     parts = main.ac.inputs[i].Address.split('.');
                     main.ac.inputs[i].offsetByte = parseInt(parts[0], 10);
                     main.ac.inputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
-                    main.ac.inputs[i].id = 'Inputs.' + main.ac.inputs[i].offsetByte + '.' + (main.ac.inputs[i].Name.replace(/[.\s]+/g, '_') || main.ac.inputs[i].offsetBit);
+                    main.ac.inputs[i].id = `Inputs.${main.ac.inputs[i].offsetByte}.${main.ac.inputs[i].Name.replace(/[.\s]+/g, '_') || main.ac.inputs[i].offsetBit}`;
 
                     main.ac.inputs[i].len = 1;
                     if (main.ac.inputs[i].Type === 'WORD'  || main.ac.inputs[i].Type === 'INT'  || main.ac.inputs[i].Type === 'S5TIME') {
@@ -604,7 +623,7 @@ var main = {
                     parts = main.ac.outputs[i].Address.split('.');
                     main.ac.outputs[i].offsetByte = parseInt(parts[0], 10);
                     main.ac.outputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
-                    main.ac.outputs[i].id = 'Outputs.' + main.ac.outputs[i].offsetByte + '.' + (main.ac.outputs[i].Name.replace(/[.\s]+/g, '_') || main.ac.outputs[i].offsetBit);
+                    main.ac.outputs[i].id = `Outputs.${main.ac.outputs[i].offsetByte}.${main.ac.outputs[i].Name.replace(/[.\s]+/g, '_') || main.ac.outputs[i].offsetBit}`;
 
                     main.ac.outputs[i].len = 1;
                     if (main.ac.outputs[i].Type === 'WORD'  || main.ac.outputs[i].Type === 'INT'  || main.ac.outputs[i].Type === 'S5TIME') {
@@ -761,11 +780,12 @@ var main = {
             }
 
             // ------------- create states and objects ----------------------------
-            var channels = [];
+            let channels = [];
             for (i = 0; main.ac.inputs.length > i; i++) {
-                if (channels.indexOf('Inputs.' + main.ac.inputs[i].offsetByte) === -1) {
-                    channels.push('Inputs.' + main.ac.inputs[i].offsetByte);
-                    adapter.setObject('Inputs.' + main.ac.inputs[i].offsetByte, {
+                const name = 'Inputs.' + main.ac.inputs[i].offsetByte;
+                if (!channels.includes(name)) {
+                    channels.push(name);
+                    adapter.setObject(name, {
                         type: 'channel',
                         common: {
                             name: main.ac.inputs[i].offsetByte.toString()
@@ -795,15 +815,16 @@ var main = {
                     }
                 });
 
-                syncEnums('rooms', adapter.namespace + '.' + main.ac.inputs[i].id, main.ac.inputs[i].Room);
+                syncEnums('rooms', `${adapter.namespace}.${main.ac.inputs[i].id}`, main.ac.inputs[i].Room);
 
-                main.new_objects.push(adapter.namespace + '.' + main.ac.inputs[i].id);
+                main.newObjects.push(`${adapter.namespace}.${main.ac.inputs[i].id}`);
             }
             channels = [];
             for (i = 0; main.ac.outputs.length > i; i++) {
-                if (channels.indexOf('Outputs.' + main.ac.outputs[i].offsetByte) === -1) {
-                    channels.push('Outputs.' + main.ac.outputs[i].offsetByte);
-                    adapter.setObject('Outputs.' + main.ac.outputs[i].offsetByte, {
+                const name = 'Outputs.' + main.ac.outputs[i].offsetByte;
+                if (!channels.includes(name)) {
+                    channels.push(name);
+                    adapter.setObject(name, {
                         type: 'channel',
                         common: {
                             name: main.ac.outputs[i].offsetByte.toString()
@@ -832,16 +853,17 @@ var main = {
                         len:       main.ac.outputs[i].Length
                     }
                 });
-                syncEnums('rooms', adapter.namespace + '.' + main.ac.outputs[i].id, main.ac.outputs[i].Room);
-                main.new_objects.push(adapter.namespace + '.' + main.ac.outputs[i].id);
+                syncEnums('rooms', `${adapter.namespace}.${main.ac.outputs[i].id}`, main.ac.outputs[i].Room);
+                main.newObjects.push(`${adapter.namespace}.${main.ac.outputs[i].id}`);
             }
 
             channels = [];
             for (i = 0; main.ac.markers.length > i; i++) {
-                if (channels.indexOf('Markers.' + main.ac.markers[i].offsetByte) === -1) {
-                    channels.push('Markers.' + main.ac.markers[i].offsetByte);
+                const name = 'Markers.' + main.ac.markers[i].offsetByte;
+                if (!channels.includes(name)) {
+                    channels.push(name);
 
-                    adapter.setObject('Markers.' + main.ac.markers[i].offsetByte, {
+                    adapter.setObject(name, {
                         type: 'channel',
                         common: {
                             name: main.ac.markers[i].offsetByte.toString()
@@ -871,14 +893,16 @@ var main = {
                     }
                 });
 
-                syncEnums('rooms', adapter.namespace + '.' + main.ac.markers[i].id, main.ac.markers[i].Room);
+                syncEnums('rooms', `${adapter.namespace}.${main.ac.markers[i].id}`, main.ac.markers[i].Room);
 
-                main.new_objects.push(adapter.namespace + '.' + main.ac.markers[i].id);
+                main.newObjects.push(adapter.namespace + '.' + main.ac.markers[i].id);
             }
 
 
             for (i = 0; main.db_size.length > i; i++) {
-                if (main.db_size[i].lsb === 0xFFFF) main.db_size[i].lsb = 0;
+                if (main.db_size[i].lsb === 0xFFFF) {
+                    main.db_size[i].lsb = 0;
+                }
 
                 adapter.setObject('DBs.' + main.db_size[i].db, {
                     type: 'channel',
@@ -912,8 +936,8 @@ var main = {
                         len:       main.ac.dbs[i].Length
                     }
                 });
-                syncEnums('rooms', adapter.namespace + '.' + main.ac.dbs[i].id, main.ac.dbs[i].Room);
-                main.new_objects.push(adapter.namespace + '.' + main.ac.dbs[i].id);
+                syncEnums('rooms', `${adapter.namespace}.${main.ac.dbs[i].id}`, main.ac.dbs[i].Room);
+                main.newObjects.push(adapter.namespace + '.' + main.ac.dbs[i].id);
             }
 
 
@@ -964,7 +988,7 @@ var main = {
                 },
                 native: {}
             });
-            main.new_objects.push(adapter.namespace + '.info.poll_time');
+            main.newObjects.push(`${adapter.namespace}.info.poll_time`);
 
             createExtendObject('info.connection', {
                 type: 'state',
@@ -975,7 +999,7 @@ var main = {
                 },
                 native: {}
             });
-            main.new_objects.push(adapter.namespace + '.info.connection');
+            main.newObjects.push(`${adapter.namespace}.info.connection`);
 
             createExtendObject('info.pdu', {
                 type: 'state',
@@ -986,81 +1010,84 @@ var main = {
                 },
                 native: {}
             });
-            main.new_objects.push(adapter.namespace + '.info.pdu');
+            main.newObjects.push(`${adapter.namespace}.info.pdu`);
 
-            adapter.setState('info.connection', false, true);
+            updateConnection(false);
 
-            for (var key in main.db_size) {
+            for (const key in main.db_size) {
                 if (main.db_size.hasOwnProperty(key)) {
                     main._db_size.push(main.db_size[key]);
                 }
             }
 
             // clear unused states
-            var l = main.old_objects.length;
-
-            function clear() {
-                for (var id in main.old_objects) {
-                    if (main.new_objects.indexOf(id) === -1) {
-                        adapter.delObject(id, function (/* err */) {
-
-                        });
-                    }
+            const listObj = [];
+            for (const id in main.oldObjects) {
+                if (!main.newObjects.includes(id)) {
+                    listObj.push(id);
                 }
-
-                main.old_objects = [];
-                main.new_objects = [];
-                adapter.subscribeStates('*');
-                main.start();
             }
 
-            clear();
+            deleteStates(listObj, () => {
+                main.oldObjects = [];
+                main.newObjects = [];
+                adapter.subscribeStates('*');
+                main.start();
+            });
         });
     },
 
-    start: function () {
-
-        if (!s7client) return;
+    start: () => {
+        if (!s7client) {
+            return;
+        }
         if (main.acp.localTSAP && main.acp.remoteTSAP) {
-            adapter.log.info('Connect in LOGO! mode to ' + main.acp.localTSAP + ' / ' + main.acp.remoteTSAP);
+            adapter.log.info(`Connect in LOGO! mode to ${main.acp.localTSAP} / ${main.acp.remoteTSAP}`);
             s7client.SetConnectionParams(main.acp.ip, main.acp.localTSAP, main.acp.remoteTSAP); // C++
-            s7client.Connect(function (err) {
-
+            s7client.Connect(err => {
                 if (err) {
-                    adapter.log.error('Connection failed. Code #' + err + (sysErrors[err] ? '(' + sysErrors[err] + ')' : ''));
-                    adapter.setState('info.connection', false, true);
-                    return setTimeout(main.start, main.acp.recon);
+                    adapter.log.error(`Connection failed. Code #${err}${sysErrors[err] ? '(' + sysErrors[err] + ')' : ''}`);
+                    updateConnection(false);
+                    reconTimer && clearTimeout(reconTimer);
+                    reconTimer = setTimeout(() => {
+                        reconTimer = null;
+                        main.start();
+                    }, main.acp.recon);
+                } else {
+                    adapter.log.info('Successfully connected in LOGO! mode');
+
+                    updateConnection(true);
+                    adapter.setState('info.pdu', s7client.PDULength(), true);
+
+                    main.poll();
                 }
-                adapter.log.info('Successfully connected in LOGO! mode');
-
-                connected = true;
-                adapter.setState('info.connection', true, true);
-                adapter.setState('info.pdu', s7client.PDULength(), true);
-
-                main.poll();
             });
         } else {
-            adapter.log.info('Connect in S7 mode to ' + main.acp.rack + ' / ' + main.acp.slot);
-            s7client.ConnectTo(main.acp.ip, main.acp.rack, main.acp.slot, function (err) {
+            adapter.log.info(`Connect in S7 mode to ${main.acp.rack} / ${main.acp.slot}`);
+            s7client.ConnectTo(main.acp.ip, main.acp.rack, main.acp.slot, err => {
 
                 if (err) {
-                    adapter.log.error('Connection failed. Code #' + err + (sysErrors[err] ? '(' + sysErrors[err] + ')' : ''));
-                    adapter.setState('info.connection', false, true);
-                    return setTimeout(main.start, main.acp.recon);
+                    adapter.log.error(`Connection failed. Code #${err}${sysErrors[err] ? '(' + sysErrors[err] + ')' : ''}`);
+                    updateConnection(false);
+                    reconTimer && clearTimeout(reconTimer);
+                    reconTimer = setTimeout(() => {
+                        reconTimer = null;
+                        main.start();
+                    }, main.acp.recon);
+                } else {
+                    adapter.log.info('Successfully connected in S7 mode');
+
+                    updateConnection(false);
+                    adapter.setState('info.pdu', s7client.PDULength(), true);
+
+                    main.poll();
                 }
-                adapter.log.info('Successfully connected in S7 mode');
-
-                connected = true;
-                adapter.setState('info.connection', true, true);
-                adapter.setState('info.pdu', s7client.PDULength(), true);
-
-                main.poll();
             });
         }
     },
 
     write: function (id, buff, type, offsetByte, offsetBit, len) {
-        var val   = 0;
+        let val   = 0;
 
         if (type === 'BOOL') {
             val = !!((buff[offsetByte] >> offsetBit) & 1);
@@ -1102,7 +1129,7 @@ var main = {
         } else if (type === 'STRING') {
             if (iconvFrom || iconvToL) {
                 if (len > 255) len = 255;
-                var str1 = Buffer.allocUnsafe(len);
+                const str1 = Buffer.allocUnsafe(len);
                 buff.copy(str1, 0, offsetByte, offsetByte + len);
                 if (iconvFrom) {
                     val = iconvFrom.convert(str1);
@@ -1117,12 +1144,16 @@ var main = {
                 adapter.setState(id, val, true);
             }
         } else if (type === 'S7STRING') {
-            var max = buff[offsetByte];
+            let max = buff[offsetByte];
             len = buff[offsetByte + 1];
-            if (max > 512) max = 512;
-            if (len > max) len = max;
+            if (max > 512) {
+                max = 512;
+            }
+            if (len > max) {
+                len = max;
+            }
             if (iconvFrom || iconvToL) {
-                var str2 = Buffer.allocUnsafe(len);
+                const str2 = Buffer.allocUnsafe(len);
                 buff.copy(str2, 0, offsetByte + 2, offsetByte + 2 + len);
 
                 if (iconvFrom) {
@@ -1138,8 +1169,8 @@ var main = {
                 adapter.setState(id, val, true);
             }
         } else if (type === 'ARRAY') {
-            var result = [];
-            for (var i = 0; i < len; i++) {
+            const result = [];
+            for (let i = 0; i < len; i++) {
                 result.push(buff[offsetByte + i]);
             }
             val = JSON.stringify(result);
@@ -1149,7 +1180,7 @@ var main = {
             }
         } else if (type === 'REAL') {
             val = buff.readFloatBE(offsetByte);
-            var _val = parseFloat(Math.round(val * main.round) / main.round);
+            const _val = parseFloat(Math.round(val * main.round) / main.round);
 
             if (ackObjects[id] === undefined || ackObjects[id].val !== _val) {
                 ackObjects[id] = {val: _val};
@@ -1172,7 +1203,7 @@ var main = {
 
             val = buff.readUInt16BE(offsetByte);
 
-            var factor = (val >> 12) & 0x3;
+            let factor = (val >> 12) & 0x3;
             if (factor === 0) {
                 factor = 0.01;
             } else if (factor === 1) {
@@ -1191,8 +1222,8 @@ var main = {
             }
         } else if (type === 'S7TIME') {
             // 0x15100822 0x42301231 = 2015.10.08 22:42:30.123 Monday
-            var d = new Date();
-            var y = buff[offsetByte + 0];
+            const d = new Date();
+            let y = buff[offsetByte + 0];
             // 21 = 0x15 => 2015
             y = ((y >> 4) & 0xF) * 10 + (y & 0xF);
             if (y >= 90) {
@@ -1253,17 +1284,18 @@ var main = {
         }
     },
 
-    poll: function () {
-        var start_t = (new Date()).valueOf();
+    poll: () => {
+        nextPoll = null;
+        const startTime = Date.now();
         async.parallel({
-                input: function (callback) {
+                input: callback => {
                     if (main.input_msb) {
-                        s7client.EBRead(main.input_lsb, main.input_msb - main.input_lsb, function (err, res) {
+                        s7client.EBRead(main.input_lsb, main.input_msb - main.input_lsb, (err, res) => {
                             if (err) {
-                                adapter.log.warn('EBRead error[' + main.input_lsb + ' - ' + main.input_msb + ']: code: 0x' + parseInt(err, 10).toString(16) + (errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''));
+                                adapter.log.warn(`EBRead error[${main.input_lsb} - ${main.input_msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
                                 callback(err);
                             } else {
-                                for (var n = 0; main.inputs.length > n; n++) {
+                                for (let n = 0; main.inputs.length > n; n++) {
                                     try {
                                         main.write(
                                             main.inputs[n].id,       // ID of the object
@@ -1274,7 +1306,7 @@ var main = {
                                             main.inputs[n].Length    // length for string, array
                                         );
                                     } catch (err) {
-                                        adapter.log.error('Writing Input. Code #' + err);
+                                        adapter.log.error(`Writing Input. Code #${err}`);
                                     }
                                 }
                                 callback(null);
@@ -1284,14 +1316,14 @@ var main = {
                         callback(null, null);
                     }
                 },
-                output: function (callback) {
+                output: callback => {
                     if (main.output_msb) {
-                        s7client.ABRead(main.output_lsb, main.output_msb - main.output_lsb, function (err, res) {
+                        s7client.ABRead(main.output_lsb, main.output_msb - main.output_lsb, (err, res) => {
                             if (err) {
-                                adapter.log.warn('ABRead error[' + main.output_lsb + ' - ' + main.output_msb + ']: code: 0x' + parseInt(err, 10).toString(16) + (errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''));
+                                adapter.log.warn(`ABRead error[${main.output_lsb} - ${main.output_msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
                                 callback(err);
                             } else {
-                                for (var n = 0; main.outputs.length > n; n++) {
+                                for (let n = 0; main.outputs.length > n; n++) {
                                     try {
                                         main.write(
                                             main.outputs[n].id,
@@ -1302,7 +1334,7 @@ var main = {
                                             main.outputs[n].Length    // length for string, array
                                         );
                                     } catch (err) {
-                                        adapter.log.error('Writing Output. Code #' + err);
+                                        adapter.log.error(`Writing Output. Code #${err}`);
                                     }
                                 }
                                 callback(null);
@@ -1312,14 +1344,14 @@ var main = {
                         callback(null);
                     }
                 },
-                marker: function (callback) {
+                marker: callback => {
                     if (main.marker_msb) {
-                        s7client.MBRead(main.marker_lsb, main.marker_msb - main.marker_lsb, function (err, res) {
+                        s7client.MBRead(main.marker_lsb, main.marker_msb - main.marker_lsb, (err, res) => {
                             if (err) {
-                                adapter.log.warn('MBRead error[' + main.marker_lsb + ' - ' + main.marker_msb + ']: code: 0x' + parseInt(err, 10).toString(16) + (errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''));
+                                adapter.log.warn(`MBRead error[${main.marker_lsb} - ${main.marker_msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
                                 callback(err);
                             } else {
-                                for (var n = 0; main.markers.length > n; n++) {
+                                for (let n = 0; main.markers.length > n; n++) {
                                     try {
                                         main.write(
                                             main.markers[n].id,
@@ -1330,7 +1362,7 @@ var main = {
                                             main.markers[n].Length    // length for string, array
                                         );
                                     } catch (err) {
-                                        adapter.log.error('Writing Merker. Code #' + err);
+                                        adapter.log.error(`Writing Merker. Code #${err}`);
                                     }
                                 }
                                 callback(null);
@@ -1341,82 +1373,87 @@ var main = {
                         callback(null);
                     }
                 },
-                dbs: function (callback) {
-                    var buf = {};
+                dbs: callback => {
+                    const buf = {};
 
-                    async.each(main._db_size, function (db, callback) {
-                        s7client.DBRead(db.dbId, db.lsb, db.msb - db.lsb, function (err, res) {
+                    async.each(main._db_size,
+                        (db, callback) => {
+                            s7client.DBRead(db.dbId, db.lsb, db.msb - db.lsb, (err, res) => {
+                                if (err) {
+                                    adapter.log.warn(`DBRead error[DB ${db.dbId}:${db.lsb} - ${db.msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
+                                    callback(err);
+                                } else {
+                                    buf[db.db] = res;
+                                    callback(null, res);
+                                }
+                            });
+                        },
+                        (err, res) => {
                             if (err) {
-                                adapter.log.warn('DBRead error[DB ' + db.dbId + ':' + db.lsb + ' - ' + db.msb + ']: code: 0x' + parseInt(err, 10).toString(16) + (errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''));
                                 callback(err);
                             } else {
-                                buf[db.db] = res;
-                                callback(null, res);
+                                for (let n = 0; main.dbs.length > n; n++) {
+                                    try {
+                                        const db     = main.dbs[n];
+                                        const offset = db.offsetByte - main.db_size[db.db].lsb;
+                                        main.write(
+                                            db.id,
+                                            buf[db.db],
+                                            db.Type,
+                                            offset,
+                                            db.offsetBit,
+                                            db.Length    // length for string, array
+                                        );
+                                    } catch (err) {
+                                        adapter.log.error(`Writing DB. Code #${err}`);
+                                        const info = {
+                                            dbID:           db.id,
+                                            db:             db.db,
+                                            dbType:         db.Type,
+                                            dbOffsetByte:   db.offsetByte,
+                                            dbOffsetBit:    db.offsetBit,
+                                            dbLength:       db.Length,
+                                            dbLsb:          main.db_size[db.db].lsb,
+                                            n:              n,
+                                            bufLength:      buf[db.db].length
+                                        };
+                                        adapter.log.error(`Writing DB: ${JSON.stringify(info)}`);
+                                    }
+                                }
+                                callback(null);
                             }
                         });
-                    }, function (err, res) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            for (var n = 0; main.dbs.length > n; n++) {
-                                try {
-                                    var db     = main.dbs[n];
-                                    var offset = db.offsetByte - main.db_size[db.db].lsb;
-                                    main.write(
-                                        db.id,
-                                        buf[db.db],
-                                        db.Type,
-                                        offset,
-                                        db.offsetBit,
-                                        db.Length    // length for string, array
-                                    );
-                                } catch (err) {
-                                    adapter.log.error('Writing DB. Code #' + err);
-                                    var info = {
-                                        dbID:           db.id,
-                                        db:             db.db,
-                                        dbType:         db.Type,
-                                        dbOffsetByte:   db.offsetByte,
-                                        dbOffsetBit:    db.offsetBit,
-                                        dbLength:       db.Length,
-                                        dbLsb:          main.db_size[db.db].lsb,
-                                        n:              n,
-                                        bufLength:      buf[db.db].length
-                                    };
-                                    adapter.log.error('Writing DB: ' + JSON.stringify(info));
-                                }
-                            }
-                            callback(null);
-                        }
-                    });
                 }
             },
 
-            function (err) {
+            err => {
                 if (err) {
-                    main.error_count++;
+                    main.errorCount++;
 
-                    adapter.log.warn('Poll error count: ' + main.error_count + ' code: 0x' + parseInt(err, 10).toString(16) + (errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''));
-                    adapter.log.warn('Poll error Last-Error Info: ' + s7client.LastError() + ': ' + s7client.ErrorText(s7client.LastError()));
-                    adapter.setState('info.connection', false, true);
+                    adapter.log.warn(`Poll error count: ${main.errorCount} code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
+                    adapter.log.warn(`Poll error Last-Error Info: ${s7client.LastError()}: ${s7client.ErrorText(s7client.LastError())}`);
+                    updateConnection(false);
 
-                    if (main.error_count < 6 && s7client.Connected() && err !== 0xa006e) {
-                        setTimeout(main.poll, main.acp.poll);
+                    if (main.errorCount < 6 && s7client.Connected() && err !== 0xa006e) {
+                        nextPoll && clearTimeout(nextPoll);
+                        nextPoll = setTimeout(main.poll, main.acp.poll);
                     } else {
-                        connected = false;
-                        const disconnectSucceess = s7client.Disconnect();
-                        adapter.log.error('try reconnection: Disconnect successfull: ' + disconnectSucceess);
-                        adapter.setState('info.connection', false, true);
-                        setTimeout(main.start, main.acp.recon);
+                        const disconnectSuccess = s7client.Disconnect();
+                        adapter.log.error(`try reconnection: Disconnect successful: ${disconnectSuccess}`);
+                        updateConnection(false);
+                        reconTimer && clearTimeout(reconTimer);
+                        reconTimer = setTimeout(() => {
+                            reconTimer = null;
+                            main.start();
+                        }, main.acp.recon);
                     }
-
                 } else {
-
-                    adapter.setState('info.poll_time', (new Date()).valueOf() - start_t, true);
-                    if (main.error_count > 0) {
-                        adapter.setState('info.connection', true, true);
-                        main.error_count = 0;
+                    adapter.setState('info.poll_time', Date.now() - startTime, true);
+                    if (main.errorCount) {
+                        updateConnection(true);
+                        main.errorCount = 0;
                     }
+                    nextPoll && clearTimeout(nextPoll);
                     nextPoll = setTimeout(main.poll, main.acp.poll);
                 }
             }
@@ -1425,7 +1462,15 @@ var main = {
 };
 
 function sortByAddress(a, b) {
-    var ad = parseFloat(a.Address);
-    var bd = parseFloat(b.Address);
+    const ad = parseFloat(a.Address);
+    const bd = parseFloat(b.Address);
     return ((ad < bd) ? -1 : ((ad > bd) ? 1 : 0));
+}
+
+// If started as allInOne/compact mode => return function to create instance
+if (module && module.parent) {
+    module.exports = startAdapter;
+} else {
+    // or start the instance directly
+    startAdapter();
 }

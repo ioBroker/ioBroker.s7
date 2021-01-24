@@ -22,16 +22,16 @@ Diese Anforderungen stellen sicherlich keine Herausforderung für jemanden dar,
 der die Kommunikation zwischen ioBroker und einer S7 in Erwägung zieht.
 
 ### Installation
-Unter Linux braucht man "make" Umgebung um die binries zu bauen. Das kann man mit folgenden Kommando installieren:
+Unter Linux braucht man `make` Umgebung um die binaries zu bauen. Das kann man mit folgendem Kommando installieren:
 
 ```
 sudo apt-get update
 sudo apt-get install build-essential
 ```
 
-Unter windows braucht man Visual Studio 2013 (Community Edition ist genug) oder später. Auch Python 2.7 (nicht 3.x) muss instaliert werden.
+Unter windows braucht man Visual Studio 2013 (Community Edition ist genug) oder später. Auch Python 2.7 (nicht 3.x) muss installiert werden.
 ## English
-Format of the addresses for Inputs, Outputs or markers is "X.Y", where X is byte offset and Y is bit offset in byte.
+Format of the addresses for Inputs, Outputs or markers is "X.Y", where X is byte offset and Y is the bit offset in the byte.
 Format of the addresses for DBs is "DBZ +X.Y", where z is number of DB, like "DB34 +12.0"
 
 ### Install
@@ -55,7 +55,14 @@ You can use 4 time offset modes for S7TIME:
 ## S5TIME
 S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_Datentyps_S5TIME_Zeitdauer.htm
 
+<!--
+	Placeholder for the next version (at the beginning of the line):
+	### __WORK IN PROGRESS__
+-->
+
 ## Changelog
+### __WORK IN PROGRESS__
+* (smiling_Jack) Bugfix in the Admin
 
 ### 1.1.9 (2020-08-02)
 * (Apollon77) Fix object access issue
@@ -68,7 +75,7 @@ S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_D
 * (Apollon77) reconnection handling on timeouts optimized
 
 ### 1.1.4 (2018.07.10)
-* (Apollon77) Support for nodejs 10 on windows
+* (Apollon77) Support for nodejs 10 on Windows
 
 ### 1.1.3 (2018.01.19)
 * (bluefox) The time offset was added
@@ -138,7 +145,7 @@ S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_D
 
 ### 0.1.8 (2015.08.10)
 * (smiling_Jack) Bugfix send info states
-* (smiling_Jack) Remove unneeded conole.log
+* (smiling_Jack) Remove unneeded console.log
 
 ### 0.1.7 (2015.08.06)
 * (smiling_Jack) Bugfix send to SPS
@@ -185,7 +192,7 @@ S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_D
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2020 smiling_Jack <steffen.schorling@googlemail.com>, bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2021 smiling_Jack <steffen.schorling@googlemail.com>, bluefox <dogafox@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
