@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.1.9",
+        "version": "1.1.10",
         "news": {
+            "1.1.10": {
+                "en": "Bugfix in the Admin",
+                "de": "Bugfix im Admin",
+                "ru": "Исправление в админке",
+                "pt": "Correção de bug no Admin",
+                "nl": "Bugfix in de Admin",
+                "fr": "Correction de bogue dans l'administrateur",
+                "it": "Bugfix nell'amministratore",
+                "es": "Corrección de errores en el administrador",
+                "pl": "Poprawka błędu w Admin",
+                "zh-cn": "管理员中的错误修正"
+            },
             "1.1.9": {
                 "en": "update node-snap7 library and error case prevented",
                 "de": "Aktualisierung der Node-Snap7-Bibliothek und Fehlerfall verhindert",

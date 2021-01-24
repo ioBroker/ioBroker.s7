@@ -61,7 +61,7 @@ S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_D
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 1.1.10 (2021-01-24)
 * (smiling_Jack) Bugfix in the Admin
 
 ### 1.1.9 (2020-08-02)
