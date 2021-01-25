@@ -481,14 +481,17 @@ function syncEnums(enumGroup, id, newEnumName, callback) {
     }
 }
 
-function createExtendObject(id, objData, callback) {
-    adapter.getObject(id, (err, oldObj) => {
-        if (!err && oldObj) {
-            adapter.extendObject(id, objData, callback);
-        } else {
-            adapter.setObjectNotExists(id, objData, callback);
+async function createExtendObject(id, objData) {
+    try {
+        const oldObj = await adapter.getObjectAsync(id);
+        if (oldObj) {
+            return adapter.extendObjectAsync(id, objData);
         }
-    });
+    } catch (err) {
+        // err
+    }
+
+    return adapter.setObjectNotExistsAsync(id, objData);
 }
 
 function isDST(time) {
@@ -578,7 +581,7 @@ const main = {
         main.acp.pulsetime  = parseInt(main.acp.pulsetime, 10) || 1000;
         main.acp.timeOffset = parseInt(main.acp.timeOffset, 10) || 0;
 
-        adapter.getForeignObjects(adapter.namespace + '.*', (err, list) => {
+        adapter.getForeignObjects(adapter.namespace + '.*', async (err, list) => {
 
             main.oldObjects = list;
 
@@ -740,7 +743,7 @@ const main = {
 
             // ------------------ create devices -------------
             if (main.ac.inputs.length > 0) {
-                adapter.setObject('Inputs', {
+                await adapter.setObjectAsync('Inputs', {
                     type: 'device',
                     common: {
                         name: 'Inputs'
@@ -750,7 +753,7 @@ const main = {
             }
 
             if (main.ac.outputs.length > 0) {
-                adapter.setObject('Outputs', {
+                await adapter.setObjectAsync('Outputs', {
                     type: 'device',
                     common: {
                         name: 'Outputs'
@@ -760,7 +763,7 @@ const main = {
             }
 
             if (main.ac.markers.length > 0) {
-                adapter.setObject('Markers', {
+                await adapter.setObjectAsync('Markers', {
                     type: 'device',
                     common: {
                         name: 'Markers'
@@ -770,7 +773,7 @@ const main = {
             }
 
             if (main.ac.dbs.length > 0) {
-                adapter.setObject('DBs', {
+                await adapter.setObjectAsync('DBs', {
                     type: 'device',
                     common: {
                         name: 'DBs'
@@ -785,7 +788,7 @@ const main = {
                 const name = 'Inputs.' + main.ac.inputs[i].offsetByte;
                 if (!channels.includes(name)) {
                     channels.push(name);
-                    adapter.setObject(name, {
+                    await adapter.setObjectAsync(name, {
                         type: 'channel',
                         common: {
                             name: main.ac.inputs[i].offsetByte.toString()
@@ -794,7 +797,7 @@ const main = {
                     });
                 }
 
-                createExtendObject(main.ac.inputs[i].id, {
+                await createExtendObject(main.ac.inputs[i].id, {
                     type: 'state',
                     common: {
                         name:    main.ac.inputs[i].Description,
@@ -824,7 +827,7 @@ const main = {
                 const name = 'Outputs.' + main.ac.outputs[i].offsetByte;
                 if (!channels.includes(name)) {
                     channels.push(name);
-                    adapter.setObject(name, {
+                    await adapter.setObjectAsync(name, {
                         type: 'channel',
                         common: {
                             name: main.ac.outputs[i].offsetByte.toString()
@@ -833,7 +836,7 @@ const main = {
                     });
                 }
 
-                createExtendObject(main.ac.outputs[i].id, {
+                await createExtendObject(main.ac.outputs[i].id, {
                     type: 'state',
                     common: {
                         name:    main.ac.outputs[i].Description,
@@ -863,7 +866,7 @@ const main = {
                 if (!channels.includes(name)) {
                     channels.push(name);
 
-                    adapter.setObject(name, {
+                    await adapter.setObjectAsync(name, {
                         type: 'channel',
                         common: {
                             name: main.ac.markers[i].offsetByte.toString()
@@ -872,7 +875,7 @@ const main = {
                     });
                 }
 
-                createExtendObject(main.ac.markers[i].id, {
+                await createExtendObject(main.ac.markers[i].id, {
                     type: 'state',
                     common: {
                         name:    main.ac.markers[i].Description,
@@ -904,7 +907,7 @@ const main = {
                     main.db_size[i].lsb = 0;
                 }
 
-                adapter.setObject('DBs.' + main.db_size[i].db, {
+                await adapter.setObjectAsync('DBs.' + main.db_size[i].db, {
                     type: 'channel',
                     common: {
                         name: 'DBs'
@@ -914,7 +917,7 @@ const main = {
             }
 
             for (i = 0; main.ac.dbs.length > i; i++) {
-                createExtendObject(main.ac.dbs[i].id, {
+                await createExtendObject(main.ac.dbs[i].id, {
                     type: 'state',
                     common: {
                         name:    main.ac.dbs[i].Description,
@@ -968,7 +971,7 @@ const main = {
                 }
             }
 
-            adapter.setObject('info', {
+            await adapter.setObjectAsync('info', {
                 type: 'device',
                 common: {
                     name: 'info',
@@ -978,7 +981,7 @@ const main = {
                 native: {}
             });
 
-            createExtendObject('info.poll_time', {
+            await createExtendObject('info.poll_time', {
                 type: 'state',
                 common: {
                     name: 'Poll time',
@@ -990,7 +993,7 @@ const main = {
             });
             main.newObjects.push(`${adapter.namespace}.info.poll_time`);
 
-            createExtendObject('info.connection', {
+            await createExtendObject('info.connection', {
                 type: 'state',
                 common: {
                     name: 'Connection status',
@@ -1001,7 +1004,7 @@ const main = {
             });
             main.newObjects.push(`${adapter.namespace}.info.connection`);
 
-            createExtendObject('info.pdu', {
+            await createExtendObject('info.pdu', {
                 type: 'state',
                 common: {
                     name: 'PDU size',

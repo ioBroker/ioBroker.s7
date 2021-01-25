@@ -7,7 +7,7 @@ sudo: required
 node_js:
   - '10'
   - '12'
-  - 'node'
+  - '14'
 before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CC=clang++; export CXX=clang++; export CXXFLAGS=-std=c++11; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CXX=g++-6; fi'
@@ -15,8 +15,6 @@ before_script:
   - export NPMVERSION=$(echo "$($(which npm) -v)"|cut -c1)
   - 'if [[ $NPMVERSION == 5 ]]; then npm install -g npm@5; fi'
   - npm -v
-  - npm install winston@3.2.1
-  - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo setcap cap_net_bind_service=+ep $(eval readlink -f `which node`); fi'
 script:
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo node_modules/mocha/bin/mocha --exit; fi'
