@@ -164,7 +164,6 @@ function startAdapter(options) {
 
     adapter.on('ready', () => {
         infoRegExp = new RegExp(adapter.namespace.replace(/\./g, '\\.') + '\\.info\\.');
-        updateConnection(false);
         main.main();
     });
 

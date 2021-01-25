@@ -192,7 +192,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
             } else {
                 //??
             }
-            done();
+            setTimeout(done, 2000);
         });
     });
 
