@@ -62,7 +62,7 @@ S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_D
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 1.2.1 (2021-01-25)
 * (Apollon77) fix info.connection state
 
 ### 1.2.0 (2021-01-25)
