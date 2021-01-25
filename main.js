@@ -1077,7 +1077,7 @@ const main = {
                 } else {
                     adapter.log.info('Successfully connected in S7 mode');
 
-                    updateConnection(false);
+                    updateConnection(true);
                     adapter.setState('info.pdu', s7client.PDULength(), true);
 
                     main.poll();
