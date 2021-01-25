@@ -198,16 +198,16 @@ function writeHelper(id, state) {
 }
 
 function prepareWrite(id, state) {
+    const _id = id.substring(adapter.namespace.length + 1);
     if (objects[id] && objects[id].native && objects[id].native.rw) {
 
         if (!objects[id].native.wp) {
             writeHelper(id, state);
             setTimeout(() =>
-                adapter.setState(id, ackObjects[id.substring(adapter.namespace.length + 1)].val, true), main.acp.poll * 1.5);
+                ackObjects[_id] && adapter.setState(id, ackObjects[_id].val, true), main.acp.poll * 1.5);
 
         } else {
             if (pulseList[id] === undefined) {
-                const _id = id.substring(adapter.namespace.length + 1);
                 pulseList[id] = ackObjects[_id] ? ackObjects[_id].val : !state.val;
 
                 setTimeout(() => {
@@ -226,8 +226,8 @@ function prepareWrite(id, state) {
             }
         }
     } else {
-        setTimeout(() =>
-            adapter.setState(id, ackObjects[id.substring(adapter.namespace.length + 1)].val, true), 0);
+        ackObjects[_id] && setImmediate(() =>
+            adapter.setState(id, ackObjects[_id].val, true));
     }
 }
 

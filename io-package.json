@@ -215,7 +215,12 @@
             "sentry": {
                 "dsn": "https://d7dff297e602417087d181577d34482f@sentry.iobroker.net/113"
             }
-        }
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=2.0.0"
+            }
+        ]
     },
     "native": {
         "params": {
