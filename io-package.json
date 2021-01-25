@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.2.0",
+        "version": "1.2.1",
         "news": {
+            "1.2.1": {
+                "en": "fix info.connection state",
+                "de": "Info.Verbindungsstatus korrigieren",
+                "ru": "исправить состояние info.connection",
+                "pt": "corrigir estado de info.connection",
+                "nl": "fix info.connection staat",
+                "fr": "corriger l'état de la connexion info.",
+                "it": "correggere lo stato di info.connection",
+                "es": "arreglar el estado de la conexión de información",
+                "pl": "napraw stan info.connection",
+                "zh-cn": "修复信息连接状态"
+            },
             "1.2.0": {
                 "en": "Prevent error case (Sentry IOBROKER-S7-4)\njs-controller 2.0 is now required at minimum",
                 "de": "Fehlerfall verhindern (Sentry IOBROKER-S7-4)\njs-controller 2.0 ist jetzt mindestens erforderlich",
@@ -173,11 +185,6 @@
                 "en": "Upgrade node-snap7 library to current version",
                 "de": "node-snap7 Library aktualisiert",
                 "ru": "Upgrade node-snap7 library to current version"
-            },
-            "0.2.6": {
-                "en": "Fix history handling",
-                "de": "Probleme bei History Nutzung behoben",
-                "ru": "Fix history handling"
             }
         },
         "title": "Siemens Simatic S7",
