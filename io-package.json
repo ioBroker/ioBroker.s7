@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.1.10",
+        "version": "1.2.0",
         "news": {
+            "1.2.0": {
+                "en": "Prevent error case (Sentry IOBROKER-S7-4)\njs-controller 2.0 is now required at minimum",
+                "de": "Fehlerfall verhindern (Sentry IOBROKER-S7-4)\njs-controller 2.0 ist jetzt mindestens erforderlich",
+                "ru": "Предотвращение ошибок (Sentry IOBROKER-S7-4)\njs-controller 2.0 теперь требуется как минимум",
+                "pt": "Evitar caso de erro (Sentry IOBROKER-S7-4)\njs-controller 2.0 agora é necessário no mínimo",
+                "nl": "Voorkom foutgevallen (Sentry IOBROKER-S7-4)\njs-controller 2.0 is nu minimaal vereist",
+                "fr": "Empêcher les cas d'erreur (Sentry IOBROKER-S7-4)\njs-controller 2.0 est maintenant requis au minimum",
+                "it": "Prevenire il caso di errore (Sentry IOBROKER-S7-4)\njs-controller 2.0 è ora richiesto come minimo",
+                "es": "Prevenir caso de error (Sentry IOBROKER-S7-4)\njs-controller 2.0 ahora se requiere como mínimo",
+                "pl": "Zapobiegaj przypadkom błędu (Sentry IOBROKER-S7-4)\njs-controller 2.0 jest teraz wymagany jako minimum",
+                "zh-cn": "防止错误情况（Sentry IOBROKER-S7-4）\n现在至少需要js-controller 2.0"
+            },
             "1.1.10": {
                 "en": "Bugfix in the Admin",
                 "de": "Bugfix im Admin",
@@ -166,11 +178,6 @@
                 "en": "Fix history handling",
                 "de": "Probleme bei History Nutzung behoben",
                 "ru": "Fix history handling"
-            },
-            "0.2.5": {
-                "en": "Fix button text: Import",
-                "de": "Korrigiere Knopftext: Import",
-                "ru": "Исправлен текст на кнопке импорт"
             }
         },
         "title": "Siemens Simatic S7",
