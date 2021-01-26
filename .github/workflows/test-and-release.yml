@@ -69,6 +69,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Fix permissions
+        run: sudo setcap 'cap_net_bind_service,cap_net_raw+eip' $(eval readlink -f `which node`)
       - name: Run local tests
         run: npm test
 #      - name: Run unit tests
