@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.2.1",
+        "version": "1.2.2",
         "news": {
+            "1.2.2": {
+                "en": "Prevent warnings in js-controller 3.2",
+                "de": "Verhindern Sie Warnungen in js-controller 3.2",
+                "ru": "Предотвращение предупреждений в js-controller 3.2",
+                "pt": "Evite avisos no js-controller 3.2",
+                "nl": "Voorkom waarschuwingen in js-controller 3.2",
+                "fr": "Empêcher les avertissements dans js-controller 3.2",
+                "it": "Prevenire gli avvisi in js-controller 3.2",
+                "es": "Prevenir advertencias en js-controller 3.2",
+                "pl": "Zapobiegaj ostrzeżeniom w js-controller 3.2",
+                "zh-cn": "在js-controller 3.2中防止警告"
+            },
             "1.2.1": {
                 "en": "fix info.connection state",
                 "de": "Info.Verbindungsstatus korrigieren",
@@ -180,11 +192,6 @@
                 "en": "Fix DB bit offset bug if starting not from 0",
                 "de": "Korrigiere DB bit offset Fehler, falls fängt nicht vom 0 an",
                 "ru": "Исправлена ошибка, если DB стартует не с 0"
-            },
-            "0.3.0": {
-                "en": "Upgrade node-snap7 library to current version",
-                "de": "node-snap7 Library aktualisiert",
-                "ru": "Upgrade node-snap7 library to current version"
             }
         },
         "title": "Siemens Simatic S7",
