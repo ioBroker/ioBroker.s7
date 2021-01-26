@@ -67,10 +67,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Dependencies
-        run: sudo npm install
+        run: npm install
 
       - name: Run local tests
-        run: sudo npm test
+        run: npm test
 #      - name: Run unit tests
 #        run: npm run test:unit
 #      - name: Run integration tests # (linux/osx)
