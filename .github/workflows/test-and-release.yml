@@ -70,7 +70,7 @@ jobs:
         run: npm install
 
       - name: Run local tests
-        run: npm test
+        run: sudo npm test
 #      - name: Run unit tests
 #        run: npm run test:unit
 #      - name: Run integration tests # (linux/osx)
