@@ -57,7 +57,7 @@ jobs:
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - uses: actions/checkout@v2.3.4
@@ -69,10 +69,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Fix permissions
-        run: sudo setcap 'cap_net_bind_service,cap_net_raw+eip' $(eval readlink -f `which node`)
-      - name: Run local tests
-        run: npm test
+      - name: Local tests
+        if: startsWith(runner.OS, 'linux')
+        run: |
+          sudo setcap 'cap_net_bind_service,cap_net_raw+eip' $(eval readlink -f `which node`)
+          npm test
 #      - name: Run unit tests
 #        run: npm run test:unit
 #      - name: Run integration tests # (linux/osx)
