@@ -189,6 +189,11 @@ function startAdapter(options) {
 }
 
 function writeHelper(id, state) {
+    if (!state || state.val === null) {
+        adapter.log.warn(`Write for ${id} cannot be doe because no value provided (${state ? state.val : state}`);
+        return;
+    }
+
     sendBuffer[id] = state.val;
 
     if (Object.keys(sendBuffer).length === 1) {
@@ -231,6 +236,16 @@ function prepareWrite(id, state) {
 }
 
 function send() {
+    function next(err) {
+        if (err) {
+            adapter.log.error(`DB write error for ${id}: Code #${err}`);
+        }
+        delete(sendBuffer[id]);
+        if (Object.keys(sendBuffer).length) {
+            send();
+        }
+    }
+
     const id = Object.keys(sendBuffer)[0];
 
     const type = objects[id].native.type;
@@ -326,95 +341,89 @@ function send() {
 
     let addr;
 
-    if (data.native.cat === 'db') {
+    try {
+        if (data.native.cat === 'db') {
 
-        if (type === 'BOOL') {
-            addr = data.native.address * 8 + data.native.offsetBit;
-            s7client.WriteArea(s7client.S7AreaDB, data.native.dbId, addr, 1, s7client.S7WLBit, buf, err =>
-                next(err));
-        } else if (type === 'BYTE') {
-            s7client.DBWrite(data.native.dbId, data.native.address, 1, buf, err =>
-                next(err));
-        } else if (type === 'INT' || type === 'WORD') {
-            s7client.DBWrite(data.native.dbId, data.native.address, 2, buf, err =>
-                next(err));
-        } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-            s7client.DBWrite(data.native.dbId, data.native.address, 4, buf, err =>
-                next(err));
-        } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-            s7client.DBWrite(data.native.dbId, data.native.address, data.native.len, buf, err =>
-                next(err));
+            if (type === 'BOOL') {
+                addr = data.native.address * 8 + data.native.offsetBit;
+                s7client.WriteArea(s7client.S7AreaDB, data.native.dbId, addr, 1, s7client.S7WLBit, buf, err =>
+                    next(err));
+            } else if (type === 'BYTE') {
+                s7client.DBWrite(data.native.dbId, data.native.address, 1, buf, err =>
+                    next(err));
+            } else if (type === 'INT' || type === 'WORD') {
+                s7client.DBWrite(data.native.dbId, data.native.address, 2, buf, err =>
+                    next(err));
+            } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
+                s7client.DBWrite(data.native.dbId, data.native.address, 4, buf, err =>
+                    next(err));
+            } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
+                s7client.DBWrite(data.native.dbId, data.native.address, data.native.len, buf, err =>
+                    next(err));
+            }
         }
-    }
 
-    if (data.native.cat === 'input') {
-        if (type === 'BOOL') {
-            addr = data.native.address * 8 + data.native.offsetBit;
-            s7client.WriteArea(s7client.S7AreaPE, 0, addr, 1, s7client.S7WLBit, buf, err =>
-                next(err));
-        } else if (type === 'BYTE') {
-            s7client.EBWrite(data.native.address, data.native.address, 1, buf, err =>
-                next(err));
-        } else if (type === 'INT' || type === 'WORD') {
-            s7client.EBWrite(data.native.address, data.native.address, 2, buf, err =>
-                next(err));
-        } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-            s7client.EBWrite(data.native.address, data.native.address, 4, buf, err =>
-                next(err));
-        } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-            s7client.EBWrite(data.native.address, data.native.address, data.native.len, buf, err =>
-                next(err));
+        if (data.native.cat === 'input') {
+            if (type === 'BOOL') {
+                addr = data.native.address * 8 + data.native.offsetBit;
+                s7client.WriteArea(s7client.S7AreaPE, 0, addr, 1, s7client.S7WLBit, buf, err =>
+                    next(err));
+            } else if (type === 'BYTE') {
+                s7client.EBWrite(data.native.address, data.native.address, 1, buf, err =>
+                    next(err));
+            } else if (type === 'INT' || type === 'WORD') {
+                s7client.EBWrite(data.native.address, data.native.address, 2, buf, err =>
+                    next(err));
+            } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
+                s7client.EBWrite(data.native.address, data.native.address, 4, buf, err =>
+                    next(err));
+            } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
+                s7client.EBWrite(data.native.address, data.native.address, data.native.len, buf, err =>
+                    next(err));
+            }
         }
-    }
-    if (data.native.cat === 'output') {
+        if (data.native.cat === 'output') {
 
-        if (type === 'BOOL') {
-            addr = data.native.address * 8 + data.native.offsetBit;
-            s7client.WriteArea(s7client.S7AreaPA, 0, addr, 1, s7client.S7WLBit, buf, err =>
-                next(err));
-        } else if (type === 'BYTE') {
-            s7client.ABWrite(data.native.address, data.native.address, 1, buf, err =>
-                next(err));
-        } else if (type === 'INT' || type === 'WORD') {
-            s7client.ABWrite(data.native.address, data.native.address, 2, buf, err =>
-                next(err));
-        } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-            s7client.ABWrite(data.native.address, data.native.address, 4, buf, err =>
-                next(err));
-        } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-            s7client.ABWrite(data.native.address, data.native.address, data.native.len, buf, err =>
-                next(err));
+            if (type === 'BOOL') {
+                addr = data.native.address * 8 + data.native.offsetBit;
+                s7client.WriteArea(s7client.S7AreaPA, 0, addr, 1, s7client.S7WLBit, buf, err =>
+                    next(err));
+            } else if (type === 'BYTE') {
+                s7client.ABWrite(data.native.address, data.native.address, 1, buf, err =>
+                    next(err));
+            } else if (type === 'INT' || type === 'WORD') {
+                s7client.ABWrite(data.native.address, data.native.address, 2, buf, err =>
+                    next(err));
+            } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
+                s7client.ABWrite(data.native.address, data.native.address, 4, buf, err =>
+                    next(err));
+            } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
+                s7client.ABWrite(data.native.address, data.native.address, data.native.len, buf, err =>
+                    next(err));
+            }
         }
-    }
-    if (data.native.cat === 'marker') {
+        if (data.native.cat === 'marker') {
 
-        if (type === 'BOOL') {
-            addr = data.native.address * 8 + data.native.offsetBit;
-            s7client.WriteArea(s7client.S7AreaMK, 0, addr, 1, s7client.S7WLBit, buf, err =>
-                next(err));
-        } else if (type === 'BYTE') {
-            s7client.MBWrite(data.native.address, 1, buf, err =>
-                next(err));
-        } else if (type === 'INT' || type === 'WORD') {
-            s7client.MBWrite(data.native.address, 2, buf, err =>
-                next(err));
-        } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-            s7client.MBWrite(data.native.address, 4, buf, err =>
-                next(err));
-        } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-            s7client.MBWrite(data.native.address, data.native.len, buf, err =>
-                next(err));
+            if (type === 'BOOL') {
+                addr = data.native.address * 8 + data.native.offsetBit;
+                s7client.WriteArea(s7client.S7AreaMK, 0, addr, 1, s7client.S7WLBit, buf, err =>
+                    next(err));
+            } else if (type === 'BYTE') {
+                s7client.MBWrite(data.native.address, 1, buf, err =>
+                    next(err));
+            } else if (type === 'INT' || type === 'WORD') {
+                s7client.MBWrite(data.native.address, 2, buf, err =>
+                    next(err));
+            } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
+                s7client.MBWrite(data.native.address, 4, buf, err =>
+                    next(err));
+            } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
+                s7client.MBWrite(data.native.address, data.native.len, buf, err =>
+                    next(err));
+            }
         }
-    }
-
-    function next(err) {
-        if (err) {
-            adapter.log.error('DB write error. Code #' + err);
-        }
-        delete(sendBuffer[id]);
-        if (Object.keys(sendBuffer).length) {
-            send();
-        }
+    } catch (err) {
+        return next(err);
     }
 }
 
@@ -1292,85 +1301,108 @@ const main = {
         async.parallel({
                 input: callback => {
                     if (main.input_msb) {
-                        s7client.EBRead(main.input_lsb, main.input_msb - main.input_lsb, (err, res) => {
-                            if (err) {
-                                adapter.log.warn(`EBRead error[${main.input_lsb} - ${main.input_msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
-                                callback(err);
-                            } else {
-                                for (let n = 0; main.inputs.length > n; n++) {
-                                    try {
-                                        main.write(
-                                            main.inputs[n].id,       // ID of the object
-                                            res,                     // buffer
-                                            main.inputs[n].Type,     // type
-                                            main.inputs[n].offsetByte - main.input_lsb,  // offset in the buffer
-                                            main.inputs[n].offsetBit, // bit offset
-                                            main.inputs[n].Length    // length for string, array
-                                        );
-                                    } catch (err) {
-                                        adapter.log.error(`Writing Input. Code #${err}`);
+                        if (!s7client) {
+                            return; // we are already unloaded
+                        }
+                        try {
+                            s7client.EBRead(main.input_lsb, main.input_msb - main.input_lsb, (err, res) => {
+                                if (err) {
+                                    adapter.log.warn(`EBRead error[${main.input_lsb} - ${main.input_msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
+                                    callback(err);
+                                } else {
+                                    for (let n = 0; main.inputs.length > n; n++) {
+                                        try {
+                                            main.write(
+                                                main.inputs[n].id,       // ID of the object
+                                                res,                     // buffer
+                                                main.inputs[n].Type,     // type
+                                                main.inputs[n].offsetByte - main.input_lsb,  // offset in the buffer
+                                                main.inputs[n].offsetBit, // bit offset
+                                                main.inputs[n].Length    // length for string, array
+                                            );
+                                        } catch (err) {
+                                            adapter.log.error(`Writing Input. Code #${err}`);
+                                        }
                                     }
+                                    callback(null);
                                 }
-                                callback(null);
-                            }
-                        });
+                            });
+                        } catch (err) {
+                            adapter.log.warn(`EBRead error[${main.input_lsb} - ${main.input_msb}]: ${err}`);
+                            callback(err);
+                        }
                     } else {
                         callback(null, null);
                     }
                 },
                 output: callback => {
                     if (main.output_msb) {
-                        s7client.ABRead(main.output_lsb, main.output_msb - main.output_lsb, (err, res) => {
-                            if (err) {
-                                adapter.log.warn(`ABRead error[${main.output_lsb} - ${main.output_msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
-                                callback(err);
-                            } else {
-                                for (let n = 0; main.outputs.length > n; n++) {
-                                    try {
-                                        main.write(
-                                            main.outputs[n].id,
-                                            res,
-                                            main.outputs[n].Type,
-                                            main.outputs[n].offsetByte - main.output_lsb,
-                                            main.outputs[n].offsetBit,
-                                            main.outputs[n].Length    // length for string, array
-                                        );
-                                    } catch (err) {
-                                        adapter.log.error(`Writing Output. Code #${err}`);
+                        if (!s7client) {
+                            return; // we are already unloaded
+                        }
+                        try {
+                            s7client.ABRead(main.output_lsb, main.output_msb - main.output_lsb, (err, res) => {
+                                if (err) {
+                                    adapter.log.warn(`ABRead error[${main.output_lsb} - ${main.output_msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
+                                    callback(err);
+                                } else {
+                                    for (let n = 0; main.outputs.length > n; n++) {
+                                        try {
+                                            main.write(
+                                                main.outputs[n].id,
+                                                res,
+                                                main.outputs[n].Type,
+                                                main.outputs[n].offsetByte - main.output_lsb,
+                                                main.outputs[n].offsetBit,
+                                                main.outputs[n].Length    // length for string, array
+                                            );
+                                        } catch (err) {
+                                            adapter.log.error(`Writing Output. Code #${err}`);
+                                        }
                                     }
+                                    callback(null);
                                 }
-                                callback(null);
-                            }
-                        });
+                            });
+                        } catch (err) {
+                            adapter.log.warn(`ABRead error[${main.output_lsb} - ${main.output_msb}]: ${err}`);
+                            callback(err);
+                        }
                     } else {
                         callback(null);
                     }
                 },
                 marker: callback => {
                     if (main.marker_msb) {
-                        s7client.MBRead(main.marker_lsb, main.marker_msb - main.marker_lsb, (err, res) => {
-                            if (err) {
-                                adapter.log.warn(`MBRead error[${main.marker_lsb} - ${main.marker_msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
-                                callback(err);
-                            } else {
-                                for (let n = 0; main.markers.length > n; n++) {
-                                    try {
-                                        main.write(
-                                            main.markers[n].id,
-                                            res,
-                                            main.markers[n].Type,
-                                            main.markers[n].offsetByte - main.marker_lsb,
-                                            main.markers[n].offsetBit,
-                                            main.markers[n].Length    // length for string, array
-                                        );
-                                    } catch (err) {
-                                        adapter.log.error(`Writing Merker. Code #${err}`);
+                        if (!s7client) {
+                            return; // we are already unloaded
+                        }
+                        try {
+                            s7client.MBRead(main.marker_lsb, main.marker_msb - main.marker_lsb, (err, res) => {
+                                if (err) {
+                                    adapter.log.warn(`MBRead error[${main.marker_lsb} - ${main.marker_msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
+                                    callback(err);
+                                } else {
+                                    for (let n = 0; main.markers.length > n; n++) {
+                                        try {
+                                            main.write(
+                                                main.markers[n].id,
+                                                res,
+                                                main.markers[n].Type,
+                                                main.markers[n].offsetByte - main.marker_lsb,
+                                                main.markers[n].offsetBit,
+                                                main.markers[n].Length    // length for string, array
+                                            );
+                                        } catch (err) {
+                                            adapter.log.error(`Writing Merker. Code #${err}`);
+                                        }
                                     }
+                                    callback(null);
                                 }
-                                callback(null);
-                            }
-                        });
-
+                            });
+                        } catch (err) {
+                            adapter.log.warn(`MBRead error[${main.marker_lsb} - ${main.marker_msb}]: ${err}`);
+                            callback(err);
+                        }
                     } else {
                         callback(null);
                     }
@@ -1380,15 +1412,23 @@ const main = {
 
                     async.each(main._db_size,
                         (db, callback) => {
-                            s7client.DBRead(db.dbId, db.lsb, db.msb - db.lsb, (err, res) => {
-                                if (err) {
-                                    adapter.log.warn(`DBRead error[DB ${db.dbId}:${db.lsb} - ${db.msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
-                                    callback(err);
-                                } else {
-                                    buf[db.db] = res;
-                                    callback(null, res);
-                                }
-                            });
+                            if (!s7client) {
+                                return; // we are already unloaded
+                            }
+                            try {
+                                s7client.DBRead(db.dbId, db.lsb, db.msb - db.lsb, (err, res) => {
+                                    if (err) {
+                                        adapter.log.warn(`DBRead error[DB ${db.dbId}:${db.lsb} - ${db.msb}]: code: 0x${parseInt(err, 10).toString(16)}${errorCodes[err] ? ' (' + errorCodes[err] + ')' : ''}`);
+                                        callback(err);
+                                    } else {
+                                        buf[db.db] = res;
+                                        callback(null, res);
+                                    }
+                                });
+                            } catch (err) {
+                                adapter.log.warn(`DBRead error[DB ${db.dbId}:${db.lsb} - ${db.msb}]: ${err}`);
+                                callback(err);
+                            }
                         },
                         (err, res) => {
                             if (err) {
@@ -1429,6 +1469,9 @@ const main = {
             },
 
             err => {
+                if (!s7client) {
+                    return; // we are already unloaded
+                }
                 if (err) {
                     main.errorCount++;
 
