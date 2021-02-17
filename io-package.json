@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.2.2",
+        "version": "1.2.3",
         "news": {
+            "1.2.3": {
+                "en": "null values will no longer be tried to send but give error message (Sentry IOBROKER-S7-8)\nPrevent some more crash cases (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
+                "de": "Es wird nicht mehr versucht, Nullwerte zu senden, sondern es wird eine Fehlermeldung ausgegeben (Sentry IOBROKER-S7-8).\nVerhindern Sie weitere Absturzfälle (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G).",
+                "ru": "нулевые значения больше не будут отправляться, но будут выдавать сообщение об ошибке (Sentry IOBROKER-S7-8)\nПредотвратить еще несколько случаев сбоя (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
+                "pt": "Não será mais tentado enviar valores nulos, mas sim uma mensagem de erro (Sentry IOBROKER-S7-8)\nEvite mais alguns casos de colisão (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
+                "nl": "null-waarden worden niet langer geprobeerd te verzenden, maar geven een foutmelding (Sentry IOBROKER-S7-8)\nVoorkom nog meer crashgevallen (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
+                "fr": "les valeurs nulles ne seront plus envoyées mais donneront un message d'erreur (Sentry IOBROKER-S7-8)\nÉvitez d'autres cas de crash (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
+                "it": "i valori nulli non verranno più tentati di inviare ma forniranno un messaggio di errore (Sentry IOBROKER-S7-8)\nPrevenire altri casi di crash (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
+                "es": "Los valores nulos ya no se intentarán enviar pero darán un mensaje de error (Sentry IOBROKER-S7-8)\nEvite algunos casos de colisión más (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
+                "pl": "wartości zerowe nie będą już próbowane do wysyłania, ale wyświetlą komunikat o błędzie (Sentry IOBROKER-S7-8)\nZapobiegaj kolejnym przypadkom awarii (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
+                "zh-cn": "空值将不再尝试发送，但会给出错误消息（Sentry IOBROKER-S7-8）\n防止更多的崩溃情况（IOBROKER-S7-1，IOBROKER-S7-9，IOBROKER-S7-E，IOBROKER-S7-F，IOBROKER-S7-G）"
+            },
             "1.2.2": {
                 "en": "Prevent warnings in js-controller 3.2",
                 "de": "Verhindern Sie Warnungen in js-controller 3.2",
@@ -187,11 +199,6 @@
                 "en": "Activate save button if something was deleted",
                 "de": "Aktiviere Speichern-Knopf beim löschen",
                 "ru": "Активировать кнопку сохранения при удалении чего либо"
-            },
-            "0.3.2": {
-                "en": "Fix DB bit offset bug if starting not from 0",
-                "de": "Korrigiere DB bit offset Fehler, falls fängt nicht vom 0 an",
-                "ru": "Исправлена ошибка, если DB стартует не с 0"
             }
         },
         "title": "Siemens Simatic S7",
