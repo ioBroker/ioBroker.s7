@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.2.3",
+        "version": "1.2.4",
         "news": {
+            "1.2.4": {
+                "en": "Make sure data are of correct type (Sentry IOBROKER-S7-K)",
+                "de": "Stellen Sie sicher, dass die Daten vom richtigen Typ sind (Sentry IOBROKER-S7-K).",
+                "ru": "Убедитесь, что данные правильного типа (Sentry IOBROKER-S7-K)",
+                "pt": "Certifique-se de que os dados sejam do tipo correto (Sentry IOBROKER-S7-K)",
+                "nl": "Zorg ervoor dat de gegevens van het juiste type zijn (Sentry IOBROKER-S7-K)",
+                "fr": "Assurez-vous que les données sont de type correct (Sentry IOBROKER-S7-K)",
+                "it": "Assicurati che i dati siano del tipo corretto (Sentry IOBROKER-S7-K)",
+                "es": "Asegúrese de que los datos sean del tipo correcto (Sentry IOBROKER-S7-K)",
+                "pl": "Upewnij się, że dane są odpowiedniego typu (Sentry IOBROKER-S7-K)",
+                "zh-cn": "确保数据类型正确（Sentry IOBROKER-S7-K）"
+            },
             "1.2.3": {
                 "en": "null values will no longer be tried to send but give error message (Sentry IOBROKER-S7-8)\nPrevent some more crash cases (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
                 "de": "Es wird nicht mehr versucht, Nullwerte zu senden, sondern es wird eine Fehlermeldung ausgegeben (Sentry IOBROKER-S7-8).\nVerhindern Sie weitere Absturzfälle (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G).",
@@ -194,11 +206,6 @@
                 "en": "Detect DB and db in addresses",
                 "de": "Detect DB und db in Adressen",
                 "ru": "Распознаёт DB и db в адресах"
-            },
-            "1.0.0": {
-                "en": "Activate save button if something was deleted",
-                "de": "Aktiviere Speichern-Knopf beim löschen",
-                "ru": "Активировать кнопку сохранения при удалении чего либо"
             }
         },
         "title": "Siemens Simatic S7",
