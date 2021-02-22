@@ -62,6 +62,9 @@ S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_D
 
 ## Changelog
 
+### __WORK IN PROGRES__
+* (Apollon77) Make sure data are of correct type (Sentry IOBROKER-S7-K)
+
 ### 1.2.3 (2021-02-17)
 * (Apollon77) null values will no longer be tried to send but give error message (Sentry IOBROKER-S7-8)
 * (Apollon77) Prevent some more crash cases (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)

@@ -603,6 +603,7 @@ const main = {
 
             if (main.ac.inputs.length > 0) {
                 for (i = main.ac.inputs.length - 1; i >= 0; i--) {
+                    if (typeof main.ac.inputs[i].Address !== 'string') main.ac.inputs[i].Address = main.ac.inputs[i].Address.toString();
                     main.ac.inputs[i].Address = main.ac.inputs[i].Address.replace(/\+/g, '');
                     parts = main.ac.inputs[i].Address.split('.');
                     main.ac.inputs[i].offsetByte = parseInt(parts[0], 10);
@@ -630,6 +631,7 @@ const main = {
 
             if (main.ac.outputs.length > 0) {
                 for (i = main.ac.outputs.length - 1; i >= 0; i--) {
+                    if (typeof main.ac.outputs[i].Address !== 'string') main.ac.outputs[i].Address = main.ac.outputs[i].Address.toString();
                     main.ac.outputs[i].Address = main.ac.outputs[i].Address.replace(/\+/g, '');
                     parts = main.ac.outputs[i].Address.split('.');
                     main.ac.outputs[i].offsetByte = parseInt(parts[0], 10);
@@ -657,6 +659,7 @@ const main = {
 
             if (main.ac.markers.length > 0) {
                 for (i = main.ac.markers.length - 1; i >= 0; i--) {
+                    if (typeof main.ac.markers[i].Address !== 'string') main.ac.markers[i].Address = main.ac.markers[i].Address.toString();
                     main.ac.markers[i].Address = main.ac.markers[i].Address.replace(/\+/g, '');
                     parts = main.ac.markers[i].Address.split('.');
                     main.ac.markers[i].offsetByte = parseInt(parts[0], 10);
