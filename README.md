@@ -62,6 +62,9 @@ S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_D
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) Fix pot crash case (Sentry IOBROKER-S7-16)
+
 ### 1.2.4 (2021-02-22)
 * (Apollon77) Make sure data are of correct type (Sentry IOBROKER-S7-K)
 
