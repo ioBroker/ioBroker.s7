@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.2.4",
+        "version": "1.2.5",
         "news": {
+            "1.2.5": {
+                "en": "Fix pot crash case (Sentry IOBROKER-S7-16)",
+                "de": "Fix Pot Crash Fall (Sentry IOBROKER-S7-16)",
+                "ru": "Исправить случай аварии горшка (Sentry IOBROKER-S7-16)",
+                "pt": "Corrigir caso de travamento de pot (Sentry IOBROKER-S7-16)",
+                "nl": "Potcrash-geval repareren (Sentry IOBROKER-S7-16)",
+                "fr": "Correction d'un cas de crash de pot (Sentry IOBROKER-S7-16)",
+                "it": "Risolto il caso di crash del vaso (Sentry IOBROKER-S7-16)",
+                "es": "Arreglar el caso de bloqueo de olla (Sentry IOBROKER-S7-16)",
+                "pl": "Napraw przypadek awarii garnka (Sentry IOBROKER-S7-16)",
+                "zh-cn": "修复锅底摔坏的情况（Sentry IOBROKER-S7-16）"
+            },
             "1.2.4": {
                 "en": "Make sure data are of correct type (Sentry IOBROKER-S7-K)",
                 "de": "Stellen Sie sicher, dass die Daten vom richtigen Typ sind (Sentry IOBROKER-S7-K).",
@@ -230,18 +242,6 @@
                 "es": "Mejore los datos del objeto para permitir la escritura si está disponible\n",
                 "pl": "Popraw dane obiektu, aby umożliwić zapis, jeśli jest dostępny\n",
                 "zh-cn": "增强对象数据以允许写入（如果可用）\n"
-            },
-            "1.0.1": {
-                "en": "Detect DB and db in addresses",
-                "de": "Detect DB und db in Adressen",
-                "ru": "Распознаёт DB и db в адресах",
-                "pt": "Detectar banco de dados e banco de dados em endereços",
-                "nl": "Detecteer DB en DB in adressen",
-                "fr": "Détecter DB et DB dans les adresses",
-                "it": "Rileva DB e db negli indirizzi",
-                "es": "Detecta DB y DB en direcciones",
-                "pl": "Wykryj DB i DB w adresach",
-                "zh-cn": "检测地址中的数据库和数据库"
             }
         },
         "title": "Siemens Simatic S7",
