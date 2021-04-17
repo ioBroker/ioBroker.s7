@@ -132,7 +132,8 @@
                 "fr": "Prise en charge de nodejs 10 sur Windows",
                 "it": "Supporto per nodejs 10 su Windows",
                 "es": "Soporte para nodejs 10 en windows",
-                "pl": "Obsługa nodejs 10 w oknach"
+                "pl": "Obsługa nodejs 10 w oknach",
+                "zh-cn": "在Windows上支持Node.js 10"
             },
             "1.1.3": {
                 "en": "The time offset was added",
@@ -143,7 +144,8 @@
                 "fr": "Le décalage horaire a été ajouté",
                 "it": "L'offset temporale è stato aggiunto",
                 "es": "La compensación de tiempo se agregó",
-                "pl": "Przesunięcie czasu zostało dodane"
+                "pl": "Przesunięcie czasu zostało dodane",
+                "zh-cn": "时间偏移已添加"
             },
             "1.1.2": {
                 "en": "Fix strings",
@@ -153,7 +155,9 @@
                 "nl": "Snaren repareren",
                 "fr": "Corriger les chaînes",
                 "it": "Correggi le stringhe",
-                "es": "Corregir cadenas"
+                "es": "Corregir cadenas",
+                "pl": "Napraw ciągi",
+                "zh-cn": "修正字串"
             },
             "1.1.1": {
                 "en": "Fix LOGO! support",
@@ -163,7 +167,9 @@
                 "nl": "LOGO! repareren",
                 "fr": "Corriger les LOGO!",
                 "it": "Correggi le LOGO!",
-                "es": "Corregir LOGO!"
+                "es": "Corregir LOGO!",
+                "pl": "Napraw LOGO! ",
+                "zh-cn": "修复LOGO！"
             },
             "1.1.0": {
                 "en": "Fix strings\nfix names if they have more than one space",
@@ -173,7 +179,9 @@
                 "nl": "Snaren repareren\nrepareer namen als ze meer dan één spatie hebben",
                 "fr": "Corriger les chaînes\nfixer les noms s'ils ont plus d'un espace",
                 "it": "Correggi le stringhe\ncorreggere i nomi se hanno più di uno spazio",
-                "es": "Corregir cadenas\ncorregir nombres si tienen más de un espacio"
+                "es": "Corregir cadenas\ncorregir nombres si tienen más de un espacio",
+                "pl": "Napraw ciągi\n",
+                "zh-cn": "修正字串\n"
             },
             "1.0.6": {
                 "en": "The error codes are decoded into the readable text",
@@ -182,7 +190,10 @@
                 "pt": "Os códigos de erro são decodificados no texto legível",
                 "nl": "De foutcodes worden gedecodeerd in de leesbare tekst",
                 "fr": "Les codes d'erreur sont décodés dans le texte lisible",
-                "it": "I codici di errore sono decodificati nel testo leggibile"
+                "it": "I codici di errore sono decodificati nel testo leggibile",
+                "es": "Los códigos de error se decodifican en el texto legible",
+                "pl": "Kody błędów są dekodowane na czytelny tekst",
+                "zh-cn": "错误代码被解码成可读文本"
             },
             "1.0.5": {
                 "en": "Error by the DB import is fixed",
@@ -190,22 +201,47 @@
                 "ru": "Исправлена ошибка при импорте DB",
                 "pt": "O erro pela importação do banco de dados é corrigido",
                 "nl": "Fout bij de DB-import staat vast",
-                "fr": "Erreur par l'importation de la base de données est fixée"
+                "fr": "Erreur par l'importation de la base de données est fixée",
+                "it": "L'errore durante l'importazione del DB è stato risolto",
+                "es": "El error de la importación de la base de datos se solucionó",
+                "pl": "Naprawiono błąd importu bazy danych",
+                "zh-cn": "数据库导入错误已修复"
             },
             "1.0.4": {
                 "en": "Reading of DB (range error) fixed",
                 "de": "Lesen von DB (range error) behobent",
-                "ru": "чтение DB (ошибка диапазона) исправлено"
+                "ru": "чтение DB (ошибка диапазона) исправлено",
+                "pt": "Leitura de DB (erro de alcance) corrigido",
+                "nl": "Lezen van DB (bereikfout) opgelost",
+                "fr": "Correction de la lecture du DB (erreur de plage)",
+                "it": "Lettura del DB (errore di range) corretta",
+                "es": "Lectura de DB (error de rango) fijo",
+                "pl": "Poprawiono odczyt DB (błąd zakresu)",
+                "zh-cn": "读取数据库（范围错误）的问题已修复"
             },
             "1.0.2": {
                 "en": "Enhance object data to allow writing if available\nAdd export from Graphpic",
                 "de": "Objektdaten erweitert um Schreibzugriff zu erlauben wenn verfügbar\nExport aus Graphpic hinzugefügt",
-                "ru": "Усовершенствование данных объекта, позволяющих записывать, если можно\nДобавлен экспорт из Graphpic"
+                "ru": "Усовершенствование данных объекта, позволяющих записывать, если можно\nДобавлен экспорт из Graphpic",
+                "pt": "Aprimore os dados do objeto para permitir a gravação, se disponível\n",
+                "nl": "Verbeter objectgegevens om schrijven mogelijk te maken, indien beschikbaar\n",
+                "fr": "Améliorez les données d'objet pour permettre l'écriture si disponible\n",
+                "it": "Migliora i dati degli oggetti per consentire la scrittura, se disponibile\n",
+                "es": "Mejore los datos del objeto para permitir la escritura si está disponible\n",
+                "pl": "Popraw dane obiektu, aby umożliwić zapis, jeśli jest dostępny\n",
+                "zh-cn": "增强对象数据以允许写入（如果可用）\n"
             },
             "1.0.1": {
                 "en": "Detect DB and db in addresses",
                 "de": "Detect DB und db in Adressen",
-                "ru": "Распознаёт DB и db в адресах"
+                "ru": "Распознаёт DB и db в адресах",
+                "pt": "Detectar banco de dados e banco de dados em endereços",
+                "nl": "Detecteer DB en DB in adressen",
+                "fr": "Détecter DB et DB dans les adresses",
+                "it": "Rileva DB e db negli indirizzi",
+                "es": "Detecta DB y DB en direcciones",
+                "pl": "Wykryj DB i DB w adresach",
+                "zh-cn": "检测地址中的数据库和数据库"
             }
         },
         "title": "Siemens Simatic S7",
@@ -218,7 +254,8 @@
             "fr": "Connexion Siemens SIMATIC S7 via Snap7",
             "it": "Collegamento Siemens SIMATIC S7 tramite Snap7",
             "es": "Conexión Siemens SIMATIC S7 a través de Snap7",
-            "pl": "Połączenie Siemens SIMATIC S7 za pomocą Snap7"
+            "pl": "Połączenie Siemens SIMATIC S7 za pomocą Snap7",
+            "zh-cn": "通过Snap7的西门子SIMATIC S7连接"
         },
         "authors": [
             "smiling_Jack <steffen.schorling@googlemail.com>",

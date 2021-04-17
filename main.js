@@ -1071,7 +1071,7 @@ const main = {
                     adapter.log.info('Successfully connected in LOGO! mode');
 
                     updateConnection(true);
-                    adapter.setState('info.pdu', s7client.PDULength(), true);
+                    s7client && adapter.setState('info.pdu', s7client.PDULength(), true);
 
                     main.poll();
                 }
@@ -1092,7 +1092,7 @@ const main = {
                     adapter.log.info('Successfully connected in S7 mode');
 
                     updateConnection(true);
-                    adapter.setState('info.pdu', s7client.PDULength(), true);
+                    s7client && adapter.setState('info.pdu', s7client.PDULength(), true);
 
                     main.poll();
                 }
