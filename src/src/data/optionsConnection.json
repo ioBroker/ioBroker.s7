@@ -1,0 +1,32 @@
+[
+    {
+        "name": "ip",
+        "type": "text",
+        "title": "PLC IP Address"
+    },
+    {
+        "name": "s7logo",
+        "type": "checkbox",
+        "title": "S7 LOGO!"
+    },
+    {
+        "name": "rack",
+        "type": "text",
+        "title": "PLC Rack"
+    },
+    {
+        "name": "slot",
+        "type": "text",
+        "title": "PLC Slot"
+    },
+    {
+        "name": "localTSAP",
+        "type": "text",
+        "title": "Local TSAP"
+    },
+    {
+        "name": "remoteTSAP",
+        "type": "text",
+        "title": "Remote TSAP"
+    }
+]

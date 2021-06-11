@@ -1,0 +1,54 @@
+[
+    {
+      "name":"round",
+      "type":"number",
+      "title":"Round Real to"
+    },
+    {
+      "name":"poll",
+      "type":"number",
+      "title":"Poll delay",
+      "dimension":"ms"
+    },
+    {
+      "name":"recon",
+      "type":"number",
+      "title":"Reconnect time",
+      "dimension":"ms"
+    },
+    {
+      "name":"pulsetime",
+      "type":"number",
+      "title":"Pulse time",
+      "dimension":"ms"
+    },
+    {
+      "name": "timeFormat",
+      "type": "select",
+      "title": "S7 Time mode",
+      "options": [
+          {
+              "value": "",
+              "title": "Local time"
+          },
+          {
+              "value": "utc",
+              "title": "UTC"
+          },
+          {
+              "value": "summer",
+              "title": "Time offset (with day saving time)"
+          },
+          {
+            "value": "offset",
+            "title": "Time offset (no day saving time)"
+        }
+      ]
+    },
+    {
+      "name":"timeOffset",
+      "type":"number",
+      "title":"Time offset",
+      "dimension":"minutes"
+    }
+  ]
