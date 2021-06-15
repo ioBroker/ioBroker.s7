@@ -21,15 +21,13 @@ import TabMarker from './Tabs/Marker';
 import TabDbs from './Tabs/DBs';
 
 
-import background from './img/plc_back_opacity.png';
-
 const styles = theme => ({
     root: {},
     tabContent: {
         padding: 10,
         height: 'calc(100% - 64px - 48px - 20px)',
         overflow: 'auto',
-        backgroundImage: `url(${background})`
+        // backgroundImage: `url(${background})`
     },
     tabContentIFrame: {
         padding: 10,
@@ -175,7 +173,7 @@ class App extends GenericApp {
                                 rooms={this.state.rooms}
                             />
                         })}
-                    {/* <pre>{JSON.stringify(this.state.native, null, 2)}</pre> */}
+                    <pre>{JSON.stringify(this.state.native, null, 2)}</pre>
                     </div>
                     {this.renderError()}
                     {this.renderSaveCloseButtons()}

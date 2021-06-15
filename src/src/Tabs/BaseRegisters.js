@@ -25,14 +25,14 @@ class BaseRegisters extends Component {
         rooms.unshift({value: '', title: ''});
 
         let result = [
-            {name: 'Address', title: 'Address', type: 'number', sorted: true, width: 20},
+            {name: 'Address', title: 'Address', type: 'text', sorted: true, width: 20},
             {name: 'Name', title: 'Name', type: 'text', sorted: true},
             {name: 'Description', title: 'Description', type: 'text', sorted: true},
             {name: 'Type', title: 'Type', type: 'select', options: types, sorted: true},
             {name: 'Length', title: 'Length', type: 'text', width: 20},
             {name: 'Unit', title: 'Unit', type: 'text', width: 30},
             {name: 'Role', title: 'Role', type: 'select', options: roles, sorted: true},
-            {name: 'Room', title: 'Room', type: 'select', options: rooms, sorted: true},
+            {name: 'Room', title: 'Room', type: 'rooms', options: rooms, sorted: true},
             {name: 'poll', title: 'Poll', type: 'checkbox'},
             {name: 'RW', title: 'RW', type: 'checkbox'},
             {name: 'WP', title: 'WP', type: 'checkbox'},
@@ -50,6 +50,26 @@ class BaseRegisters extends Component {
     changeParam = (index, name, value) => {
         let data = JSON.parse(JSON.stringify(this.props.native[this.nativeField]));
         data[index][name] = value;
+        if (name === 'Type') {
+            if (['BOOL'].includes(value)) {
+                data[index].Length = 0.1;
+            } else
+            if (['', 'BYTE'].includes(value)) {
+                data[index].Length = 1;
+            } else
+            if (['WORD', 'INT', 'STRING', 'S5TIME'].includes(value)) {
+                data[index].Length = 2;
+            } else
+            if (['DWORD', 'DINT', 'REAL'].includes(value)) {
+                data[index].Length = 4;
+            } else
+            if (['S7TIME'].includes(value)) {
+                data[index].Length = 8;
+            } else
+            if (['S7STRING', 'ARRAY'].includes(value)) {
+                data[index].Length = 32;
+            }
+        }
         this.props.onChange(this.nativeField, data);
     }
 
@@ -61,7 +81,24 @@ class BaseRegisters extends Component {
             let sortedData = JSON.parse(JSON.stringify(data));
             sortedData.sort((item1, item2) => item1.Address > item2.Address ? 1 : -1);
             let lastItem = sortedData[sortedData.length - 1];
-            newItem.Address = parseInt(lastItem.Address) + 1;
+            if (this.nativeField === 'dbs') {
+                let address = lastItem.Address;
+                if (address && address.toString().match(/^[^ ]+ [0-9.,]+$/)) {
+                    address = address.split(' ');
+                    newItem.Address = (parseFloat(address[1]) + (lastItem.Length ? parseFloat(lastItem.Length) : 1)).toFixed(1);
+                    if (newItem.Address.toString().match(/\.8$/)) {
+                        newItem.Address = parseFloat(Math.floor(newItem.Address) + 1);
+                    }
+                    newItem.Address = address[0] + ' ' + newItem.Address;
+                } else {
+                    newItem.Address = 'db1 0';
+                }
+            } else {
+                newItem.Address = (parseFloat(lastItem.Address) + (lastItem.Length ? parseFloat(lastItem.Length) : 1)).toFixed(1);
+                if (newItem.Address.toString().match(/\.8$/)) {
+                    newItem.Address = parseFloat(Math.floor(newItem.Address) + 1);
+                }
+            }
             newItem.Type = lastItem.Type;
             newItem.Length = lastItem.Length;
             newItem.Unit = lastItem.Unit;
@@ -88,7 +125,8 @@ class BaseRegisters extends Component {
     }
 
     getDisable = (index, name) => {
-        return false;
+        return name === 'Length' &&
+            !['STRING', 'S7STRING', 'ARRAY'].includes(this.props.native[this.nativeField][index].type);
     }
 
     render() {
@@ -101,6 +139,7 @@ class BaseRegisters extends Component {
                 deleteItem={this.deleteItem}
                 changeData={this.changeData}
                 getDisable={this.getDisable}
+                rooms={this.props.rooms}
             />
         </Paper>
     }

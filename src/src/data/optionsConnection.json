@@ -21,12 +21,12 @@
     },
     {
         "name": "localTSAP",
-        "type": "text",
+        "type": "hex",
         "title": "Local TSAP"
     },
     {
         "name": "remoteTSAP",
-        "type": "text",
+        "type": "hex",
         "title": "Remote TSAP"
     }
 ]

@@ -24,11 +24,12 @@ import ImportExport from '@material-ui/icons/ImportExport';
 import I18n from '@iobroker/adapter-react/i18n';
 
 import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
+import TextWithIcon from '@iobroker/adapter-react/Components/TextWithIcon';
+import SelectWithIcon from '@iobroker/adapter-react/Components/SelectWithIcon';
 
 import TsvDialog from './TsvDialog';
 import DeleteAllDialog from './DeleteAllDialog';
 import DeleteDialog from './DeleteDialog';
-
 
 const styles = theme => ({
     tableHeader: {
@@ -81,7 +82,7 @@ const DataCell = props => {
             result = <Checkbox
                 checked={!!item[field.name]}
                 disabled
-            />
+            />;
         } else {
             result = <Tooltip title={I18n.t(field.title)}>
                 <Checkbox
@@ -91,17 +92,31 @@ const DataCell = props => {
                     disabled={props.getDisable(sortedItem.$index, field.name)}
                     onChange={e => props.changeParam(sortedItem.$index, field.name, e.target.checked)}
                 />
-            </Tooltip>
+            </Tooltip>;
         }
-    }
-    else if (field.type === 'select') {
+    } else if (field.type === 'rooms') {
+        if (!editMode) {
+            result = <TextWithIcon list={props.rooms} value={item[field.name]}/>;
+        } else {
+            result = <SelectWithIcon
+                list={props.rooms}
+                allowNone={true}
+                value={item[field.name]}
+                dense={true}
+                inputProps={{ref, className: props.classes.tableSelect}}
+                disabled={props.getDisable(sortedItem.$index, field.name)}
+                onChange={value => props.changeParam(sortedItem.$index, field.name, value)}
+                className={props.classes.tableSelectContainer}
+            />;
+        }
+    } else if (field.type === 'select') {
         if (!editMode) {
             let option = field.options.find(option => option.value === item[field.name]);
             result = option ? option.title : '';
         } else {
             result = <Select
                 value={item[field.name]}
-                inputProps={{ref: ref, className: props.classes.tableSelect}}
+                inputProps={{ref, className: props.classes.tableSelect}}
                 disabled={props.getDisable(sortedItem.$index, field.name)}
                 onChange={e => props.changeParam(sortedItem.$index, field.name, e.target.value)}
                 className={props.classes.tableSelectContainer}
@@ -109,7 +124,7 @@ const DataCell = props => {
                 {field.options.map(option =>
                     <MenuItem key={option.value} value={option.value}>{option.title ? option.title : <i>{I18n.t('Nothing')}</i>}</MenuItem>
                 )}
-            </Select>
+            </Select>;
         }
     } else {
         if (!editMode) {
@@ -120,7 +135,7 @@ const DataCell = props => {
                 type={field.type}
                 onChange={e => props.changeParam(sortedItem.$index, field.name, e.target.value)}
                 disabled={props.getDisable(sortedItem.$index, field.name)}
-            />
+            />;
         }
     }
 
@@ -136,7 +151,7 @@ const DataCell = props => {
         // style={{padding: '0px 4px', border: 0}}
     >
         {result}
-    </TableCell>
+    </TableCell>;
 }
 
 const RegisterTable = props => {
@@ -207,7 +222,7 @@ const RegisterTable = props => {
             >
                 <TableHead>
                     <TableRow>
-                        {props.fields.filter(item => extendedMode || !item.expert).map(field => {
+                        {props.fields.filter(item => (extendedMode || !item.expert) && (!props.formulaDisabled || !item.formulaDisabled)).map(field => {
                             let isChecked = false;
                             let indeterminate = false;
                             let trueFound = false;
@@ -241,9 +256,8 @@ const RegisterTable = props => {
                                             checked={isChecked}
                                             onChange={e => {
                                                 let newData = JSON.parse(JSON.stringify(props.data));
-                                                newData.forEach(item => {
-                                                    item[field.name] = e.target.checked;
-                                                })
+                                                newData.forEach(item =>
+                                                    item[field.name] = e.target.checked);
                                                 props.changeData(newData);
                                             }}
                                         />
@@ -262,15 +276,18 @@ const RegisterTable = props => {
                         })}
                         <TableCell>
                             <Tooltip title={I18n.t('Delete all')}>
-                                <IconButton size="small"
-                                            onClick={e => setDeleteAllDialog({
-                                                open: true,
-                                                action: () => props.changeData([]),
-                                            })}
-                                            disabled={!props.data.length}
-                                >
-                                    <DeleteIcon/>
-                                </IconButton>
+                                <div>
+                                    <IconButton
+                                        size="small"
+                                        onClick={e => setDeleteAllDialog({
+                                            open: true,
+                                            action: () => props.changeData([]),
+                                        })}
+                                        disabled={!props.data.length}
+                                    >
+                                        <DeleteIcon/>
+                                    </IconButton>
+                                </div>
                             </Tooltip>
                         </TableCell>
                     </TableRow>
@@ -279,8 +296,8 @@ const RegisterTable = props => {
                     {
                         sortedData.map((sortedItem) =>
                             <TableRow hover key={sortedItem.$index}>
-                                {props.fields.filter(item => extendedMode || !item.expert).map(field =>
-                                    <DataCell sortedItem={sortedItem} field={field} editMode={editMode}
+                                {props.fields.filter(item => (extendedMode || !item.expert) && (!props.formulaDisabled || !item.formulaDisabled)).map(field =>
+                                    <DataCell sortedItem={sortedItem} field={field} editMode={editMode} rooms={props.rooms}
                                               setEditMode={setEditMode} key={field.name} {...props} />
                                 )}
                                 <TableCell>
@@ -294,7 +311,7 @@ const RegisterTable = props => {
                                                 }
                                                 setDeleteDialog({
                                                     open: true,
-                                                    action: (disableDialogs) => {
+                                                    action: disableDialogs => {
                                                         if (disableDialogs) {
                                                             window.sessionStorage.setItem('disableDeleteDialogs', (new Date()).toISOString());
                                                         }
@@ -349,6 +366,8 @@ RegisterTable.propTypes = {
     addItem: PropTypes.func,
     changeData: PropTypes.func,
     deleteItem: PropTypes.func,
+    rooms: PropTypes.object,
+    formulaDisabled: PropTypes.bool,
 }
 
 export default withStyles(styles)(RegisterTable);
