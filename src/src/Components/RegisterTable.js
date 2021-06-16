@@ -8,7 +8,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import Checkbox from '@material-ui/core/Checkbox';
-import Textfield from '@material-ui/core/Textfield';
+import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -22,6 +22,7 @@ import AddIcon from '@material-ui/icons/Add';
 import ImportExport from '@material-ui/icons/ImportExport';
 
 import I18n from '@iobroker/adapter-react/i18n';
+import Utils from '@iobroker/adapter-react/Components/Utils';
 
 import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
 import TextWithIcon from '@iobroker/adapter-react/Components/TextWithIcon';
@@ -38,6 +39,9 @@ const styles = theme => ({
         fontSize: '80%',
         padding: '0px 8px'
     },
+    tableHeaderExtended: {
+        color: theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark
+    },
     tableCell: {
         whiteSpace: 'nowrap',
         fontSize: '80%',
@@ -47,17 +51,20 @@ const styles = theme => ({
         overflow: 'auto',
         maxHeight: 'calc(100vh - 180px)'
     },
-    tableTextfield: {
+    tableTextField: {
         fontSize: '80%'
     },
     tableSelect: {
         fontSize: '80%'
     },
-    tableTextfieldContainer: {
+    tableTextFieldContainer: {
         width: '100%'
     },
     tableSelectContainer: {
         width: '100%'
+    },
+    nonEditMode: {
+        cursor: 'pointer'
     }
 });
 
@@ -130,8 +137,8 @@ const DataCell = props => {
         if (!editMode) {
             result = item[field.name] ? item[field.name] : null;
         } else {
-            result = <Textfield value={item[field.name]} className={props.classes.tableTextfieldContainer}
-                inputProps={{ref: ref, className: props.classes.tableTextfield}}
+            result = <TextField value={item[field.name]} className={props.classes.tableTextFieldContainer}
+                inputProps={{ref: ref, className: props.classes.tableTextField}}
                 type={field.type}
                 onChange={e => props.changeParam(sortedItem.$index, field.name, e.target.value)}
                 disabled={props.getDisable(sortedItem.$index, field.name)}
@@ -140,15 +147,12 @@ const DataCell = props => {
     }
 
     return <TableCell
-        className={props.classes.tableCell}
+        className={Utils.clsx(props.classes.tableCell, !editMode && props.classes.nonEditMode)}
         onClick={e => {
             setEditMode(true);
+            window.localStorage.setItem('Modbus.editMode', 'true');
             window.setTimeout(() => ref.current && ref.current.focus(), 100);
         }}
-        style={{
-            cursor: editMode ? null : 'pointer'
-        }}
-        // style={{padding: '0px 4px', border: 0}}
     >
         {result}
     </TableCell>;
@@ -156,9 +160,7 @@ const DataCell = props => {
 
 const RegisterTable = props => {
     const [tsvDialogOpen, setTsvDialogOpen] = useState(false);
-    const [order, setOrder] = useState('asc');
-    const [orderBy, setOrderBy] = useState('Address');
-    const [editMode, setEditMode] = useState(true);
+    const [editMode, setEditMode] = useState(window.localStorage.getItem('Modbus.editMode') !== 'false');
     const [extendedMode, setExtendedMode] = useState(window.localStorage.getItem('Modbus.extendedMode') === 'true');
     const [deleteAllDialog, setDeleteAllDialog] = useState({
         open: false,
@@ -170,23 +172,7 @@ const RegisterTable = props => {
         action: null,
     });
 
-    let sortedData = []
-    props.data.forEach((item, index) => {sortedData[index] = {item: item, $index: index}});
-    sortedData.sort((sortedItem1, sortedItem2) => {
-        let sort1;
-        let sort2;
-        if (orderBy === '$index') {
-            sort1 = sortedItem1[orderBy];
-            sort2 = sortedItem2[orderBy];
-        } else if (props.fields[orderBy] && props.fields[orderBy].type === 'number') {
-            sort1 = parseInt(sortedItem1.item[orderBy]);
-            sort2 = parseInt(sortedItem2.item[orderBy]);
-        } else {
-            sort1 = sortedItem1.item[orderBy];
-            sort2 = sortedItem2.item[orderBy];
-        }
-        return (order === 'asc' ? sort1 > sort2 : sort1 < sort2) ? 1 : -1;
-    });
+    let sortedData = props.getSortedData(props.data, props.orderBy, props.order);
 
     return <div>
         <div>
@@ -201,7 +187,10 @@ const RegisterTable = props => {
                 </IconButton>
             </Tooltip>
             <FormControlLabel
-                control={<Switch checked={editMode} onChange={e => setEditMode(e.target.checked)}/>}
+                control={<Switch checked={editMode} onChange={e => {
+                    setEditMode(e.target.checked);
+                    window.localStorage.setItem('Modbus.editMode', e.target.checked);
+                }}/>}
                 label={I18n.t('Edit mode')}
             />
             <Tooltip title={I18n.t('Toggle extended mode')}>
@@ -246,7 +235,7 @@ const RegisterTable = props => {
                             return <TableCell
                                 key={field.name}
                                 style={{width: field.type === 'checkbox' ? 20 : field.width}}
-                                className={props.classes.tableHeader}
+                                className={Utils.clsx(props.classes.tableHeader, field.expert && props.classes.tableHeaderExtended)}
                                 title={field.tooltip ? I18n.t(field.tooltip) : null}
                             >
                                 {field.type === 'checkbox' ?
@@ -264,12 +253,11 @@ const RegisterTable = props => {
                                     </Tooltip>
                                     : null}
                                 {field.sorted ? <TableSortLabel
-                                    active={field.name === orderBy}
-                                    direction={order}
+                                    active={field.name === props.orderBy}
+                                    direction={props.order}
                                     onClick={e => {
-                                        const isAsc = orderBy === field.name && order === 'asc';
-                                        setOrder(isAsc ? 'desc' : 'asc');
-                                        setOrderBy(field.name);
+                                        const isAsc = props.orderBy === field.name && props.order === 'asc';
+                                        props.onChangeOrder(field.name, isAsc ? 'desc' : 'asc');
                                     }}
                                 >{I18n.t(field.title)}</TableSortLabel> : I18n.t(field.title)}
                             </TableCell>
@@ -294,11 +282,18 @@ const RegisterTable = props => {
                 </TableHead>
                 <TableBody>
                     {
-                        sortedData.map((sortedItem) =>
+                        sortedData.map(sortedItem =>
                             <TableRow hover key={sortedItem.$index}>
                                 {props.fields.filter(item => (extendedMode || !item.expert) && (!props.formulaDisabled || !item.formulaDisabled)).map(field =>
-                                    <DataCell sortedItem={sortedItem} field={field} editMode={editMode} rooms={props.rooms}
-                                              setEditMode={setEditMode} key={field.name} {...props} />
+                                    <DataCell
+                                        sortedItem={sortedItem}
+                                        field={field}
+                                        editMode={editMode}
+                                        rooms={props.rooms}
+                                        setEditMode={setEditMode}
+                                        ey={field.name}
+                                        {...props}
+                                    />
                                 )}
                                 <TableCell>
                                     <Tooltip title={I18n.t('Delete')}>
@@ -368,6 +363,7 @@ RegisterTable.propTypes = {
     deleteItem: PropTypes.func,
     rooms: PropTypes.object,
     formulaDisabled: PropTypes.bool,
+    getSortedData: PropTypes.func,
 }
 
 export default withStyles(styles)(RegisterTable);

@@ -9,7 +9,6 @@ import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
@@ -28,7 +27,7 @@ const styles = theme => ({
     optionsSelect: {
         width: 280
     },
-    optionsTextfield: {
+    optionsTextField: {
         width: 280
     },
     optionContainer: {
@@ -51,13 +50,13 @@ const styles = theme => ({
         fontSize: 24,
     },
     fileInput: {
-        textAlign: 'center', 
-        display: 'inline-block', 
-        height: 80, 
-        width: 200, 
-        border: '2px dashed #777', 
-        borderRadius: 10, 
-        marginTop: 12, 
+        textAlign: 'center',
+        display: 'inline-block',
+        height: 80,
+        width: 200,
+        border: '2px dashed #777',
+        borderRadius: 10,
+        marginTop: 12,
         padding: 4
     }
 });
@@ -164,7 +163,7 @@ class Options extends Component {
                     bottom = value;
                 }
                 return <Box className={this.props.classes.optionContainer} key={input.name}>
-                    <FormControl style={{width: '100%', paddingTop: '20px'}} className={this.props.classes.optionsTextfield}>
+                    <FormControl style={{width: '100%', paddingTop: '20px'}} className={this.props.classes.optionsTextField}>
                         <InputLabel>{I18n.t(input.title)}</InputLabel>
                         <div>
                             <Input style={{width: '12ch', marginRight: '20px'}} value={top.toString(16) ? top.toString(16).toUpperCase() : 0} onChange={e => {
@@ -186,7 +185,7 @@ class Options extends Component {
                 return <Box className={this.props.classes.optionContainer} key={input.name}><TextField
                     type={input.type}
                     label={I18n.t(input.title)}
-                    className={this.props.classes.optionsTextfield}
+                    className={this.props.classes.optionsTextField}
                     disabled={this.inputDisabled(input)}
                     value={this.getValue(input.name)}
                     InputProps={{endAdornment: <InputAdornment position="end">{I18n.t(input.dimension)}</InputAdornment>}}
@@ -194,7 +193,7 @@ class Options extends Component {
                 /></Box>
             }
         })}
-        </Paper></>
+        </Paper></>;
     }
 
     getImportsBlock() {
@@ -204,7 +203,7 @@ class Options extends Component {
                 <FileInput classes={this.props.classes} onChange={this.loadSymbols} label="Load symbols" accept=".asc"/>
                 <FileInput classes={this.props.classes} onChange={this.addDb} label="Add DB" accept=".csv,.prn"/>
                 </Box>
-        </Paper></>
+        </Paper></>;
     }
 
     render() {
@@ -241,10 +240,10 @@ class Options extends Component {
 
     loadSymbols = e => {
         let native = JSON.parse(JSON.stringify(this.props.native));
-        var reader = new FileReader();
+        const reader = new FileReader();
 
         reader.onload = e => {
-            var localData = {
+            const localData = {
                 inputs:  [],
                 outputs: [],
                 markers: []
@@ -252,13 +251,13 @@ class Options extends Component {
 //                timer: [],
 //                dbs: []
             };
-            var text = reader.result;
+            let text = reader.result;
 
             text = text.split('126,');
             text.forEach(line => {
-                var typ = line.slice(23, 29).replace(/( )/g, '');
+                const typ = line.slice(23, 29).replace(/( )/g, '');
 
-                var d = {
+                const d = {
                     Name:         line.slice(0, 23).replace(/( ){2,}/g, ''),
                     Address:      line.slice(29, 36).replace(/( )/g, ''),
                     Type:         line.slice(36, 41).replace(/( )/g, ''),
@@ -292,18 +291,18 @@ class Options extends Component {
 
     addDb = e => {
         let native = JSON.parse(JSON.stringify(this.props.native));
-        var reader = new FileReader();
+        const reader = new FileReader();
 
         reader.onload = e => {
             setTimeout(function () {
-                var text       = reader.result;
-                var changes  = {
+                const text       = reader.result;
+                const changes  = {
                     inputs: false,
                     outputs: false,
                     markers: false,
                     dbs: false
                 };
-                var newParts = {
+                const newParts = {
                     inputs:     native.inputs || [],
                     outputs:    native.outputs || [],
                     markers:    native.markers || [],
@@ -312,18 +311,18 @@ class Options extends Component {
 
                 if (text.indexOf('Leseanforderung') !== -1) {
                     // Graphpic format
-                    var lines = text.replace(/\r\n/g, '\n').split('\n');
-                    var mapping = {
+                    const lines = text.replace(/\r\n/g, '\n').split('\n');
+                    const mapping = {
                         'Name':             {attr: 'Name'},
                         'Typ':              {attr: ''},
-                        'Operand':          {attr: 'Address',       process: function (f) {
+                        'Operand':          {attr: 'Address',       process: f => {
                             // DB 504.DBW 1462 => DB504 1462
                             f = f.trim();
-                            var db     = f.match(/^DB (\d+)/);
+                            const db     = f.match(/^DB (\d+)/);
                             if (!db) {
                                 // M
                                 // MB
-                                var m = f.match(/^MB? (\d+)\.?(\d+)?$/);
+                                let m = f.match(/^MB? (\d+)\.?(\d+)?$/);
                                 if (m) {
                                     return 'M ' + parseInt(m[1], 10) + (m[2] !== undefined ? '.' + m[2] : '');
                                 } else {
@@ -341,13 +340,13 @@ class Options extends Component {
                                 }
                             }
 
-                            var offset = f.match(/(\d+).?(\d+)?$/);
+                            const offset = f.match(/(\d+).?(\d+)?$/);
                             if (db && offset) {
-                                return 'DB' + db[1] + ' ' + offset[1] + (offset[2] !== undefined ? '.' + offset[2] : '');
+                                return `DB${db[1]} ${offset[1]}${offset[2] !== undefined ? '.' + offset[2] : ''}`;
                             } else {
                                 return f;
                             }
-                        } },
+                        }},
                         'SPS-Format':       {attr: 'Type',          process: function (f) {return f;} },
                         'Byteanzahl':       {attr: 'Length',        process: function (f) {return parseInt(f, 10);} },
                         'Zugriff':          {attr: 'RW',            process: function (f) {return f !== 'read';} },
@@ -358,18 +357,18 @@ class Options extends Component {
                     };
                     // First line
                     // "Name","Typ","Operand","SPS-Format","Byteanzahl","Zugriff","Leseanforderung","AktZeit (ms)","Kommentar","Clients (Anzahl)"
-                    var sFields = lines[0].split(',');
+                    let sFields = lines[0].split(',');
                     // create mapping
-                    var fields = [];
-                    for (var m = 0; m < sFields.length; m++) {
+                    const fields = [];
+                    for (let m = 0; m < sFields.length; m++) {
                         sFields[m] = sFields[m].replace(/"/g, '');
                         fields.push(mapping[sFields[m]]);
                     }
-                    for (var l = 1; l < lines.length; l++) {
+                    for (let l = 1; l < lines.length; l++) {
                         lines[l] = lines[l].trim();
                         if (!lines[l]) continue;
                         sFields = lines[l].trim().split(',');
-                        var obj = {
+                        let obj = {
                             Type:           'ARRAY',
                             Unit:           '',
                             Role:           '',
@@ -378,8 +377,10 @@ class Options extends Component {
                             RW:             false,
                             WP:             false
                         };
-                        for (var f = 0; f < fields.length; f++) {
-                            if (!fields[f].attr) continue;
+                        for (let f = 0; f < fields.length; f++) {
+                            if (!fields[f].attr) {
+                                continue;
+                            }
                             if (!sFields[f]) {
                                 console.log('error');
                                 break;
@@ -402,7 +403,7 @@ class Options extends Component {
                             if (obj.Type === 'BYTE' || obj.Type === 'BOOL' || obj.Type === 'INT') {
                                 obj.Length = '';
                             }
-                            var _attr;
+                            let _attr;
                             if (obj.Address.match(/^DB/)) {
                                 _attr = 'dbs';
                             } else if (obj.Address.match(/^IN/)) {
@@ -419,7 +420,7 @@ class Options extends Component {
                                 continue;
                             }
                             // try to find same address
-                            for (var aaa = 0; aaa < newParts[_attr].length; aaa++) {
+                            for (let aaa = 0; aaa < newParts[_attr].length; aaa++) {
                                 if (newParts[_attr][aaa].Address === obj.Address) {
                                     newParts[_attr][aaa] = obj;
                                     changes[_attr] = true;
@@ -434,18 +435,18 @@ class Options extends Component {
                         }
                     }
                 } else {
-                    var mm = text.match(/(DB)[0-9]+\s-\s/g);
-                    var db = mm ? mm[0].replace(' - ', '') : '';
-                    var vv = text.split('STRUCT');
+                    const mm = text.match(/(DB)[0-9]+\s-\s/g);
+                    const db = mm ? mm[0].replace(' - ', '') : '';
+                    const vv = text.split('STRUCT');
 
-                    var struck = vv[1] ? vv[1].split('=')[0].split('\n') : [];
+                    const struck = vv[1] ? vv[1].split('=')[0].split('\n') : [];
 
                     struck.forEach((item) => {
                         if (item.length > 10) {
-                            var x = item.split(/\s+/g);
+                            const x = item.split(/\s+/g);
                             x.shift();
 
-                            var obj = {
+                            let obj = {
                                 Address:        db + ' ' + x.shift(),
                                 Name:           x.shift(),
                                 Type:           x.shift(),
@@ -460,7 +461,7 @@ class Options extends Component {
                             };
 
                             // try to find same address
-                            for (var aaa = 0; aaa < newParts.dbs.length; aaa++) {
+                            for (let aaa = 0; aaa < newParts.dbs.length; aaa++) {
                                 if (newParts.dbs[aaa].Address === obj.Address) {
                                     newParts.dbs[aaa] = obj;
                                     changes.dbs = true;
@@ -475,17 +476,19 @@ class Options extends Component {
                         }
                     });
                 }
-                for (var attr in newParts) {
-                    if (!newParts.hasOwnProperty(attr)) continue;
-                    newParts[attr].sort(function (a, b) {
-                        var aDB = a.Address.match(/^D?B?\s?(\d+)/);
-                        var bDB = b.Address.match(/^D?B?\s?(\d+)/);
+                for (const attr in newParts) {
+                    if (!newParts.hasOwnProperty(attr)) {
+                        continue;
+                    }
+                    newParts[attr].sort((a, b) => {
+                        const aDB = a.Address.match(/^D?B?\s?(\d+)/);
+                        const bDB = b.Address.match(/^D?B?\s?(\d+)/);
                         if (!aDB) return -1;
                         if (!bDB) return 1;
                         if (parseInt(aDB[1], 10) > parseInt(bDB[1], 10)) return 1;
                         if (parseInt(aDB[1], 10) < parseInt(bDB[1], 10)) return -1;
-                        var aOffset = a.Address.match(/\s(\d+).?(\d+)?$/);
-                        var bOffset = b.Address.match(/\s(\d+).?(\d+)?$/);
+                        const aOffset = a.Address.match(/\s(\d+).?(\d+)?$/);
+                        const bOffset = b.Address.match(/\s(\d+).?(\d+)?$/);
                         if (!aOffset) return -1;
                         if (!bOffset) return 1;
                         if (parseInt(aOffset[1], 10) > parseInt(bOffset[1], 10)) return 1;

@@ -10,8 +10,14 @@ import RegisterTable from '../Components/RegisterTable';
 import Paper from '@material-ui/core/Paper';
 
 class BaseRegisters extends Component {
-
-    nativeField = ''
+    constructor(props) {
+        super(props);
+        this.nativeField = '';
+        this.state = {
+            order: window.localStorage.getItem('Modbus.order') || 'asc',
+            orderBy: window.localStorage.getItem('Modbus.orderBy') || 'Address',
+        };
+    }
 
     getRooms() {
         return this.props.rooms.map(room => ({
@@ -34,8 +40,8 @@ class BaseRegisters extends Component {
             {name: 'Role', title: 'Role', type: 'select', options: roles, sorted: true},
             {name: 'Room', title: 'Room', type: 'rooms', options: rooms, sorted: true},
             {name: 'poll', title: 'Poll', type: 'checkbox'},
-            {name: 'RW', title: 'RW', type: 'checkbox'},
-            {name: 'WP', title: 'WP', type: 'checkbox'},
+            {name: 'RW', title: 'RW', type: 'checkbox', expert: true},
+            {name: 'WP', title: 'WP', type: 'checkbox', expert: true},
         ]
 
         if (this.props.native.params.multiDeviceId) {
@@ -45,6 +51,40 @@ class BaseRegisters extends Component {
         }
 
         return result;
+    }
+
+    address2struct(address) {
+        if (this.nativeField === 'dbs') {
+            const parts = address.split(' ');
+            const db = parseInt(parts[0].replace('DB', '').replace('db', '').trim(), 10);
+            if (parts[1].includes('.')) {
+                const a = parseFloat(parts[1]);
+                return {db, byte: Math.floor(a), bit: (a * 10) % 10};
+            } else {
+                return {db, byte: parseInt(parts[1], 10)};
+            }
+        } else {
+            if (address.includes('.')) {
+                const a = parseFloat(address);
+                return {byte: Math.floor(a), bit: (a * 10) % 10};
+            } else {
+                return {byte: parseInt(address, 10)};
+            }
+        }
+    }
+
+    struct2address(struct) {
+        if (struct.db !== undefined) {
+            if (struct.bit !== undefined) {
+                return 'DB' + struct.db + ' ' + struct.byte + '.' + struct.bit;
+            } else  {
+                return 'DB' + struct.db + ' ' + struct.byte;
+            }
+        } else if (struct.bit !== undefined) {
+            return struct.byte + '.' + struct.bit;
+        } else  {
+            return struct.byte;
+        }
     }
 
     changeParam = (index, name, value) => {
@@ -69,6 +109,24 @@ class BaseRegisters extends Component {
             if (['S7STRING', 'ARRAY'].includes(value)) {
                 data[index].Length = 32;
             }
+
+            if (value === 'BOOL') {
+                const struct = this.address2struct(data[index].Address);
+                if (struct.bit === undefined) {
+                    struct.bit = 0;
+                    data[index].Address = this.struct2address(struct);
+                }
+            } else {
+                const struct = this.address2struct(data[index].Address);
+                if (struct.bit !== undefined) {
+                    if (struct.bit > 0) {
+                        struct.byte++;
+                    }
+                    delete struct.bit;
+
+                    data[index].Address = this.struct2address(struct);
+                }
+            }
         }
         this.props.onChange(this.nativeField, data);
     }
@@ -81,34 +139,46 @@ class BaseRegisters extends Component {
             let sortedData = JSON.parse(JSON.stringify(data));
             sortedData.sort((item1, item2) => item1.Address > item2.Address ? 1 : -1);
             let lastItem = sortedData[sortedData.length - 1];
-            if (this.nativeField === 'dbs') {
-                let address = lastItem.Address;
-                if (address && address.toString().match(/^[^ ]+ [0-9.,]+$/)) {
-                    address = address.split(' ');
-                    newItem.Address = (parseFloat(address[1]) + (lastItem.Length ? parseFloat(lastItem.Length) : 1)).toFixed(1);
-                    if (newItem.Address.toString().match(/\.8$/)) {
-                        newItem.Address = parseFloat(Math.floor(newItem.Address) + 1);
-                    }
-                    newItem.Address = address[0] + ' ' + newItem.Address;
-                } else {
-                    newItem.Address = 'db1 0';
+            const struct = this.address2struct(lastItem.Address);
+            if (lastItem.Type === 'BOOL') {
+                struct.bit = struct.bit || 0;
+                struct.bit++;
+                if (struct.bit >= 8) {
+                    struct.bit = struct.bit % 8;
+                    struct.byte++;
                 }
             } else {
-                newItem.Address = (parseFloat(lastItem.Address) + (lastItem.Length ? parseFloat(lastItem.Length) : 1)).toFixed(1);
-                if (newItem.Address.toString().match(/\.8$/)) {
-                    newItem.Address = parseFloat(Math.floor(newItem.Address) + 1);
+                delete struct.bit;
+                struct.byte += lastItem.Length;
+            }
+
+            if (struct.db !== undefined && struct.byte + lastItem.Length > 0xFFFF) {
+                struct.db++;
+                struct.byte = 0;
+                if (lastItem.Type === 'BOOL') {
+                    struct.bit = 0;
                 }
             }
+
+            newItem.Address = this.struct2address(struct);
             newItem.Type = lastItem.Type;
             newItem.Length = lastItem.Length;
             newItem.Unit = lastItem.Unit;
             newItem.Role = lastItem.Role;
             newItem.Room = lastItem.Room;
             newItem.poll = lastItem.poll;
-            newItem.RW = lastItem.formula;
-            newItem.WP = lastItem.formula;
+            newItem.RW = lastItem.RW;
+            newItem.WP = lastItem.WP;
         } else {
             newItem.role = 'level';
+            newItem.Type = 'BOOL';
+            newItem.Length = '0.1';
+            newItem.poll = true;
+            if (this.nativeField === 'dbs') {
+                newItem.Address = 'DB1 0.0';
+            } else {
+                newItem.Address = '0.0';
+            }
         }
         data.push(newItem);
         this.props.onChange(this.nativeField, data);
@@ -129,10 +199,57 @@ class BaseRegisters extends Component {
             !['STRING', 'S7STRING', 'ARRAY'].includes(this.props.native[this.nativeField][index].type);
     }
 
+    getSortedData = (data, orderBy, order) => {
+        this.fields = this.fields || this.getFields();
+
+        data = data || this.props.native[this.nativeField];
+        orderBy = orderBy || this.state.orderBy;
+        order = order || this.state.order;
+        let sortedData = [];
+        data.forEach((item, index) => {sortedData[index] = {item, $index: index}});
+        const field = this.fields.find(item => item.name === orderBy);
+
+        sortedData.sort((sortedItem1, sortedItem2) => {
+            let sort1;
+            let sort2;
+            if (orderBy === 'Address') {
+                const a1 = this.address2struct(sortedItem1.item.Address);
+                const a2 = this.address2struct(sortedItem2.item.Address);
+
+                sort1 = 0;
+                if (a1.db !== undefined) {
+                    sort1 = a1.db << 24;
+                }
+                if (a2.db !== undefined) {
+                    sort2 = a2.db << 24;
+                }
+                sort1 |= a1.byte << 8;
+                sort2 |= a2.byte << 8;
+                sort1 |= a1.bit || 0;
+                sort2 |= a2.bit || 0;
+            } else if (orderBy === '$index') {
+                sort1 = sortedItem1[orderBy];
+                sort2 = sortedItem2[orderBy];
+            } else if (field && field.type === 'number') {
+                sort1 = parseInt(sortedItem1.item[orderBy], 10);
+                sort2 = parseInt(sortedItem2.item[orderBy], 10);
+            } else {
+                sort1 = sortedItem1.item[orderBy];
+                sort2 = sortedItem2.item[orderBy];
+            }
+            return (order === 'asc' ? sort1 > sort2 : sort1 < sort2) ? 1 : -1;
+        });
+
+        return sortedData;
+    }
+
     render() {
+        this.fields = this.fields || this.getFields();
+
         return <Paper>
             <RegisterTable
-                fields={this.getFields()}
+                fields={this.fields}
+                getSortedData={this.getSortedData}
                 data={this.props.native[this.nativeField]}
                 changeParam={this.changeParam}
                 addItem={this.addItem}
@@ -140,6 +257,13 @@ class BaseRegisters extends Component {
                 changeData={this.changeData}
                 getDisable={this.getDisable}
                 rooms={this.props.rooms}
+                order={this.state.order}
+                orderBy={this.state.orderBy}
+                onChangeOrder={(orderBy, order) => {
+                    this.setState({orderBy, order});
+                    window.localStorage.setItem('Modbus.orderBy', orderBy);
+                    window.localStorage.setItem('Modbus.order', order);
+                }}
             />
         </Paper>
     }

@@ -169,11 +169,11 @@ class App extends GenericApp {
                                 adapterName={this.adapterName}
                                 changed={this.state.changed}
                                 onChange={(attr, value, cb) => this.updateNativeValue(attr, value, cb)}
-                                changeNative={(value) => this.setState({native: value, changed: this.getIsChanged(value)})}
+                                changeNative={value => this.setState({native: value, changed: this.getIsChanged(value)})}
                                 rooms={this.state.rooms}
                             />
                         })}
-                    <pre>{JSON.stringify(this.state.native, null, 2)}</pre>
+                        {/*<pre>{JSON.stringify(this.state.native, null, 2)}</pre>*/}
                     </div>
                     {this.renderError()}
                     {this.renderSaveCloseButtons()}

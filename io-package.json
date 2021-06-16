@@ -275,7 +275,7 @@
             "SPS"
         ],
         "enabled": false,
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/S7.png",
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/s7.png",
         "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
         "type": "iot-systems",
         "config": {
