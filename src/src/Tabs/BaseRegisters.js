@@ -1,13 +1,14 @@
 import {Component} from 'react';
 import PropTypes from 'prop-types';
 
+import Paper from '@material-ui/core/Paper';
+
 import roles from '../data/roles';
 import types from '../data/types';
 
 import I18n from '@iobroker/adapter-react/i18n';
 
 import RegisterTable from '../Components/RegisterTable';
-import Paper from '@material-ui/core/Paper';
 
 class BaseRegisters extends Component {
     constructor(props) {
@@ -20,10 +21,11 @@ class BaseRegisters extends Component {
     }
 
     getRooms() {
-        return this.props.rooms.map(room => ({
+        const lang = I18n.getLanguage();
+        return this.props.rooms ? Object.values(this.props.rooms).map(room => ({
             value: room._id,
-            title: typeof room.common.name === 'object' ? room.common.name[I18n.lang] : room.common.name
-        }));
+            title: typeof room.common.name === 'object' ? room.common.name[lang] : room.common.name
+        })) : [];
     }
 
     getFields() {
@@ -256,6 +258,7 @@ class BaseRegisters extends Component {
                 deleteItem={this.deleteItem}
                 changeData={this.changeData}
                 getDisable={this.getDisable}
+                themeType={this.props.themeType}
                 rooms={this.props.rooms}
                 order={this.state.order}
                 orderBy={this.state.orderBy}
@@ -279,6 +282,7 @@ BaseRegisters.propTypes = {
     onChange: PropTypes.func,
     changed: PropTypes.bool,
     socket: PropTypes.object.isRequired,
+    themeType: PropTypes.string,
 };
 
 export default BaseRegisters;

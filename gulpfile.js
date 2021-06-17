@@ -477,7 +477,7 @@ gulp.task('translate', async function () {
 gulp.task('translateAndUpdateWordsJS', gulp.series('translate', 'adminLanguages2words', 'adminWords2languages'));
 
 gulp.task('clean', () =>
-    del(['admin/*/**', 'admin/*', '!admin/actions.js', '!admin/alexalogo.png', '!admin/blockly.js', '!admin/iot.png']));
+    del(['admin/*/**', 'admin/*', '!admin/s7.png']));
 
 function npmInstall() {
     return new Promise((resolve, reject) => {

@@ -7,34 +7,23 @@
 
 [![NPM](https://nodei.co/npm/iobroker.s7.png?downloads=true)](https://nodei.co/npm/iobroker.s7/)
 
+## English
+The Siemens S7 adapter is based on Snap7, with Snap7 when the
+S7 adapter is also installed and the actual S7 communication between ioBroker and the S7 is organized via TCP / IP.
 
-## Deutsch
-Der Siemens S7 Adapter basiert auf Snap7, wobei Snap7 bei der Erstinstallation des
-S7 Adapters mitinstalliert wird und die eigentliche S7-Kommunikation zwischen ioBroker und der S7 über TCP/IP organisiert.
+It is therefore necessary that the S7 has an Ethernet interface
+(integrated in the CPU or as a separate CP) and can communicate via TCP / IP with the hardware on which ioBroker is running.
 
-Es ist also notwendig, dass die S7 über eine Ethernet-Schnittstelle verfügt
-(in der CPU integriert oder als separater CP) und über TCP/IP mit der Hardware kommunizieren kann, auf der ioBroker läuft.
+It is assumed that the user has the necessary knowledge of TCP / IP communication
+and is able to configure and program the S7 accordingly using Step7.
+Proficient use of a PC and various operating systems is also a prerequisite.
+These requirements are certainly not a challenge for someone
+who is considering communication between ioBroker and an S7.
 
-Es wird vorausgesetzt, dass der Anwender über die notwendigen Kenntnisse zur TCP/IP-Kommunikation verfügt
-und in der Lage ist, die S7 mittels Step7 entsprechend zu konfigurieren und zu programmieren.
-Der geübte Umgang mit PC und verschiedenen Betriebssystem ist ebenfalls Voraussetzung.
-Diese Anforderungen stellen sicherlich keine Herausforderung für jemanden dar,
-der die Kommunikation zwischen ioBroker und einer S7 in Erwägung zieht.
+Format of the addresses for Inputs, Outputs or markers is "X.Y", where X is byte offset and Y is the bit offset in the byte.
+Format of the addresses for DBs is `DBZ +X.Y`, where `z` is number of `DB`, like `DB34 +12.0`
 
 ### Installation
-Unter Linux braucht man `make` Umgebung um die binaries zu bauen. Das kann man mit folgendem Kommando installieren:
-
-```
-sudo apt-get update
-sudo apt-get install build-essential
-```
-
-Unter windows braucht man Visual Studio 2013 (Community Edition ist genug) oder später. Auch Python 2.7 (nicht 3.x) muss installiert werden.
-## English
-Format of the addresses for Inputs, Outputs or markers is "X.Y", where X is byte offset and Y is the bit offset in the byte.
-Format of the addresses for DBs is "DBZ +X.Y", where z is number of DB, like "DB34 +12.0"
-
-### Install
 On some Linux systems the build essentials must be installed to get this adapter work. You can install it with:
 
 ```
@@ -55,12 +44,20 @@ You can use 4 time offset modes for S7TIME:
 ## S5TIME
 S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_Datentyps_S5TIME_Zeitdauer.htm
 
+## More information
+More description could be found [here](https://github.com/ioBroker/ioBroker.s7/blob/master/docs/en/s7.md).
+
+## Deutsch
+[German documentation](https://github.com/ioBroker/ioBroker.s7/blob/master/docs/de/s7.md)
+
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### __WORK IN PROGRESS__
 -->
 
 ## Changelog
+### 1.3.0 (2021-06-17)
+* (bluefox) New configuration page on react 
 
 ### 1.2.5 (2021-04-17)
 * (Apollon77) Fix pot crash case (Sentry IOBROKER-S7-16)
@@ -210,10 +207,11 @@ S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_D
 * Bugfix start file
 
 ## License
-
 The MIT License (MIT)
 
-Copyright (c) 2014-2021 smiling_Jack <steffen.schorling@googlemail.com>, bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2021 bluefox <dogafox@gmail.com>,
+
+Copyright (c) 2014-2016 smiling_Jack <steffen.schorling@googlemail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

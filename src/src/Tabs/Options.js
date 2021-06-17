@@ -31,9 +31,6 @@ const styles = theme => ({
         width: 280
     },
     optionContainer: {
-        alignItems: 'center',
-        paddingTop: 4,
-        paddingBottom: 4
     },
     optionsContainer: {
         width: `calc(100% - ${theme.spacing(4)}px)`,
@@ -45,6 +42,9 @@ const styles = theme => ({
     optionsGrid: {
         textAlign: 'center',
         padding: theme.spacing(2),
+    },
+    optionsLabel: {
+        fontSize: 12,
     },
     header: {
         fontSize: 24,
@@ -119,81 +119,85 @@ class Options extends Component {
     }
 
     getInputsBlock(inputs, title) {
-        return <><Paper className={this.props.classes.optionsContainer}>
+        return <Paper className={this.props.classes.optionsContainer}>
             <Typography variant="h4" gutterBottom className={this.props.classes.header}>{I18n.t(title)}</Typography>
-            {inputs.map(input => {
-            if (!this.inputDisplay(input)) {
-                return null;
-            }
-            if (input.type === 'checkbox') {
-                return <Box className={this.props.classes.optionContainer} key={input.name}><FormControlLabel
-                    label={I18n.t(input.title)}
-                    control={<Checkbox
-                        label={I18n.t(input.title)}
-                        className={this.props.classes.optionsCheckbox}
-                        disabled={this.inputDisabled(input)}
-                        checked={this.getValue(input.name)}
-                        onChange={e => this.changeParam(input.name, e.target.checked)}
-                />}/> {I18n.t(input.dimension)}</Box>
-            } else if (input.type === 'select') {
-                return <Box className={this.props.classes.optionContainer} key={input.name}>
-                    <FormControl>
-                        <InputLabel shrink>{I18n.t(input.title)}</InputLabel>
-                        <Select
-                            className={this.props.classes.optionsSelect}
-                            displayEmpty
+            <Grid container spacing={2} direction="column">
+                {inputs.map(input => {
+                    if (!this.inputDisplay(input)) {
+                        return null;
+                    }
+                    if (input.type === 'checkbox') {
+                        return <Grid item className={this.props.classes.optionContainer} key={input.name}>
+                            <FormControlLabel
+                                label={I18n.t(input.title)}
+                                control={<Checkbox
+                                    label={I18n.t(input.title)}
+                                    className={this.props.classes.optionsCheckbox}
+                                    disabled={this.inputDisabled(input)}
+                                    checked={this.getValue(input.name)}
+                                    onChange={e => this.changeParam(input.name, e.target.checked)}
+                                />}/> {input.dimension ? I18n.t(input.dimension) : null}</Grid>;
+                    } else if (input.type === 'select') {
+                        return <Grid item className={this.props.classes.optionContainer} key={input.name}>
+                            <FormControl>
+                                <InputLabel shrink>{I18n.t(input.title)}</InputLabel>
+                                <Select
+                                    className={this.props.classes.optionsSelect}
+                                    displayEmpty
+                                    disabled={this.inputDisabled(input)}
+                                    value={this.getValue(input.name)}
+                                    onChange={e => this.changeParam(input.name, e.target.value)}
+                                >
+                                    {input.options.map(option =>
+                                        <MenuItem key={option.value} value={option.value}>{option.title}</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl> {input.dimension ? I18n.t(input.dimension) : null}
+                        </Grid>;
+                    } else if (input.type === 'hex') {
+                        let value = parseInt(this.getValue(input.name)) ? parseInt(this.getValue(input.name)) : 0;
+                        let top = 0;
+                        let bottom = 0;
+                        if (value > 255) {
+                            bottom = value % 256;
+                            top = Math.floor(value / 256);
+                        } else {
+                            bottom = value;
+                        }
+                        return <Grid item className={this.props.classes.optionContainer} key={input.name}>
+                            <InputLabel className={this.props.classes.optionsLabel}>{I18n.t(input.title)}</InputLabel>
+                            <Input title={I18n.t('Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic')} style={{width: '6ch'}} value={top.toString(16) ? top.toString(16).toUpperCase() : 0}
+                                   onChange={e => {
+                                       if (parseInt(e.target.value, 16) > 255 || parseInt(e.target.value, 16) < 0) {
+                                           return;
+                                       }
+                                       this.changeParam(input.name, bottom + parseInt(e.target.value, 16) * 256);
+                                   }}/>
+                            <Input title={I18n.t('Rack and slot: [Rack * 0x20 + Slot]')} style={{marginLeft: 5, width: '6ch'}}
+                                   value={bottom.toString(16) ? bottom.toString(16).toUpperCase() : 0} onChange={e => {
+                                if (parseInt(e.target.value, 16) > 255 || parseInt(e.target.value, 16) < 0) {
+                                    return;
+                                }
+                                this.changeParam(input.name, top * 256 + parseInt(e.target.value, 16));
+                            }}/>
+                        </Grid>;
+                    } else {
+                        return <Grid item className={this.props.classes.optionContainer} key={input.name}><TextField
+                            type={input.type}
+                            label={I18n.t(input.title)}
+                            className={this.props.classes.optionsTextField}
                             disabled={this.inputDisabled(input)}
                             value={this.getValue(input.name)}
+                            InputProps={{
+                                endAdornment: input.dimension ?
+                                    <InputAdornment position="end">{I18n.t(input.dimension)}</InputAdornment> : null
+                            }}
                             onChange={e => this.changeParam(input.name, e.target.value)}
-                        >
-                            {input.options.map(option =>
-                                <MenuItem key={option.value} value={option.value}>{option.title}</MenuItem>
-                            )}
-                        </Select>
-                    </FormControl> {I18n.t(input.dimension)}
-                </Box>
-            } else if (input.type === 'hex') {
-                let value = parseInt(this.getValue(input.name)) ? parseInt(this.getValue(input.name)) : 0;
-                let top = 0;
-                let bottom = 0;
-                if (value > 255) {
-                    bottom = value % 256;
-                    top = Math.floor(value / 256);
-                } else {
-                    bottom = value;
-                }
-                return <Box className={this.props.classes.optionContainer} key={input.name}>
-                    <FormControl style={{width: '100%', paddingTop: '20px'}} className={this.props.classes.optionsTextField}>
-                        <InputLabel>{I18n.t(input.title)}</InputLabel>
-                        <div>
-                            <Input style={{width: '12ch', marginRight: '20px'}} value={top.toString(16) ? top.toString(16).toUpperCase() : 0} onChange={e => {
-                                if (parseInt(e.target.value, 16) > 255 || parseInt(e.target.value, 16) < 0) {
-                                    return;
-                                }
-                                this.changeParam(input.name, bottom + parseInt(e.target.value, 16) * 256)
-                            }} endAdornment={<InputAdornment position="end">{I18n.t('high')}</InputAdornment>}/>
-                            <Input style={{width: '12ch'}} value={bottom.toString(16) ? bottom.toString(16).toUpperCase() : 0} onChange={e => {
-                                if (parseInt(e.target.value, 16) > 255 || parseInt(e.target.value, 16) < 0) {
-                                    return;
-                                }
-                                this.changeParam(input.name, top * 256 + parseInt(e.target.value, 16))
-                            }} endAdornment={<InputAdornment position="end">{I18n.t('low')}</InputAdornment>}/>
-                        </div>
-                    </FormControl>
-                </Box>
-            } else {
-                return <Box className={this.props.classes.optionContainer} key={input.name}><TextField
-                    type={input.type}
-                    label={I18n.t(input.title)}
-                    className={this.props.classes.optionsTextField}
-                    disabled={this.inputDisabled(input)}
-                    value={this.getValue(input.name)}
-                    InputProps={{endAdornment: <InputAdornment position="end">{I18n.t(input.dimension)}</InputAdornment>}}
-                    onChange={e => this.changeParam(input.name, e.target.value)}
-                /></Box>
-            }
-        })}
-        </Paper></>;
+                        /></Grid>;
+                    }
+                })}
+            </Grid>
+        </Paper>;
     }
 
     getImportsBlock() {

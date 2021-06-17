@@ -45,36 +45,26 @@ const tabs = [
         name: 'inputs',
         title: 'Inputs',
         component: TabInputs,
-        tooltip: 'Binary inputs (read-only)'
     },
     {
         name: 'outputs',
         title: 'Outputs',
         component: TabOutputs,
-        tooltip: 'Binary inputs and outputs'
     },
     {
         name: 'marker',
         title: 'Marker',
         component: TabMarker,
-        tooltip: 'Input registers (8-64 bit values, read-only)'
     },
     {
         name: 'dbs',
         title: 'DBs',
         component: TabDbs,
-        tooltip: 'Input/output registers (8-64 bit values)'
     },
 ]
 
 class App extends GenericApp {
     constructor(props) {
-        // TODO: delete it after adapter-react 1.0.27 (BF: 2021.06.09)
-        if (window.io && window.location.port === '3000') {
-            console.log('Reaload!');
-            delete window.io;
-            window.io = new window.SocketClient();
-        }
         const extendedProps = {...props};
         extendedProps.encryptedFields = ['pass'];
 
@@ -98,9 +88,9 @@ class App extends GenericApp {
 
     onConnectionReady() {
         super.onConnectionReady()
-        this.socket.getForeignObjects('enum.rooms.*', 'enum').then(rooms => {
-            this.setState({moreLoaded: true, rooms: Object.values(rooms)});
-        })
+        this.socket.getForeignObjects('enum.rooms.*', 'enum')
+            .then(rooms =>
+                this.setState({moreLoaded: true, rooms}));
     }
 
     getSelectedTab() {
@@ -127,14 +117,12 @@ class App extends GenericApp {
                             value={this.getSelectedTab()}
                             onChange={(e, index) => this.selectTab(tabs[index].name, index)}
                             variant="scrollable" scrollButtons="auto">
-                            {tabs.map(tab => {
-                                return <Tab
-                                    label={tab.icon ? <>{tab.icon}{I18n.t(tab.title)}</> : I18n.t(tab.title)}
-                                    data-name={tab.name}
-                                    key={tab.name}
-                                    title={tab.tooltip ? I18n.t(tab.tooltip) : undefined}
-                                />
-                            })}
+                            {tabs.map(tab => <Tab
+                                label={tab.icon ? <>{tab.icon}{I18n.t(tab.title)}</> : I18n.t(tab.title)}
+                                data-name={tab.name}
+                                key={tab.name}
+                                title={tab.tooltip ? I18n.t(tab.tooltip) : undefined}
+                            />)}
                         </Tabs>
                     </AppBar>
                     <div className={this.isIFrame ? this.props.classes.tabContentIFrame : this.props.classes.tabContent}>
@@ -151,6 +139,7 @@ class App extends GenericApp {
                             }
                             return <TabComponent
                                 key={tab.name}
+                                themeType={this.state.themeType}
                                 common={this.common}
                                 socket={this.socket}
                                 native={this.state.native}

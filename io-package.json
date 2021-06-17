@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.2.5",
+        "version": "1.3.0",
         "news": {
+            "1.3.0": {
+                "en": "New configuration page on react",
+                "de": "Neue Konfigurationsseite auf React",
+                "ru": "Новая страница конфигурации при реакции",
+                "pt": "Nova página de configuração no react",
+                "nl": "Nieuwe configuratiepagina op reageren",
+                "fr": "Nouvelle page de configuration sur React",
+                "it": "Nuova pagina di configurazione su react",
+                "es": "Nueva página de configuración en reaccionar",
+                "pl": "Nowa strona konfiguracji na Reaguj",
+                "zh-cn": "反应上的新配置页面"
+            },
             "1.2.5": {
                 "en": "Fix pot crash case (Sentry IOBROKER-S7-16)",
                 "de": "Fix Pot Crash Fall (Sentry IOBROKER-S7-16)",
@@ -230,21 +242,12 @@
                 "es": "Lectura de DB (error de rango) fijo",
                 "pl": "Poprawiono odczyt DB (błąd zakresu)",
                 "zh-cn": "读取数据库（范围错误）的问题已修复"
-            },
-            "1.0.2": {
-                "en": "Enhance object data to allow writing if available\nAdd export from Graphpic",
-                "de": "Objektdaten erweitert um Schreibzugriff zu erlauben wenn verfügbar\nExport aus Graphpic hinzugefügt",
-                "ru": "Усовершенствование данных объекта, позволяющих записывать, если можно\nДобавлен экспорт из Graphpic",
-                "pt": "Aprimore os dados do objeto para permitir a gravação, se disponível\n",
-                "nl": "Verbeter objectgegevens om schrijven mogelijk te maken, indien beschikbaar\n",
-                "fr": "Améliorez les données d'objet pour permettre l'écriture si disponible\n",
-                "it": "Migliora i dati degli oggetti per consentire la scrittura, se disponibile\n",
-                "es": "Mejore los datos del objeto para permitir la escritura si está disponible\n",
-                "pl": "Popraw dane obiektu, aby umożliwić zapis, jeśli jest dostępny\n",
-                "zh-cn": "增强对象数据以允许写入（如果可用）\n"
             }
         },
         "title": "Siemens Simatic S7",
+        "titleLang": {
+            "en": "Siemens Simatic S7"
+        },
         "desc": {
             "en": "Siemens SIMATIC S7 connection via Snap7",
             "de": "Siemens SIMATIC S7-Anbindung über Snap7",
@@ -268,7 +271,8 @@
         "icon": "S7.png",
         "messagebox": true,
         "docs": {
-            "en": "docs/en/s7.md"
+            "en": "docs/en/s7.md",
+            "de": "docs/de/s7.md"
         },
         "keywords": [
             "S7",
@@ -278,9 +282,9 @@
         "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/s7.png",
         "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
         "type": "iot-systems",
-        "config": {
-            "minWidth": 1024,
-            "width": 1224
+        "materialize": true,
+        "adminUI": {
+            "config": "materialize"
         },
         "compact": true,
         "plugins": {

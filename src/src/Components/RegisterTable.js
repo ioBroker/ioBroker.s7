@@ -103,13 +103,14 @@ const DataCell = props => {
         }
     } else if (field.type === 'rooms') {
         if (!editMode) {
-            result = <TextWithIcon list={props.rooms} value={item[field.name]}/>;
+            result = <TextWithIcon list={props.rooms} value={item[field.name]} themeType={props.themeType}/>;
         } else {
             result = <SelectWithIcon
                 list={props.rooms}
                 allowNone={true}
                 value={item[field.name]}
                 dense={true}
+                themeType={props.themeType}
                 inputProps={{ref, className: props.classes.tableSelect}}
                 disabled={props.getDisable(sortedItem.$index, field.name)}
                 onChange={value => props.changeParam(sortedItem.$index, field.name, value)}
@@ -286,6 +287,8 @@ const RegisterTable = props => {
                             <TableRow hover key={sortedItem.$index}>
                                 {props.fields.filter(item => (extendedMode || !item.expert) && (!props.formulaDisabled || !item.formulaDisabled)).map(field =>
                                     <DataCell
+                                        key={field.name}
+                                        themeType={props.themeType}
                                         sortedItem={sortedItem}
                                         field={field}
                                         editMode={editMode}
@@ -364,6 +367,7 @@ RegisterTable.propTypes = {
     rooms: PropTypes.object,
     formulaDisabled: PropTypes.bool,
     getSortedData: PropTypes.func,
+    themeType: PropTypes.string,
 }
 
 export default withStyles(styles)(RegisterTable);

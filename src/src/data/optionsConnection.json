@@ -22,11 +22,11 @@
     {
         "name": "localTSAP",
         "type": "hex",
-        "title": "Local TSAP"
+        "title": "Local TSAP",
     },
     {
         "name": "remoteTSAP",
         "type": "hex",
-        "title": "Remote TSAP"
+        "title": "Remote TSAP",
     }
 ]
