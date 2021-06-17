@@ -7,9 +7,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
-import {AiOutlineFieldBinary as BinaryIcon} from 'react-icons/all';
-import {TiSortNumerically as DigitsIcon} from 'react-icons/all';
-
 import GenericApp from '@iobroker/adapter-react/GenericApp';
 import Loader from '@iobroker/adapter-react/Components/Loader'
 import I18n from '@iobroker/adapter-react/i18n';
@@ -20,14 +17,12 @@ import TabOutputs from './Tabs/Outputs';
 import TabMarker from './Tabs/Marker';
 import TabDbs from './Tabs/DBs';
 
-
 const styles = theme => ({
     root: {},
     tabContent: {
         padding: 10,
         height: 'calc(100% - 64px - 48px - 20px)',
         overflow: 'auto',
-        // backgroundImage: `url(${background})`
     },
     tabContentIFrame: {
         padding: 10,
@@ -50,28 +45,24 @@ const tabs = [
         name: 'inputs',
         title: 'Inputs',
         component: TabInputs,
-        icon: <BinaryIcon style={{width: 18, height: 18, marginRight: 4, display: 'inline-block'}}/>,
         tooltip: 'Binary inputs (read-only)'
     },
     {
         name: 'outputs',
         title: 'Outputs',
         component: TabOutputs,
-        icon: <BinaryIcon style={{width: 18, height: 18, marginRight: 4, display: 'inline-block'}}/>,
         tooltip: 'Binary inputs and outputs'
     },
     {
         name: 'marker',
         title: 'Marker',
         component: TabMarker,
-        icon: <DigitsIcon style={{width: 18, height: 18, marginRight: 4, display: 'inline-block'}}/>,
         tooltip: 'Input registers (8-64 bit values, read-only)'
     },
     {
         name: 'dbs',
         title: 'DBs',
         component: TabDbs,
-        icon: <DigitsIcon style={{width: 18, height: 18, marginRight: 4, display: 'inline-block'}}/>,
         tooltip: 'Input/output registers (8-64 bit values)'
     },
 ]
