@@ -156,30 +156,33 @@ class Options extends Component {
                         </Grid>;
                     } else if (input.type === 'hex') {
                         let value = parseInt(this.getValue(input.name)) ? parseInt(this.getValue(input.name)) : 0;
-                        let top = 0;
-                        let bottom = 0;
-                        if (value > 255) {
-                            bottom = value % 256;
-                            top = Math.floor(value / 256);
-                        } else {
-                            bottom = value;
-                        }
+                        let top = (value >> 8) & 0xFF;
+                        let bottom = value & 0xFF;
+
                         return <Grid item className={this.props.classes.optionContainer} key={input.name}>
                             <InputLabel className={this.props.classes.optionsLabel}>{I18n.t(input.title)}</InputLabel>
-                            <Input title={I18n.t('Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic')} style={{width: '6ch'}} value={top.toString(16) ? top.toString(16).toUpperCase() : 0}
-                                   onChange={e => {
-                                       if (parseInt(e.target.value, 16) > 255 || parseInt(e.target.value, 16) < 0) {
-                                           return;
-                                       }
-                                       this.changeParam(input.name, bottom + parseInt(e.target.value, 16) * 256);
-                                   }}/>
-                            <Input title={I18n.t('Rack and slot: [Rack * 0x20 + Slot]')} style={{marginLeft: 5, width: '6ch'}}
-                                   value={bottom.toString(16) ? bottom.toString(16).toUpperCase() : 0} onChange={e => {
-                                if (parseInt(e.target.value, 16) > 255 || parseInt(e.target.value, 16) < 0) {
-                                    return;
-                                }
-                                this.changeParam(input.name, top * 256 + parseInt(e.target.value, 16));
-                            }}/>
+                            <Input
+                                title={I18n.t('Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic')}
+                                style={{width: '6ch'}}
+                                value={top.toString(16) ? top.toString(16).toUpperCase() : 0}
+                               onChange={e => {
+                                   if (parseInt(e.target.value, 16) > 0xFF || parseInt(e.target.value, 16) < 0) {
+                                       return;
+                                   }
+                                   this.changeParam(input.name, (parseInt(e.target.value, 16) << 8) | bottom);
+                               }}
+                            />
+                            <Input
+                                title={I18n.t('Rack and slot: [Rack * 0x20 + Slot]')}
+                                style={{marginLeft: 5, width: '6ch'}}
+                                value={bottom.toString(16) ? bottom.toString(16).toUpperCase() : 0}
+                                onChange={e => {
+                                    if (parseInt(e.target.value, 16) > 0xFF || parseInt(e.target.value, 16) < 0) {
+                                        return;
+                                    }
+                                    this.changeParam(input.name, (top << 8) | parseInt(e.target.value, 16));
+                                }}
+                            />
                         </Grid>;
                     } else {
                         return <Grid item className={this.props.classes.optionContainer} key={input.name}><TextField
