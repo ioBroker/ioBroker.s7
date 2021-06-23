@@ -515,6 +515,7 @@ const convertS7type = {
     DWORD:    'number',
     INT:      'number',
     DINT:     'number',
+    REAL:     'number',
     STRING:   'string',
     S7STRING: 'string',
     S5TIME:   'number',
@@ -813,7 +814,7 @@ const main = {
                     common: {
                         name:    main.ac.inputs[i].Description,
                         role:    main.ac.inputs[i].Role,
-                        type:    convertS7type[main.ac.inputs[i].Type],
+                        type:    convertS7type[main.ac.inputs[i].Type] || 'number',
                         unit:    main.ac.inputs[i].Unit || ((main.ac.inputs[i].Type === 'S5TIME') ? 's' : main.ac.inputs[i].Unit),
                         read:    true,
                         write:   main.ac.inputs[i].RW
@@ -833,7 +834,9 @@ const main = {
 
                 main.newObjects.push(`${adapter.namespace}.${main.ac.inputs[i].id}`);
             }
+
             channels = [];
+
             for (i = 0; main.ac.outputs.length > i; i++) {
                 const name = 'Outputs.' + main.ac.outputs[i].offsetByte;
                 if (!channels.includes(name)) {
@@ -852,7 +855,7 @@ const main = {
                     common: {
                         name:    main.ac.outputs[i].Description,
                         role:    main.ac.outputs[i].Role,
-                        type:    convertS7type[main.ac.outputs[i].Type],
+                        type:    convertS7type[main.ac.outputs[i].Type] || 'number',
                         unit:    main.ac.outputs[i].Unit || ((main.ac.outputs[i].Type === 'S5TIME') ? 's' : main.ac.outputs[i].Unit),
                         read:    true,
                         write:   main.ac.outputs[i].RW
@@ -891,7 +894,7 @@ const main = {
                     common: {
                         name:    main.ac.markers[i].Description,
                         role:    main.ac.markers[i].Role,
-                        type:    convertS7type[main.ac.markers[i].Type],
+                        type:    convertS7type[main.ac.markers[i].Type] || 'number',
                         unit:    main.ac.markers[i].Unit || ((main.ac.markers[i].Type === 'S5TIME') ? 's' : main.ac.markers[i].Unit),
                         read:    true,
                         write:   main.ac.markers[i].RW
@@ -933,7 +936,7 @@ const main = {
                     common: {
                         name:    main.ac.dbs[i].Description,
                         role:    main.ac.dbs[i].Role,
-                        type:    convertS7type[main.ac.dbs[i].Type],
+                        type:    convertS7type[main.ac.dbs[i].Type] || 'number',
                         unit:    main.ac.dbs[i].Unit || ((main.ac.dbs[i].Type === 'S5TIME') ? 's' : main.ac.dbs[i].Unit),
                         read:    true,
                         write:   main.ac.dbs[i].RW

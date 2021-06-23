@@ -56,6 +56,9 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+### 1.3.1 (2021-06-23)
+* (bluefox) Corrected the type of states
+
 ### 1.3.0 (2021-06-17)
 * (bluefox) New configuration page on react 
 

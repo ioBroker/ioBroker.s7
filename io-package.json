@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.3.0",
+        "version": "1.3.1",
         "news": {
+            "1.3.1": {
+                "en": "Corrected the type of states",
+                "de": "Die Art der Zustände wurde korrigiert",
+                "ru": "Исправлен тип состояний",
+                "pt": "Corrigido o tipo de estado",
+                "nl": "Het type toestanden gecorrigeerd",
+                "fr": "Correction du type d'états",
+                "it": "Corretto il tipo di stati",
+                "es": "Corregido el tipo de estados",
+                "pl": "Poprawiono rodzaj stanów",
+                "zh-cn": "更正了状态类型"
+            },
             "1.3.0": {
                 "en": "New configuration page on react",
                 "de": "Neue Konfigurationsseite auf React",
@@ -230,18 +242,6 @@
                 "es": "El error de la importación de la base de datos se solucionó",
                 "pl": "Naprawiono błąd importu bazy danych",
                 "zh-cn": "数据库导入错误已修复"
-            },
-            "1.0.4": {
-                "en": "Reading of DB (range error) fixed",
-                "de": "Lesen von DB (range error) behobent",
-                "ru": "чтение DB (ошибка диапазона) исправлено",
-                "pt": "Leitura de DB (erro de alcance) corrigido",
-                "nl": "Lezen van DB (bereikfout) opgelost",
-                "fr": "Correction de la lecture du DB (erreur de plage)",
-                "it": "Lettura del DB (errore di range) corretta",
-                "es": "Lectura de DB (error de rango) fijo",
-                "pl": "Poprawiono odczyt DB (błąd zakresu)",
-                "zh-cn": "读取数据库（范围错误）的问题已修复"
             }
         },
         "title": "Siemens Simatic S7",
@@ -286,6 +286,8 @@
         "adminUI": {
             "config": "materialize"
         },
+        "connectionType": "local",
+        "dataSource": "poll",
         "compact": true,
         "plugins": {
             "sentry": {

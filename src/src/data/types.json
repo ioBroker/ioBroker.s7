@@ -10,7 +10,6 @@
     {"value": "S7STRING", "title": "S7STRING"},
     {"value": "STRING", "title": "STRING"},
     {"value": "ARRAY", "title": "ARRAY"},
-    {"value": "REAL", "title": "REAL"},
     {"value": "S5TIME", "title": "S5TIME"},
     {"value": "S7TIME", "title": "S7TIME"}
 ]
