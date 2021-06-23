@@ -288,6 +288,7 @@
         },
         "connectionType": "local",
         "dataSource": "poll",
+        "tier": 2,
         "compact": true,
         "plugins": {
             "sentry": {

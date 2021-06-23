@@ -1,11 +1,13 @@
 ![Logo](admin/S7.png)
 # iobroker.s7
 
-![Number of Installations](http://iobroker.live/badges/s7-installed.svg) ![Number of Installations](http://iobroker.live/badges/s7-stable.svg) [![NPM version](http://img.shields.io/npm/v/iobroker.s7.svg)](https://www.npmjs.com/package/iobroker.s7)
-[![Downloads](https://img.shields.io/npm/dm/iobroker.s7.svg)](https://www.npmjs.com/package/iobroker.s7)
-[![Tests](https://travis-ci.org/ioBroker/ioBroker.s7.svg?branch=master)](https://travis-ci.org/ioBroker/ioBroker.s7)
+![Number of Installations](http://iobroker.live/badges/s7-installed.svg)
+![Number of Installations](http://iobroker.live/badges/s7-stable.svg)
+[![NPM version](http://img.shields.io/npm/v/iobroker.s7.svg)](https://www.npmjs.com/package/iobroker.s7)
 
-[![NPM](https://nodei.co/npm/iobroker.s7.png?downloads=true)](https://nodei.co/npm/iobroker.s7/)
+![Test and Release](https://github.com/ioBroker/iobroker.s7/workflows/Test%20and%20Release/badge.svg)
+[![Translation status](https://weblate.iobroker.net/widgets/adapters/-/s7/svg-badge.svg)](https://weblate.iobroker.net/engage/adapters/?utm_source=widget)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.s7.svg)](https://www.npmjs.com/package/iobroker.s7)
 
 ## English
 The Siemens S7 adapter is based on Snap7, with Snap7 when the
@@ -56,6 +58,10 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Add adapter tier for js-controller 3.3
+
 ### 1.3.1 (2021-06-23)
 * (bluefox) Corrected the type of states
 
