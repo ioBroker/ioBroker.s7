@@ -58,6 +58,8 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Corrected the error in GUI
 
 ### 1.3.2 (2021-06-23)
 * (Apollon77) Add adapter tier for js-controller 3.3

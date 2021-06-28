@@ -30,13 +30,13 @@ const styles = theme => ({
     }
 });
 
-const TsvDialog = (props) => {
+const TsvDialog = props => {
     const [tsv, setTsv] = useState('');
     useEffect(() => {
         let tsvResult = [];
         tsvResult.push(props.fields.map(field => field.name));
         props.data.forEach(item =>
-            tsvResult.push(props.fields.map(field => item[field.name] !== undefined ? item[field.name].toString() : ''))
+            tsvResult.push(props.fields.map(field => item[field.name] !== undefined && item[field.name] !== null ? item[field.name].toString() : ''))
         );
         setTsv(json2tsv(tsvResult));
     }, [props.open]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -112,7 +112,7 @@ const TsvDialog = (props) => {
             <Button variant="contained" onClick={props.onClose} startIcon={<ClearIcon />}>{I18n.t('Close')}</Button>
         </DialogActions>
     </Dialog>
-}
+};
 
 TsvDialog.propTypes = {
     open: PropTypes.bool,
@@ -121,6 +121,6 @@ TsvDialog.propTypes = {
     save: PropTypes.func,
     fields: PropTypes.array,
     data: PropTypes.array
-}
+};
 
 export default withStyles(styles)(TsvDialog);

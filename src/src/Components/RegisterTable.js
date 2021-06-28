@@ -329,13 +329,15 @@ const RegisterTable = props => {
                 </TableBody>
             </Table>
         </div>
-        <TsvDialog
-            open={tsvDialogOpen}
-            save={props.changeData}
-            onClose={() => setTsvDialogOpen(false)}
-            data={props.data}
-            fields={props.fields}
-        />
+        {tsvDialogOpen ?
+            <TsvDialog
+                open={true}
+                save={props.changeData}
+                onClose={() => setTsvDialogOpen(false)}
+                data={props.data}
+                fields={props.fields}
+            /> : null
+        }
         <DeleteAllDialog
             open={deleteAllDialog.open}
             action={deleteAllDialog.action}
@@ -368,6 +370,6 @@ RegisterTable.propTypes = {
     formulaDisabled: PropTypes.bool,
     getSortedData: PropTypes.func,
     themeType: PropTypes.string,
-}
+};
 
 export default withStyles(styles)(RegisterTable);
