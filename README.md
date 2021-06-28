@@ -58,7 +58,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 1.3.3 (2021-06-28)
 * (bluefox) Corrected the error in GUI
 
 ### 1.3.2 (2021-06-23)
