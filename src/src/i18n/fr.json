@@ -77,5 +77,6 @@
   "Delete item": "Effacer l'article",
   "Load symbols": "Charger des symboles",
   "Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic": "Type de connexion : 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic",
-  "Rack and slot: [Rack * 0x20 + Slot]": "Rack et slot : [Rack * 0x20 + Slot]"
+  "Rack and slot: [Rack * 0x20 + Slot]": "Rack et slot : [Rack * 0x20 + Slot]",
+  "TSV was copied to clipboard": "TSV a été copié dans le presse-papiers"
 }

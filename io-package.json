@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.3.3",
+        "version": "1.3.4",
         "news": {
+            "1.3.4": {
+                "en": "Change edit mode behaviour",
+                "de": "Verhalten im Bearbeitungsmodus ändern",
+                "ru": "Изменить поведение режима редактирования",
+                "pt": "Alterar o comportamento do modo de edição",
+                "nl": "Gedrag van bewerkingsmodus wijzigen",
+                "fr": "Modifier le comportement du mode édition",
+                "it": "Modifica il comportamento della modalità di modifica",
+                "es": "Cambiar el comportamiento del modo de edición",
+                "pl": "Zmień zachowanie trybu edycji",
+                "zh-cn": "更改编辑模式行为"
+            },
             "1.3.3": {
                 "en": "Corrected the error in GUI",
                 "de": "Fehler in der GUI behoben",
@@ -230,18 +242,6 @@
                 "es": "Corregir LOGO!",
                 "pl": "Napraw LOGO! ",
                 "zh-cn": "修复LOGO！"
-            },
-            "1.1.0": {
-                "en": "Fix strings\nfix names if they have more than one space",
-                "de": "Strings korrigieren\nKorrigiere Namen, wenn sie mehr als einen Lehrzeichen haben",
-                "ru": "исправлены строки\nисправлены имена, если они имеют более одного пробела",
-                "pt": "Corrigir cordas\ncorrigir nomes se eles tiverem mais de um espaço",
-                "nl": "Snaren repareren\nrepareer namen als ze meer dan één spatie hebben",
-                "fr": "Corriger les chaînes\nfixer les noms s'ils ont plus d'un espace",
-                "it": "Correggi le stringhe\ncorreggere i nomi se hanno più di uno spazio",
-                "es": "Corregir cadenas\ncorregir nombres si tienen más de un espacio",
-                "pl": "Napraw ciągi\n",
-                "zh-cn": "修正字串\n"
             }
         },
         "title": "Siemens Simatic S7",

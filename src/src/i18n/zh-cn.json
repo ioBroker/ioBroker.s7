@@ -77,5 +77,6 @@
   "Delete item": "删除项目",
   "Load symbols": "加载符号",
   "Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic": "连接类型：0x1 - PG、0x2 - OP、0x3-0x10 - S7 Basic",
-  "Rack and slot: [Rack * 0x20 + Slot]": "机架和插槽：[机架 * 0x20 + 插槽]"
+  "Rack and slot: [Rack * 0x20 + Slot]": "机架和插槽：[机架 * 0x20 + 插槽]",
+  "TSV was copied to clipboard": "TSV 被复制到剪贴板"
 }

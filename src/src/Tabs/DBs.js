@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import BaseRegisters from './BaseRegisters';
 
 class Dbs extends BaseRegisters {
-    nativeField = 'dbs'
+    nativeField = 'dbs';
 }
 
 Dbs.propTypes = {

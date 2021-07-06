@@ -250,6 +250,7 @@ class BaseRegisters extends Component {
 
         return <Paper>
             <RegisterTable
+                prefix={this.nativeField === 'dbs' ? 'DB' : ''}
                 fields={this.fields}
                 getSortedData={this.getSortedData}
                 data={this.props.native[this.nativeField]}

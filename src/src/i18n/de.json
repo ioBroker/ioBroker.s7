@@ -77,5 +77,6 @@
   "Delete item": "Item löschen",
   "Load symbols": "Symbole laden",
   "Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic": "Verbindungstyp: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic",
-  "Rack and slot: [Rack * 0x20 + Slot]": "Rack und Steckplatz: [Rack * 0x20 + Steckplatz]"
+  "Rack and slot: [Rack * 0x20 + Slot]": "Rack und Steckplatz: [Rack * 0x20 + Steckplatz]",
+  "TSV was copied to clipboard": "TSV wurde in die Zwischenablage kopiert"
 }

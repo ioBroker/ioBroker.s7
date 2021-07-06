@@ -77,5 +77,6 @@
   "Delete item": "Eliminar elemento",
   "Load symbols": "Cargar símbolos",
   "Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic": "Tipo de conexión: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic",
-  "Rack and slot: [Rack * 0x20 + Slot]": "Rack y ranura: [Rack * 0x20 + Slot]"
+  "Rack and slot: [Rack * 0x20 + Slot]": "Rack y ranura: [Rack * 0x20 + Slot]",
+  "TSV was copied to clipboard": "TSV se copió al portapapeles"
 }

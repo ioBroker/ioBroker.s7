@@ -77,5 +77,6 @@
   "Delete item": "Usuń przedmiot",
   "Load symbols": "Załaduj symbole",
   "Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic": "Typ połączenia: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic",
-  "Rack and slot: [Rack * 0x20 + Slot]": "Szafa i gniazdo: [Stelaż * 0x20 + Slot]"
+  "Rack and slot: [Rack * 0x20 + Slot]": "Szafa i gniazdo: [Stelaż * 0x20 + Slot]",
+  "TSV was copied to clipboard": "TSV został skopiowany do schowka"
 }

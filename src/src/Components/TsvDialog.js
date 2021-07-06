@@ -5,8 +5,7 @@ import {withStyles} from '@material-ui/core/styles';
 import { tsv2json, json2tsv } from 'tsv-json';
 import { useSnackbar } from 'notistack';
 import AceEditor from "react-ace";
-import Utils from '@iobroker/adapter-react/Components/Utils';
-
+import copy from 'copy-to-clipboard';
 import I18n from '@iobroker/adapter-react/i18n';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -66,7 +65,7 @@ const TsvDialog = props => {
                     success = false;
                 }
                 if (props.fields[index].type === 'checkbox') {
-                    itemValues[index] = itemValues[index] === 'true' ? true : false;
+                    itemValues[index] = itemValues[index] === 'true';
                 }
                 item[props.fields[index].name] = itemValues[index];
             }
@@ -105,7 +104,8 @@ const TsvDialog = props => {
         </DialogContent>
         <DialogActions>
             <Button variant="outlined" color="primary" onClick={() => {
-                Utils.copyToClipboard(tsv);
+                //Utils.copyToClipboard(tsv);
+                copy(tsv);
                 enqueueSnackbar(I18n.t('TSV was copied to clipboard'));
             }} startIcon={<FileCopyIcon />}>{I18n.t('Copy to clipboard')}</Button>
             <Button variant="contained" color="primary" onClick={saveTsv} startIcon={<SaveIcon />}>{I18n.t('Import')}</Button>

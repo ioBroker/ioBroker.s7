@@ -12,8 +12,6 @@ import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -75,32 +73,25 @@ const DataCell = props => {
     const setEditMode = props.setEditMode;
 
     const ref = useRef();
-    // useEffect(() => {
-    //     if (props.editMode) {
-    //         // ref.current && ref.current.focus()
-    //         //window.setTimeout(() => ref.current && ref.current.focus(), 1000);
-    //     }
-    // }, [props.editMode])
+    /*useEffect(() => {
+         if (props.editMode) {
+             // ref.current && ref.current.focus()
+             //window.setTimeout(() => ref.current && ref.current.focus(), 1000);
+         }
+    }, [props.editMode])*/
 
     let item = sortedItem.item;
     let result;
     if (field.type === 'checkbox') {
-        if (!editMode) {
-            result = <Checkbox
+        result = <Tooltip title={I18n.t(field.title)}>
+            <Checkbox
+                inputRef={ref}
+                className={props.classes.tableCheckbox}
                 checked={!!item[field.name]}
-                disabled
-            />;
-        } else {
-            result = <Tooltip title={I18n.t(field.title)}>
-                <Checkbox
-                    inputRef={ref}
-                    className={props.classes.tableCheckbox}
-                    checked={!!item[field.name]}
-                    disabled={props.getDisable(sortedItem.$index, field.name)}
-                    onChange={e => props.changeParam(sortedItem.$index, field.name, e.target.checked)}
-                />
-            </Tooltip>;
-        }
+                disabled={props.getDisable(sortedItem.$index, field.name)}
+                onChange={e => props.changeParam(sortedItem.$index, field.name, e.target.checked)}
+            />
+        </Tooltip>;
     } else if (field.type === 'rooms') {
         if (!editMode) {
             result = <TextWithIcon list={props.rooms} value={item[field.name]} themeType={props.themeType}/>;
@@ -161,7 +152,7 @@ const DataCell = props => {
 
 const RegisterTable = props => {
     const [tsvDialogOpen, setTsvDialogOpen] = useState(false);
-    const [editMode, setEditMode] = useState(window.localStorage.getItem('Modbus.editMode') !== 'false');
+    const [editMode, setEditMode] = useState(parseInt(window.localStorage.getItem('Modbus.editMode'), 10) || 0);
     const [extendedMode, setExtendedMode] = useState(window.localStorage.getItem('Modbus.extendedMode') === 'true');
     const [deleteAllDialog, setDeleteAllDialog] = useState({
         open: false,
@@ -187,13 +178,6 @@ const RegisterTable = props => {
                     <ImportExport/>
                 </IconButton>
             </Tooltip>
-            <FormControlLabel
-                control={<Switch checked={editMode} onChange={e => {
-                    setEditMode(e.target.checked);
-                    window.localStorage.setItem('Modbus.editMode', e.target.checked);
-                }}/>}
-                label={I18n.t('Edit mode')}
-            />
             <Tooltip title={I18n.t('Toggle extended mode')}>
                 <IconButton
                     color={extendedMode ? 'primary' : 'inherit'}
@@ -291,9 +275,9 @@ const RegisterTable = props => {
                                         themeType={props.themeType}
                                         sortedItem={sortedItem}
                                         field={field}
-                                        editMode={editMode}
+                                        editMode={editMode === sortedItem.$index}
                                         rooms={props.rooms}
-                                        setEditMode={setEditMode}
+                                        setEditMode={() => setEditMode(sortedItem.$index)}
                                         ey={field.name}
                                         {...props}
                                     />
@@ -332,7 +316,17 @@ const RegisterTable = props => {
         {tsvDialogOpen ?
             <TsvDialog
                 open={true}
-                save={props.changeData}
+                save={data => {
+                    if (props.prefix) {
+                        data.forEach(line => {
+                            line.Address = (line.Address || '').toUpperCase();
+                            if (line.Address && !line.Address.startsWith(props.prefix)) {
+                                line.Address = props.prefix + line.Address;
+                            }
+                        });
+                    }
+                    props.changeData(data);
+                }}
                 onClose={() => setTsvDialogOpen(false)}
                 data={props.data}
                 fields={props.fields}
@@ -370,6 +364,7 @@ RegisterTable.propTypes = {
     formulaDisabled: PropTypes.bool,
     getSortedData: PropTypes.func,
     themeType: PropTypes.string,
+    prefix: PropTypes.string,
 };
 
 export default withStyles(styles)(RegisterTable);

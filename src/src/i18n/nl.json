@@ -77,5 +77,6 @@
   "Delete item": "Verwijder item",
   "Load symbols": "Symbolen laden",
   "Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic": "Aansluittype: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic",
-  "Rack and slot: [Rack * 0x20 + Slot]": "Rek en sleuf: [Rack * 0x20 + sleuf]"
+  "Rack and slot: [Rack * 0x20 + Slot]": "Rek en sleuf: [Rack * 0x20 + sleuf]",
+  "TSV was copied to clipboard": "TSV is gekopieerd naar het klembord"
 }

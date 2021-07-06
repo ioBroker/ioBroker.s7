@@ -77,5 +77,6 @@
   "Delete item": "Удалить пункт",
   "Load symbols": "Загрузить символы",
   "Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic": "Тип подключения: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic",
-  "Rack and slot: [Rack * 0x20 + Slot]": "Стойка и слот: [Стойка * 0x20 + слот]"
+  "Rack and slot: [Rack * 0x20 + Slot]": "Стойка и слот: [Стойка * 0x20 + слот]",
+  "TSV was copied to clipboard": "TSV скопирован в буфер обмена"
 }
