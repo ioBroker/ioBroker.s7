@@ -278,7 +278,6 @@ const RegisterTable = props => {
                                         editMode={editMode === sortedItem.$index}
                                         rooms={props.rooms}
                                         setEditMode={() => setEditMode(sortedItem.$index)}
-                                        ey={field.name}
                                         {...props}
                                     />
                                 )}
