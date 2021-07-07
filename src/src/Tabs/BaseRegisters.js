@@ -59,7 +59,7 @@ class BaseRegisters extends Component {
         if (this.nativeField === 'dbs') {
             const parts = address.split(' ');
             const db = parseInt(parts[0].replace('DB', '').replace('db', '').trim(), 10);
-            if (parts[1].includes('.')) {
+            if (parts[1] && parts[1].includes('.')) {
                 const a = parseFloat(parts[1]);
                 return {db, byte: Math.floor(a), bit: (a * 10) % 10};
             } else {

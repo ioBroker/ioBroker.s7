@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.3.4",
+        "version": "1.3.5",
         "news": {
+            "1.3.5": {
+                "en": "Change edit mode behaviour",
+                "de": "Verhalten im Bearbeitungsmodus ändern",
+                "ru": "Изменить поведение режима редактирования",
+                "pt": "Alterar o comportamento do modo de edição",
+                "nl": "Gedrag van bewerkingsmodus wijzigen",
+                "fr": "Modifier le comportement du mode édition",
+                "it": "Modifica il comportamento della modalità di modifica",
+                "es": "Cambiar el comportamiento del modo de edición",
+                "pl": "Zmień zachowanie trybu edycji",
+                "zh-cn": "更改编辑模式行为"
+            },
             "1.3.4": {
                 "en": "Change edit mode behaviour",
                 "de": "Verhalten im Bearbeitungsmodus ändern",
@@ -230,18 +242,6 @@
                 "es": "Corregir cadenas",
                 "pl": "Napraw ciągi",
                 "zh-cn": "修正字串"
-            },
-            "1.1.1": {
-                "en": "Fix LOGO! support",
-                "de": "LOGO! Unterstützung korrigiert",
-                "ru": "Исправьте LOGO! поддержка",
-                "pt": "Corrigir LOGO!",
-                "nl": "LOGO! repareren",
-                "fr": "Corriger les LOGO!",
-                "it": "Correggi le LOGO!",
-                "es": "Corregir LOGO!",
-                "pl": "Napraw LOGO! ",
-                "zh-cn": "修复LOGO！"
             }
         },
         "title": "Siemens Simatic S7",
