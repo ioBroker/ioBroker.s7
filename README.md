@@ -58,6 +58,9 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+### 1.3.6 (2021-07-31)
+* (bluefox) Corrected import of last line
+
 ### 1.3.5 (2021-07-07)
 * (bluefox) Change edit mode behaviour
 

@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "s7",
-        "version": "1.3.5",
+        "version": "1.3.6",
         "news": {
+            "1.3.6": {
+                "en": "Corrected import of last line",
+                "de": "Korrigierter Import der letzten Zeile",
+                "ru": "Исправлен импорт последней строки",
+                "pt": "Importação corrigida da última linha",
+                "nl": "Gecorrigeerde import van laatste regel",
+                "fr": "Importation corrigée de la dernière ligne",
+                "it": "Importazione corretta dell'ultima riga",
+                "es": "Importación corregida de la última línea",
+                "pl": "Poprawiony import ostatniej linii",
+                "zh-cn": "更正了最后一行的导入"
+            },
             "1.3.5": {
                 "en": "Change edit mode behaviour",
                 "de": "Verhalten im Bearbeitungsmodus ändern",
@@ -230,18 +242,6 @@
                 "es": "La compensación de tiempo se agregó",
                 "pl": "Przesunięcie czasu zostało dodane",
                 "zh-cn": "时间偏移已添加"
-            },
-            "1.1.2": {
-                "en": "Fix strings",
-                "de": "Strings korrigieren",
-                "ru": "исправлены строки",
-                "pt": "Corrigir cordas",
-                "nl": "Snaren repareren",
-                "fr": "Corriger les chaînes",
-                "it": "Correggi le stringhe",
-                "es": "Corregir cadenas",
-                "pl": "Napraw ciągi",
-                "zh-cn": "修正字串"
             }
         },
         "title": "Siemens Simatic S7",

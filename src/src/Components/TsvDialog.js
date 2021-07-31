@@ -46,7 +46,7 @@ const TsvDialog = props => {
     }
 
     const saveTsv = () => {
-        let data = tsv2json(tsv);
+        let data = tsv2json(tsv.endsWith('\n') ? tsv : tsv + '\n');
         let fields = data.shift();
         let success = true;
         let errors = [];
