@@ -38,7 +38,7 @@
   "dependencies": {
     "node-snap7": "^1.0.6",
     "iconv-lite": "0.6.3",
-    "async": "^3.2.1",
+    "async": "^3.2.2",
     "@iobroker/adapter-core": "^2.5.1"
   },
   "devDependencies": {
