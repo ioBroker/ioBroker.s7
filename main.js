@@ -297,42 +297,44 @@ function send() {
 
             }
         }
-        buf = Buffer.alloc(data.native.len);
+        const len = parseInt(data.native.len);
+        buf = Buffer.alloc(len);
         if ((iconvTo || iconvToL) && type === 'STRING' && typeof val === 'string') {
             const buffer1 = iconvTo ? iconvTo.convert(val) : iconvToL.encode(val, encoding);
-            buffer1.copy(buf, 0, 0, buffer1.byteLength > data.native.len ? data.native.len : buffer1.byteLength);
+            buffer1.copy(buf, 0, 0, buffer1.byteLength > len ? len : buffer1.byteLength);
         } else {
 
             let s1;
-            for (s1 = 0; s1 < val.length && s1 < data.native.len; s1++) {
+            for (s1 = 0; s1 < val.length && s1 < len; s1++) {
                 buf[s1] = val[s1];
             }
             // zero end string
             if (type === 'STRING') {
-                if (s1 >= data.native.len) {
+                if (s1 >= len) {
                     s1--;
                 }
                 buf[s1] = 0;
             }
         }
     } else if (type === 'S7STRING') {
-        buf = Buffer.alloc(data.native.len + 2);
-        buf[0] = data.native.len;
+        const len = parseInt(data.native.len);
+        buf = Buffer.alloc(len + 2);
+        buf[0] = len;
         if ((iconvTo || iconvToL) && typeof val === 'string') {
             const buffer2 = iconvTo ? iconvTo.convert(val) : iconvToL.encode(val, encoding);
-            buffer2.copy(buf, 2, 0, buffer2.byteLength > data.native.len ? data.native.len : buffer2.byteLength);
-            if (buffer2.byteLength < data.native.len) {
+            buffer2.copy(buf, 2, 0, buffer2.byteLength > len ? len : buffer2.byteLength);
+            if (buffer2.byteLength < len) {
                 // zero end
                 buf[2 + buffer2.byteLength] = 0;
             }
             buf[1] = buffer2.byteLength;
         } else {
             let s2;
-            for (s2 = 0; s2 < val.length && s2 < data.native.len; s2++) {
+            for (s2 = 0; s2 < val.length && s2 < len; s2++) {
                 buf[s2 + 2] = val[s2];
             }
             // zero end string
-            if (s2 < data.native.len - 1) {
+            if (s2 < len - 1) {
                 buf[s2] = 0;
             }
             buf[1] = s2;
@@ -358,7 +360,7 @@ function send() {
                 s7client.DBWrite(data.native.dbId, data.native.address, 4, buf, err =>
                     next(err));
             } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-                s7client.DBWrite(data.native.dbId, data.native.address, data.native.len, buf, err =>
+                s7client.DBWrite(data.native.dbId, data.native.address, parseInt(data.native.len), buf, err =>
                     next(err));
             }
         }
@@ -378,7 +380,7 @@ function send() {
                 s7client.EBWrite(data.native.address, data.native.address, 4, buf, err =>
                     next(err));
             } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-                s7client.EBWrite(data.native.address, data.native.address, data.native.len, buf, err =>
+                s7client.EBWrite(data.native.address, data.native.address, parseInt(data.native.len), buf, err =>
                     next(err));
             }
         }
@@ -398,7 +400,7 @@ function send() {
                 s7client.ABWrite(data.native.address, data.native.address, 4, buf, err =>
                     next(err));
             } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-                s7client.ABWrite(data.native.address, data.native.address, data.native.len, buf, err =>
+                s7client.ABWrite(data.native.address, data.native.address, parseInt(data.native.len), buf, err =>
                     next(err));
             }
         }
@@ -418,7 +420,7 @@ function send() {
                 s7client.MBWrite(data.native.address, 4, buf, err =>
                     next(err));
             } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-                s7client.MBWrite(data.native.address, data.native.len, buf, err =>
+                s7client.MBWrite(data.native.address, parseInt(data.native.len), buf, err =>
                     next(err));
             }
         }
@@ -604,7 +606,11 @@ const main = {
 
             if (main.ac.inputs.length > 0) {
                 for (i = main.ac.inputs.length - 1; i >= 0; i--) {
-                    if (typeof main.ac.inputs[i].Address !== 'string') main.ac.inputs[i].Address = main.ac.inputs[i].Address.toString();
+                    if (!main.ac.inputs[i].Address && main.ac.inputs[i].Address !== false) {
+                        adapter.log.info(`Ignore Input ${i} because no address provided: ${JSON.stringify(main.ac.inputs[i])}`);
+                        continue;
+                    }
+                    main.ac.inputs[i].Address = main.ac.inputs[i].Address.toString();
                     main.ac.inputs[i].Address = main.ac.inputs[i].Address.replace(/\+/g, '');
                     parts = main.ac.inputs[i].Address.split('.');
                     main.ac.inputs[i].offsetByte = parseInt(parts[0], 10);
@@ -632,7 +638,11 @@ const main = {
 
             if (main.ac.outputs.length > 0) {
                 for (i = main.ac.outputs.length - 1; i >= 0; i--) {
-                    if (typeof main.ac.outputs[i].Address !== 'string') main.ac.outputs[i].Address = main.ac.outputs[i].Address.toString();
+                    if (!main.ac.outputs[i].Address && main.ac.outputs[i].Address !== false) {
+                        adapter.log.info(`Ignore Output ${i} because no address provided: ${JSON.stringify(main.ac.outputs[i])}`);
+                        continue;
+                    }
+                    main.ac.outputs[i].Address = main.ac.outputs[i].Address.toString();
                     main.ac.outputs[i].Address = main.ac.outputs[i].Address.replace(/\+/g, '');
                     parts = main.ac.outputs[i].Address.split('.');
                     main.ac.outputs[i].offsetByte = parseInt(parts[0], 10);
@@ -660,7 +670,11 @@ const main = {
 
             if (main.ac.markers.length > 0) {
                 for (i = main.ac.markers.length - 1; i >= 0; i--) {
-                    if (typeof main.ac.markers[i].Address !== 'string') main.ac.markers[i].Address = main.ac.markers[i].Address.toString();
+                    if (!main.ac.markers[i].Address && main.ac.markers[i].Address !== false) {
+                        adapter.log.info(`Ignore Marker ${i} because no address provided: ${JSON.stringify(main.ac.markers[i])}`);
+                        continue;
+                    }
+                    main.ac.markers[i].Address = main.ac.markers[i].Address.toString();
                     main.ac.markers[i].Address = main.ac.markers[i].Address.replace(/\+/g, '');
                     parts = main.ac.markers[i].Address.split('.');
                     main.ac.markers[i].offsetByte = parseInt(parts[0], 10);
@@ -1441,8 +1455,8 @@ const main = {
                                 callback(err);
                             } else {
                                 for (let n = 0; main.dbs.length > n; n++) {
+                                    const db     = main.dbs[n];
                                     try {
-                                        const db     = main.dbs[n];
                                         const offset = db.offsetByte - main.db_size[db.db].lsb;
                                         main.write(
                                             db.id,

@@ -58,6 +58,10 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (Apollon77) make sure strings work correctly
+* (Apollon77) Fix several crash cases (IOBROKER-S7-17, IOBROKER-S7-19, IOBROKER-S7-1C, IOBROKER-S7-18)
+
 ### 1.3.7 (2021-11-08)
 * (bluefox) Corrected type of "write" attribute
 
