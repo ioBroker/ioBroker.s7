@@ -817,7 +817,7 @@ const main = {
                         type:    convertS7type[main.ac.inputs[i].Type] || 'number',
                         unit:    main.ac.inputs[i].Unit || ((main.ac.inputs[i].Type === 'S5TIME') ? 's' : main.ac.inputs[i].Unit),
                         read:    true,
-                        write:   main.ac.inputs[i].RW
+                        write:   main.ac.inputs[i].RW === true || main.ac.inputs[i].RW === 'true'
                     },
                     native: {
                         cat:       'input',
@@ -858,7 +858,7 @@ const main = {
                         type:    convertS7type[main.ac.outputs[i].Type] || 'number',
                         unit:    main.ac.outputs[i].Unit || ((main.ac.outputs[i].Type === 'S5TIME') ? 's' : main.ac.outputs[i].Unit),
                         read:    true,
-                        write:   main.ac.outputs[i].RW
+                        write:   main.ac.outputs[i].RW === true || main.ac.outputs[i].RW === 'true'
                     },
                     native: {
                         cat:       'output',
@@ -897,7 +897,7 @@ const main = {
                         type:    convertS7type[main.ac.markers[i].Type] || 'number',
                         unit:    main.ac.markers[i].Unit || ((main.ac.markers[i].Type === 'S5TIME') ? 's' : main.ac.markers[i].Unit),
                         read:    true,
-                        write:   main.ac.markers[i].RW
+                        write:   main.ac.markers[i].RW === true || main.ac.markers[i].RW === 'true'
                     },
                     native: {
                         cat:       'marker',
@@ -939,7 +939,7 @@ const main = {
                         type:    convertS7type[main.ac.dbs[i].Type] || 'number',
                         unit:    main.ac.dbs[i].Unit || ((main.ac.dbs[i].Type === 'S5TIME') ? 's' : main.ac.dbs[i].Unit),
                         read:    true,
-                        write:   main.ac.dbs[i].RW
+                        write:   main.ac.dbs[i].RW === true || main.ac.dbs[i].RW === 'true'
                     },
                     native: {
                         cat:       'db',
@@ -1104,7 +1104,7 @@ const main = {
     },
 
     write: function (id, buff, type, offsetByte, offsetBit, len) {
-        let val   = 0;
+        let val = 0;
 
         if (type === 'BOOL') {
             val = !!((buff[offsetByte] >> offsetBit) & 1);

@@ -58,6 +58,9 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Corrected type of "write" attribute
+
 ### 1.3.6 (2021-07-31)
 * (bluefox) Corrected import of last line
 

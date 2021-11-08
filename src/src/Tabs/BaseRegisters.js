@@ -78,9 +78,9 @@ class BaseRegisters extends Component {
     struct2address(struct) {
         if (struct.db !== undefined) {
             if (struct.bit !== undefined) {
-                return 'DB' + struct.db + ' ' + struct.byte + '.' + struct.bit;
+                return `DB${struct.db} ${struct.byte}.${struct.bit}`;
             } else  {
-                return 'DB' + struct.db + ' ' + struct.byte;
+                return `DB${struct.db} ${struct.byte}`;
             }
         } else if (struct.bit !== undefined) {
             return struct.byte + '.' + struct.bit;
@@ -136,7 +136,9 @@ class BaseRegisters extends Component {
     addItem = () => {
         let data = JSON.parse(JSON.stringify(this.props.native[this.nativeField]));
         let newItem = {}
-        this.getFields().forEach(field => newItem[field.name] = '')
+
+        this.getFields().forEach(field => newItem[field.name] = '');
+
         if (data.length) {
             let sortedData = JSON.parse(JSON.stringify(data));
             sortedData.sort((item1, item2) => item1.Address > item2.Address ? 1 : -1);
