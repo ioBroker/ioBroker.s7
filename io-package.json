@@ -1,323 +1,167 @@
 {
-    "common": {
-        "name": "s7",
-        "version": "1.3.6",
-        "news": {
-            "1.3.6": {
-                "en": "Corrected import of last line",
-                "de": "Korrigierter Import der letzten Zeile",
-                "ru": "Исправлен импорт последней строки",
-                "pt": "Importação corrigida da última linha",
-                "nl": "Gecorrigeerde import van laatste regel",
-                "fr": "Importation corrigée de la dernière ligne",
-                "it": "Importazione corretta dell'ultima riga",
-                "es": "Importación corregida de la última línea",
-                "pl": "Poprawiony import ostatniej linii",
-                "zh-cn": "更正了最后一行的导入"
-            },
-            "1.3.5": {
-                "en": "Change edit mode behaviour",
-                "de": "Verhalten im Bearbeitungsmodus ändern",
-                "ru": "Изменить поведение режима редактирования",
-                "pt": "Alterar o comportamento do modo de edição",
-                "nl": "Gedrag van bewerkingsmodus wijzigen",
-                "fr": "Modifier le comportement du mode édition",
-                "it": "Modifica il comportamento della modalità di modifica",
-                "es": "Cambiar el comportamiento del modo de edición",
-                "pl": "Zmień zachowanie trybu edycji",
-                "zh-cn": "更改编辑模式行为"
-            },
-            "1.3.4": {
-                "en": "Change edit mode behaviour",
-                "de": "Verhalten im Bearbeitungsmodus ändern",
-                "ru": "Изменить поведение режима редактирования",
-                "pt": "Alterar o comportamento do modo de edição",
-                "nl": "Gedrag van bewerkingsmodus wijzigen",
-                "fr": "Modifier le comportement du mode édition",
-                "it": "Modifica il comportamento della modalità di modifica",
-                "es": "Cambiar el comportamiento del modo de edición",
-                "pl": "Zmień zachowanie trybu edycji",
-                "zh-cn": "更改编辑模式行为"
-            },
-            "1.3.3": {
-                "en": "Corrected the error in GUI",
-                "de": "Fehler in der GUI behoben",
-                "ru": "Исправлена ошибка в графическом интерфейсе.",
-                "pt": "Corrigido o erro na GUI",
-                "nl": "De fout in GUI gecorrigeerd",
-                "fr": "Correction de l'erreur dans l'interface graphique",
-                "it": "Corretto l'errore nella GUI",
-                "es": "Corregido el error en la GUI.",
-                "pl": "Poprawiono błąd w GUI",
-                "zh-cn": "更正了 GUI 中的错误"
-            },
-            "1.3.2": {
-                "en": "Add adapter tier for js-controller 3.3",
-                "de": "Adapterebene für js-controller 3.3 . hinzufügen",
-                "ru": "Добавить уровень адаптера для js-controller 3.3",
-                "pt": "Adicionar camada de adaptador para js-controller 3.3",
-                "nl": "Adapterlaag toevoegen voor js-controller 3.3",
-                "fr": "Ajouter un niveau adaptateur pour js-controller 3.3",
-                "it": "Aggiungi il livello dell'adattatore per js-controller 3.3",
-                "es": "Agregar nivel de adaptador para js-controller 3.3",
-                "pl": "Dodaj warstwę adaptera dla kontrolera js 3.3",
-                "zh-cn": "为 js-controller 3.3 添加适配器层"
-            },
-            "1.3.1": {
-                "en": "Corrected the type of states",
-                "de": "Die Art der Zustände wurde korrigiert",
-                "ru": "Исправлен тип состояний",
-                "pt": "Corrigido o tipo de estado",
-                "nl": "Het type toestanden gecorrigeerd",
-                "fr": "Correction du type d'états",
-                "it": "Corretto il tipo di stati",
-                "es": "Corregido el tipo de estados",
-                "pl": "Poprawiono rodzaj stanów",
-                "zh-cn": "更正了状态类型"
-            },
-            "1.3.0": {
-                "en": "New configuration page on react",
-                "de": "Neue Konfigurationsseite auf React",
-                "ru": "Новая страница конфигурации при реакции",
-                "pt": "Nova página de configuração no react",
-                "nl": "Nieuwe configuratiepagina op reageren",
-                "fr": "Nouvelle page de configuration sur React",
-                "it": "Nuova pagina di configurazione su react",
-                "es": "Nueva página de configuración en reaccionar",
-                "pl": "Nowa strona konfiguracji na Reaguj",
-                "zh-cn": "反应上的新配置页面"
-            },
-            "1.2.5": {
-                "en": "Fix pot crash case (Sentry IOBROKER-S7-16)",
-                "de": "Fix Pot Crash Fall (Sentry IOBROKER-S7-16)",
-                "ru": "Исправить случай аварии горшка (Sentry IOBROKER-S7-16)",
-                "pt": "Corrigir caso de travamento de pot (Sentry IOBROKER-S7-16)",
-                "nl": "Potcrash-geval repareren (Sentry IOBROKER-S7-16)",
-                "fr": "Correction d'un cas de crash de pot (Sentry IOBROKER-S7-16)",
-                "it": "Risolto il caso di crash del vaso (Sentry IOBROKER-S7-16)",
-                "es": "Arreglar el caso de bloqueo de olla (Sentry IOBROKER-S7-16)",
-                "pl": "Napraw przypadek awarii garnka (Sentry IOBROKER-S7-16)",
-                "zh-cn": "修复锅底摔坏的情况（Sentry IOBROKER-S7-16）"
-            },
-            "1.2.4": {
-                "en": "Make sure data are of correct type (Sentry IOBROKER-S7-K)",
-                "de": "Stellen Sie sicher, dass die Daten vom richtigen Typ sind (Sentry IOBROKER-S7-K).",
-                "ru": "Убедитесь, что данные правильного типа (Sentry IOBROKER-S7-K)",
-                "pt": "Certifique-se de que os dados sejam do tipo correto (Sentry IOBROKER-S7-K)",
-                "nl": "Zorg ervoor dat de gegevens van het juiste type zijn (Sentry IOBROKER-S7-K)",
-                "fr": "Assurez-vous que les données sont de type correct (Sentry IOBROKER-S7-K)",
-                "it": "Assicurati che i dati siano del tipo corretto (Sentry IOBROKER-S7-K)",
-                "es": "Asegúrese de que los datos sean del tipo correcto (Sentry IOBROKER-S7-K)",
-                "pl": "Upewnij się, że dane są odpowiedniego typu (Sentry IOBROKER-S7-K)",
-                "zh-cn": "确保数据类型正确（Sentry IOBROKER-S7-K）"
-            },
-            "1.2.3": {
-                "en": "null values will no longer be tried to send but give error message (Sentry IOBROKER-S7-8)\nPrevent some more crash cases (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
-                "de": "Es wird nicht mehr versucht, Nullwerte zu senden, sondern es wird eine Fehlermeldung ausgegeben (Sentry IOBROKER-S7-8).\nVerhindern Sie weitere Absturzfälle (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G).",
-                "ru": "нулевые значения больше не будут отправляться, но будут выдавать сообщение об ошибке (Sentry IOBROKER-S7-8)\nПредотвратить еще несколько случаев сбоя (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
-                "pt": "Não será mais tentado enviar valores nulos, mas sim uma mensagem de erro (Sentry IOBROKER-S7-8)\nEvite mais alguns casos de colisão (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
-                "nl": "null-waarden worden niet langer geprobeerd te verzenden, maar geven een foutmelding (Sentry IOBROKER-S7-8)\nVoorkom nog meer crashgevallen (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
-                "fr": "les valeurs nulles ne seront plus envoyées mais donneront un message d'erreur (Sentry IOBROKER-S7-8)\nÉvitez d'autres cas de crash (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
-                "it": "i valori nulli non verranno più tentati di inviare ma forniranno un messaggio di errore (Sentry IOBROKER-S7-8)\nPrevenire altri casi di crash (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
-                "es": "Los valores nulos ya no se intentarán enviar pero darán un mensaje de error (Sentry IOBROKER-S7-8)\nEvite algunos casos de colisión más (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
-                "pl": "wartości zerowe nie będą już próbowane do wysyłania, ale wyświetlą komunikat o błędzie (Sentry IOBROKER-S7-8)\nZapobiegaj kolejnym przypadkom awarii (IOBROKER-S7-1, IOBROKER-S7-9, IOBROKER-S7-E, IOBROKER-S7-F, IOBROKER-S7-G)",
-                "zh-cn": "空值将不再尝试发送，但会给出错误消息（Sentry IOBROKER-S7-8）\n防止更多的崩溃情况（IOBROKER-S7-1，IOBROKER-S7-9，IOBROKER-S7-E，IOBROKER-S7-F，IOBROKER-S7-G）"
-            },
-            "1.2.2": {
-                "en": "Prevent warnings in js-controller 3.2",
-                "de": "Verhindern Sie Warnungen in js-controller 3.2",
-                "ru": "Предотвращение предупреждений в js-controller 3.2",
-                "pt": "Evite avisos no js-controller 3.2",
-                "nl": "Voorkom waarschuwingen in js-controller 3.2",
-                "fr": "Empêcher les avertissements dans js-controller 3.2",
-                "it": "Prevenire gli avvisi in js-controller 3.2",
-                "es": "Prevenir advertencias en js-controller 3.2",
-                "pl": "Zapobiegaj ostrzeżeniom w js-controller 3.2",
-                "zh-cn": "在js-controller 3.2中防止警告"
-            },
-            "1.2.1": {
-                "en": "fix info.connection state",
-                "de": "Info.Verbindungsstatus korrigieren",
-                "ru": "исправить состояние info.connection",
-                "pt": "corrigir estado de info.connection",
-                "nl": "fix info.connection staat",
-                "fr": "corriger l'état de la connexion info.",
-                "it": "correggere lo stato di info.connection",
-                "es": "arreglar el estado de la conexión de información",
-                "pl": "napraw stan info.connection",
-                "zh-cn": "修复信息连接状态"
-            },
-            "1.2.0": {
-                "en": "Prevent error case (Sentry IOBROKER-S7-4)\njs-controller 2.0 is now required at minimum",
-                "de": "Fehlerfall verhindern (Sentry IOBROKER-S7-4)\njs-controller 2.0 ist jetzt mindestens erforderlich",
-                "ru": "Предотвращение ошибок (Sentry IOBROKER-S7-4)\njs-controller 2.0 теперь требуется как минимум",
-                "pt": "Evitar caso de erro (Sentry IOBROKER-S7-4)\njs-controller 2.0 agora é necessário no mínimo",
-                "nl": "Voorkom foutgevallen (Sentry IOBROKER-S7-4)\njs-controller 2.0 is nu minimaal vereist",
-                "fr": "Empêcher les cas d'erreur (Sentry IOBROKER-S7-4)\njs-controller 2.0 est maintenant requis au minimum",
-                "it": "Prevenire il caso di errore (Sentry IOBROKER-S7-4)\njs-controller 2.0 è ora richiesto come minimo",
-                "es": "Prevenir caso de error (Sentry IOBROKER-S7-4)\njs-controller 2.0 ahora se requiere como mínimo",
-                "pl": "Zapobiegaj przypadkom błędu (Sentry IOBROKER-S7-4)\njs-controller 2.0 jest teraz wymagany jako minimum",
-                "zh-cn": "防止错误情况（Sentry IOBROKER-S7-4）\n现在至少需要js-controller 2.0"
-            },
-            "1.1.10": {
-                "en": "Bugfix in the Admin",
-                "de": "Bugfix im Admin",
-                "ru": "Исправление в админке",
-                "pt": "Correção de bug no Admin",
-                "nl": "Bugfix in de Admin",
-                "fr": "Correction de bogue dans l'administrateur",
-                "it": "Bugfix nell'amministratore",
-                "es": "Corrección de errores en el administrador",
-                "pl": "Poprawka błędu w Admin",
-                "zh-cn": "管理员中的错误修正"
-            },
-            "1.1.9": {
-                "en": "update node-snap7 library and error case prevented",
-                "de": "Aktualisierung der Node-Snap7-Bibliothek und Fehlerfall verhindert",
-                "ru": "обновление библиотеки node-snap7 и предотвращение ошибок",
-                "pt": "atualização da biblioteca node-snap7 e impedimento de maiúsculas e minúsculas",
-                "nl": "update node-snap7 bibliotheek en foutgeval voorkomen",
-                "fr": "mise à jour de la bibliothèque node-snap7 et évitement des cas d'erreur",
-                "it": "aggiornamento libreria node-snap7 e caso di errore impedito",
-                "es": "actualizar la biblioteca node-snap7 y el caso de error evitado",
-                "pl": "aktualizacja biblioteki node-snap7 i zapobieganie przypadkom błędu",
-                "zh-cn": "更新node-snap7库并防止错误情况"
-            },
-            "1.1.8": {
-                "en": "Make sure objects ids/names are strings",
-                "de": "Stellen Sie sicher, dass Objekt-IDs / -Namen Zeichenfolgen sind",
-                "ru": "Убедитесь, что идентификаторы / имена объектов являются строками",
-                "pt": "Verifique se os IDs / nomes dos objetos são cadeias",
-                "nl": "Zorg ervoor dat objecten ids / namen strings zijn",
-                "fr": "Assurez-vous que les identifiants / noms des objets sont des chaînes",
-                "it": "Assicurarsi che gli ID / nomi degli oggetti siano stringhe",
-                "es": "Asegúrese de que los identificadores / nombres de los objetos sean cadenas",
-                "pl": "Upewnij się, że identyfikatory / nazwy obiektów są łańcuchami",
-                "zh-cn": "确保对象ID /名称是字符串"
-            },
-            "1.1.7": {
-                "en": "also allow to use slot 0",
-                "de": "Lassen Sie auch Slot 0 zu",
-                "ru": "также разрешить использовать слот 0",
-                "pt": "também permitem usar o slot 0",
-                "nl": "ook toestaan om slot 0 te gebruiken",
-                "fr": "permet également d'utiliser l'emplacement 0",
-                "it": "consentire anche di utilizzare lo slot 0",
-                "es": "también permite usar la ranura 0",
-                "pl": "pozwalają również na użycie slotu 0",
-                "zh-cn": "也允许使用插槽0"
-            },
-            "1.1.6": {
-                "en": "reconnection handling on timeouts optimized, support for nodejs 12",
-                "de": "Wiederverbindungsbehandlung bei Timeouts optimiert, Unterstützung für NodeJS 12",
-                "ru": "Оптимизация обработки переподключений, поддержка nodejs 12",
-                "pt": "manipulação de reconexão em tempos limite otimizados, suporte para nodejs 12",
-                "nl": "reconnection handling op timeouts geoptimaliseerd, ondersteuning voor nodejs 12",
-                "fr": "gestion de la reconnexion sur les délais d'attente optimisée, prise en charge de nodejs 12",
-                "it": "gestione della riconnessione su timeout ottimizzata, supporto per nodejs 12",
-                "es": "manejo de reconexión en tiempos de espera optimizados, soporte para nodejs 12",
-                "pl": "obsługa ponownego łączenia zoptymalizowana pod kątem przekroczeń limitów, obsługa nodejs 12",
-                "zh-cn": "优化了超时时的重新连接处理，支持nodejs 12"
-            },
-            "1.1.4": {
-                "en": "Support for nodejs 10 on windows",
-                "de": "Unterstützung für Nodejs 10 unter Windows",
-                "ru": "Поддержка nodejs 10 на окнах",
-                "pt": "Suporte para o nodejs 10 no windows",
-                "nl": "Ondersteuning voor nodejs 10 op Windows",
-                "fr": "Prise en charge de nodejs 10 sur Windows",
-                "it": "Supporto per nodejs 10 su Windows",
-                "es": "Soporte para nodejs 10 en windows",
-                "pl": "Obsługa nodejs 10 w oknach",
-                "zh-cn": "在Windows上支持Node.js 10"
-            },
-            "1.1.3": {
-                "en": "The time offset was added",
-                "de": "Der Zeitversatz wurde hinzugefügt",
-                "ru": "Добавлен временной сдвиг",
-                "pt": "O compensador de tempo foi adicionado",
-                "nl": "De tijdverschuiving is toegevoegd",
-                "fr": "Le décalage horaire a été ajouté",
-                "it": "L'offset temporale è stato aggiunto",
-                "es": "La compensación de tiempo se agregó",
-                "pl": "Przesunięcie czasu zostało dodane",
-                "zh-cn": "时间偏移已添加"
-            }
-        },
-        "title": "Siemens Simatic S7",
-        "titleLang": {
-            "en": "Siemens Simatic S7"
-        },
-        "desc": {
-            "en": "Siemens SIMATIC S7 connection via Snap7",
-            "de": "Siemens SIMATIC S7-Anbindung über Snap7",
-            "ru": "Подключение Siemens SIMATIC S7 через Snap7",
-            "pt": "Conexão Siemens SIMATIC S7 via Snap7",
-            "nl": "Siemens SIMATIC S7-verbinding via Snap7",
-            "fr": "Connexion Siemens SIMATIC S7 via Snap7",
-            "it": "Collegamento Siemens SIMATIC S7 tramite Snap7",
-            "es": "Conexión Siemens SIMATIC S7 a través de Snap7",
-            "pl": "Połączenie Siemens SIMATIC S7 za pomocą Snap7",
-            "zh-cn": "通过Snap7的西门子SIMATIC S7连接"
-        },
-        "authors": [
-            "smiling_Jack <steffen.schorling@googlemail.com>",
-            "bluefox <dogafox@gmail.com>"
-        ],
-        "license": "MIT",
-        "platform": "Javascript/Node.js",
-        "mode": "daemon",
-        "loglevel": "info",
-        "icon": "S7.png",
-        "messagebox": true,
-        "docs": {
-            "en": "docs/en/s7.md",
-            "de": "docs/de/s7.md"
-        },
-        "keywords": [
-            "S7",
-            "SPS"
-        ],
-        "enabled": false,
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/s7.png",
-        "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
-        "type": "iot-systems",
-        "materialize": true,
-        "adminUI": {
-            "config": "materialize"
-        },
-        "connectionType": "local",
-        "dataSource": "poll",
-        "tier": 2,
-        "compact": true,
-        "plugins": {
-            "sentry": {
-                "dsn": "https://d7dff297e602417087d181577d34482f@sentry.iobroker.net/113"
-            }
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=2.0.0"
-            }
-        ]
+  "common": {
+    "name": "s7",
+    "version": "1.3.7",
+    "news": {
+      "1.3.7": {
+        "en": "Corrected type of \"write\" attribute",
+        "de": "Korrigierter Typ des \"write\"-Attributs",
+        "ru": "Исправлен тип атрибута \"запись\".",
+        "pt": "Tipo corrigido de atributo \"escrever\"",
+        "nl": "Type \"schrijf\"-kenmerk gecorrigeerd",
+        "fr": "Type corrigé de l'attribut \"write\"",
+        "it": "Tipo corretto di attributo \"scrittura\"",
+        "es": "Tipo corregido de atributo \"escribir\"",
+        "pl": "Poprawiony typ atrybutu „zapis”",
+        "zh-cn": "更正了“写入”属性的类型"
+      },
+      "1.3.6": {
+        "en": "Corrected import of last line",
+        "de": "Korrigierter Import der letzten Zeile",
+        "ru": "Исправлен импорт последней строки",
+        "pt": "Importação corrigida da última linha",
+        "nl": "Gecorrigeerde import van laatste regel",
+        "fr": "Importation corrigée de la dernière ligne",
+        "it": "Importazione corretta dell'ultima riga",
+        "es": "Importación corregida de la última línea",
+        "pl": "Poprawiony import ostatniej linii",
+        "zh-cn": "更正了最后一行的导入"
+      },
+      "1.3.5": {
+        "en": "Change edit mode behaviour",
+        "de": "Verhalten im Bearbeitungsmodus ändern",
+        "ru": "Изменить поведение режима редактирования",
+        "pt": "Alterar o comportamento do modo de edição",
+        "nl": "Gedrag van bewerkingsmodus wijzigen",
+        "fr": "Modifier le comportement du mode édition",
+        "it": "Modifica il comportamento della modalità di modifica",
+        "es": "Cambiar el comportamiento del modo de edición",
+        "pl": "Zmień zachowanie trybu edycji",
+        "zh-cn": "更改编辑模式行为"
+      },
+      "1.3.4": {
+        "en": "Change edit mode behaviour",
+        "de": "Verhalten im Bearbeitungsmodus ändern",
+        "ru": "Изменить поведение режима редактирования",
+        "pt": "Alterar o comportamento do modo de edição",
+        "nl": "Gedrag van bewerkingsmodus wijzigen",
+        "fr": "Modifier le comportement du mode édition",
+        "it": "Modifica il comportamento della modalità di modifica",
+        "es": "Cambiar el comportamiento del modo de edición",
+        "pl": "Zmień zachowanie trybu edycji",
+        "zh-cn": "更改编辑模式行为"
+      },
+      "1.3.3": {
+        "en": "Corrected the error in GUI",
+        "de": "Fehler in der GUI behoben",
+        "ru": "Исправлена ошибка в графическом интерфейсе.",
+        "pt": "Corrigido o erro na GUI",
+        "nl": "De fout in GUI gecorrigeerd",
+        "fr": "Correction de l'erreur dans l'interface graphique",
+        "it": "Corretto l'errore nella GUI",
+        "es": "Corregido el error en la GUI.",
+        "pl": "Poprawiono błąd w GUI",
+        "zh-cn": "更正了 GUI 中的错误"
+      },
+      "1.3.2": {
+        "en": "Add adapter tier for js-controller 3.3",
+        "de": "Adapterebene für js-controller 3.3 . hinzufügen",
+        "ru": "Добавить уровень адаптера для js-controller 3.3",
+        "pt": "Adicionar camada de adaptador para js-controller 3.3",
+        "nl": "Adapterlaag toevoegen voor js-controller 3.3",
+        "fr": "Ajouter un niveau adaptateur pour js-controller 3.3",
+        "it": "Aggiungi il livello dell'adattatore per js-controller 3.3",
+        "es": "Agregar nivel de adaptador para js-controller 3.3",
+        "pl": "Dodaj warstwę adaptera dla kontrolera js 3.3",
+        "zh-cn": "为 js-controller 3.3 添加适配器层"
+      },
+      "1.3.1": {
+        "en": "Corrected the type of states",
+        "de": "Die Art der Zustände wurde korrigiert",
+        "ru": "Исправлен тип состояний",
+        "pt": "Corrigido o tipo de estado",
+        "nl": "Het type toestanden gecorrigeerd",
+        "fr": "Correction du type d'états",
+        "it": "Corretto il tipo di stati",
+        "es": "Corregido el tipo de estados",
+        "pl": "Poprawiono rodzaj stanów",
+        "zh-cn": "更正了状态类型"
+      }
     },
-    "native": {
-        "params": {
-            "ip": "192.168.0.1",
-            "rack": "0",
-            "slot": "2",
-            "round": "2",
-            "poll": "1000",
-            "recon": "60000",
-            "pulsetime": "1000",
-            "localTSAP": 0,
-            "remoteTSAP": 0,
-            "timeFormat": "",
-            "timeOffset": 0
-        },
-        "inputs": [],
-        "outputs": [],
-        "markers": [],
-        "dbs": []
-    }
+    "title": "Siemens Simatic S7",
+    "titleLang": {
+      "en": "Siemens Simatic S7"
+    },
+    "desc": {
+      "en": "Siemens SIMATIC S7 connection via Snap7",
+      "de": "Siemens SIMATIC S7-Anbindung über Snap7",
+      "ru": "Подключение Siemens SIMATIC S7 через Snap7",
+      "pt": "Conexão Siemens SIMATIC S7 via Snap7",
+      "nl": "Siemens SIMATIC S7-verbinding via Snap7",
+      "fr": "Connexion Siemens SIMATIC S7 via Snap7",
+      "it": "Collegamento Siemens SIMATIC S7 tramite Snap7",
+      "es": "Conexión Siemens SIMATIC S7 a través de Snap7",
+      "pl": "Połączenie Siemens SIMATIC S7 za pomocą Snap7",
+      "zh-cn": "通过Snap7的西门子SIMATIC S7连接"
+    },
+    "authors": [
+      "smiling_Jack <steffen.schorling@googlemail.com>",
+      "bluefox <dogafox@gmail.com>"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "loglevel": "info",
+    "icon": "S7.png",
+    "messagebox": true,
+    "docs": {
+      "en": "docs/en/s7.md",
+      "de": "docs/de/s7.md"
+    },
+    "keywords": [
+      "S7",
+      "SPS"
+    ],
+    "enabled": false,
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/s7.png",
+    "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
+    "type": "iot-systems",
+    "materialize": true,
+    "adminUI": {
+      "config": "materialize"
+    },
+    "connectionType": "local",
+    "dataSource": "poll",
+    "tier": 2,
+    "compact": true,
+    "plugins": {
+      "sentry": {
+        "dsn": "https://d7dff297e602417087d181577d34482f@sentry.iobroker.net/113"
+      }
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=2.0.0"
+      }
+    ]
+  },
+  "native": {
+    "params": {
+      "ip": "192.168.0.1",
+      "rack": "0",
+      "slot": "2",
+      "round": "2",
+      "poll": "1000",
+      "recon": "60000",
+      "pulsetime": "1000",
+      "localTSAP": 0,
+      "remoteTSAP": 0,
+      "timeFormat": "",
+      "timeOffset": 0
+    },
+    "inputs": [],
+    "outputs": [],
+    "markers": [],
+    "dbs": []
+  }
 }

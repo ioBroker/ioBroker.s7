@@ -58,7 +58,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 1.3.7 (2021-11-08)
 * (bluefox) Corrected type of "write" attribute
 
 ### 1.3.6 (2021-07-31)
@@ -77,7 +77,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 * (bluefox) Corrected the type of states
 
 ### 1.3.0 (2021-06-17)
-* (bluefox) New configuration page on react 
+* (bluefox) New configuration page on react
 
 ### 1.2.5 (2021-04-17)
 * (Apollon77) Fix pot crash case (Sentry IOBROKER-S7-16)
@@ -250,4 +250,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
