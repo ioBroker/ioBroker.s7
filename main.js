@@ -249,7 +249,7 @@ function send() {
     const id = Object.keys(sendBuffer)[0];
 
     const type = objects[id].native.type;
-    let val  = sendBuffer[id];
+    let val = sendBuffer[id];
     const data = objects[id];
 
     if (!s7client) {
@@ -263,33 +263,26 @@ function send() {
         } else {
             buf = Buffer.from([0]);
         }
-
     } else if (type === 'BYTE') {
         buf = Buffer.alloc(1);
         buf[0] = parseInt(val, 10) & 0xFF;
-
     } else if (type === 'WORD') {
         val = parseInt(val, 10);
         buf = Buffer.alloc(2);
         buf.writeUInt16BE(parseInt(val, 10), 0, 2);
-
     } else if (type === 'DWORD') {
         buf = Buffer.alloc(4);
         buf.writeUInt32BE(parseInt(val, 10), 0, 4);
-
     } else if (type === 'INT') {
         buf = Buffer.alloc(2);
         buf.writeInt16BE(parseInt(val, 10), 0, 2);
-
     } else if (type === 'DINT') {
         buf = Buffer.alloc(4);
         buf.writeInt32BE(parseInt(val, 10), 0, 4);
-
     } else if (type === 'REAL') {
         buf = Buffer.alloc(4);
         buf.writeFloatBE(parseFloat(val), 0);
     } else if (type === 'STRING' || type === 'ARRAY') {
-
         if (typeof val === 'string' && val[0] === '{') {
             try {
                 val = JSON.parse(val);
@@ -303,7 +296,6 @@ function send() {
             const buffer1 = iconvTo ? iconvTo.convert(val) : iconvToL.encode(val, encoding);
             buffer1.copy(buf, 0, 0, buffer1.byteLength > len ? len : buffer1.byteLength);
         } else {
-
             let s1;
             for (s1 = 0; s1 < val.length && s1 < len; s1++) {
                 buf[s1] = val[s1];
@@ -384,8 +376,8 @@ function send() {
                     next(err));
             }
         }
-        if (data.native.cat === 'output') {
 
+        if (data.native.cat === 'output') {
             if (type === 'BOOL') {
                 addr = data.native.address * 8 + data.native.offsetBit;
                 s7client.WriteArea(s7client.S7AreaPA, 0, addr, 1, s7client.S7WLBit, buf, err =>
@@ -836,11 +828,11 @@ const main = {
                     native: {
                         cat:       'input',
                         type:      main.ac.inputs[i].Type,
-                        address:   main.ac.inputs[i].offsetByte,
-                        offsetBit: main.ac.inputs[i].offsetBit,
-                        rw:        main.ac.inputs[i].RW,
-                        wp:        main.ac.inputs[i].WP,
-                        len:       main.ac.inputs[i].Length
+                        address:   parseInt(main.ac.inputs[i].offsetByte, 10),
+                        offsetBit: parseInt(main.ac.inputs[i].offsetBit, 10),
+                        rw:        main.ac.inputs[i].RW === true || main.ac.inputs[i].RW === 'true',
+                        wp:        main.ac.inputs[i].WP === true || main.ac.inputs[i].WP === 'true',
+                        len:       parseInt(main.ac.inputs[i].Length, 10)
                     }
                 });
 
@@ -877,11 +869,11 @@ const main = {
                     native: {
                         cat:       'output',
                         type:      main.ac.outputs[i].Type,
-                        address:   main.ac.outputs[i].offsetByte,
-                        offsetBit: main.ac.outputs[i].offsetBit,
-                        rw:        main.ac.outputs[i].RW,
-                        wp:        main.ac.outputs[i].WP,
-                        len:       main.ac.outputs[i].Length
+                        address:   parseInt(main.ac.outputs[i].offsetByte, 10),
+                        offsetBit: parseInt(main.ac.outputs[i].offsetBit, 10),
+                        rw:        main.ac.outputs[i].RW === true || main.ac.outputs[i].RW === 'true',
+                        wp:        main.ac.outputs[i].WP === true || main.ac.outputs[i].WP === 'true',
+                        len:       parseInt(main.ac.outputs[i].Length, 10)
                     }
                 });
                 syncEnums('rooms', `${adapter.namespace}.${main.ac.outputs[i].id}`, main.ac.outputs[i].Room);
@@ -916,11 +908,11 @@ const main = {
                     native: {
                         cat:       'marker',
                         type:      main.ac.markers[i].Type,
-                        address:   main.ac.markers[i].offsetByte,
-                        offsetBit: main.ac.markers[i].offsetBit,
-                        rw:        main.ac.markers[i].RW,
-                        wp:        main.ac.markers[i].WP,
-                        len:       main.ac.markers[i].Length
+                        address:   parseInt(main.ac.markers[i].offsetByte, 10),
+                        offsetBit: parseInt(main.ac.markers[i].offsetBit, 10),
+                        rw:        main.ac.markers[i].RW === true || main.ac.markers[i].RW === 'true',
+                        wp:        main.ac.markers[i].WP === true || main.ac.markers[i].WP === 'true',
+                        len:       parseInt(main.ac.markers[i].Length, 10)
                     }
                 });
 
@@ -960,11 +952,11 @@ const main = {
                         type:      main.ac.dbs[i].Type,
                         db:        main.ac.dbs[i].db,
                         dbId:      main.ac.dbs[i].dbId,
-                        address:   main.ac.dbs[i].offsetByte,
-                        offsetBit: main.ac.dbs[i].offsetBit,
-                        rw:        main.ac.dbs[i].RW,
-                        wp:        main.ac.dbs[i].WP,
-                        len:       main.ac.dbs[i].Length
+                        address:   parseInt(main.ac.dbs[i].offsetByte, 10),
+                        offsetBit: parseInt(main.ac.dbs[i].offsetBit, 10),
+                        rw:        main.ac.dbs[i].RW === true || main.ac.dbs[i].RW === 'true',
+                        wp:        main.ac.dbs[i].WP === true || main.ac.dbs[i].WP === 'true',
+                        len:       parseInt(main.ac.dbs[i].Length, 10)
                     }
                 });
                 syncEnums('rooms', `${adapter.namespace}.${main.ac.dbs[i].id}`, main.ac.dbs[i].Room);
