@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "s7",
-    "version": "1.3.7",
+    "version": "1.3.8",
     "news": {
+      "1.3.8": {
+        "en": "Corrected type of \"write\" attribute",
+        "de": "Korrigierter Typ des \"write\"-Attributs",
+        "ru": "Исправлен тип атрибута \"запись\".",
+        "pt": "Tipo corrigido de atributo \"escrever\"",
+        "nl": "Type \"schrijf\"-kenmerk gecorrigeerd",
+        "fr": "Type corrigé de l'attribut \"write\"",
+        "it": "Tipo corretto di attributo \"scrittura\"",
+        "es": "Tipo corregido de atributo \"escribir\"",
+        "pl": "Poprawiony typ atrybutu „zapis”",
+        "zh-cn": "更正了“写入”属性的类型"
+      },
       "1.3.7": {
         "en": "Corrected type of \"write\" attribute",
         "de": "Korrigierter Typ des \"write\"-Attributs",
@@ -74,18 +86,6 @@
         "es": "Agregar nivel de adaptador para js-controller 3.3",
         "pl": "Dodaj warstwę adaptera dla kontrolera js 3.3",
         "zh-cn": "为 js-controller 3.3 添加适配器层"
-      },
-      "1.3.1": {
-        "en": "Corrected the type of states",
-        "de": "Die Art der Zustände wurde korrigiert",
-        "ru": "Исправлен тип состояний",
-        "pt": "Corrigido o tipo de estado",
-        "nl": "Het type toestanden gecorrigeerd",
-        "fr": "Correction du type d'états",
-        "it": "Corretto il tipo di stati",
-        "es": "Corregido el tipo de estados",
-        "pl": "Poprawiono rodzaj stanów",
-        "zh-cn": "更正了状态类型"
       }
     },
     "title": "Siemens Simatic S7",
