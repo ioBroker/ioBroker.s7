@@ -588,6 +588,38 @@ const main = {
 
             main.oldObjects = list;
 
+            main.ac.inputs = main.ac.inputs.filter((el, i) => {
+                if (!el.Address && el.Address !== false) {
+                    adapter.log.info(`Ignore Input ${i} because no address provided: ${JSON.stringify(el)}`);
+                    return false;
+                }
+                return true;
+            });
+
+            main.ac.outputs = main.ac.outputs.filter((el, i) => {
+                if (!el.Address && el.Address !== false) {
+                    adapter.log.info(`Ignore Output ${i} because no address provided: ${JSON.stringify(el)}`);
+                    return false;
+                }
+                return true;
+            });
+
+            main.ac.markers = main.ac.markers.filter((el, i) => {
+                if (!el.Address && el.Address !== false) {
+                    adapter.log.info(`Ignore Marker ${i} because no address provided: ${JSON.stringify(el)}`);
+                    return false;
+                }
+                return true;
+            });
+
+            main.ac.dbs = main.ac.dbs.filter((el, i) => {
+                if (!el.Address && el.Address !== false) {
+                    adapter.log.info(`Ignore DBs ${i} because no address provided: ${JSON.stringify(el)}`);
+                    return false;
+                }
+                return true;
+            });
+
             main.ac.inputs.sort(sortByAddress);
             main.ac.outputs.sort(sortByAddress);
             main.ac.markers.sort(sortByAddress);
@@ -598,14 +630,10 @@ const main = {
 
             if (main.ac.inputs.length > 0) {
                 for (i = main.ac.inputs.length - 1; i >= 0; i--) {
-                    if (!main.ac.inputs[i].Address && main.ac.inputs[i].Address !== false) {
-                        adapter.log.info(`Ignore Input ${i} because no address provided: ${JSON.stringify(main.ac.inputs[i])}`);
-                        continue;
-                    }
                     main.ac.inputs[i].Address = main.ac.inputs[i].Address.toString();
                     main.ac.inputs[i].Address = main.ac.inputs[i].Address.replace(/\+/g, '');
                     parts = main.ac.inputs[i].Address.split('.');
-                    main.ac.inputs[i].offsetByte = parseInt(parts[0], 10);
+                    main.ac.inputs[i].offsetByte = parseInt(parts[0], 10) || 0;
                     main.ac.inputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     main.ac.inputs[i].id = `Inputs.${main.ac.inputs[i].offsetByte}.${main.ac.inputs[i].Name.replace(/[.\s]+/g, '_') || main.ac.inputs[i].offsetBit}`;
 
@@ -630,14 +658,10 @@ const main = {
 
             if (main.ac.outputs.length > 0) {
                 for (i = main.ac.outputs.length - 1; i >= 0; i--) {
-                    if (!main.ac.outputs[i].Address && main.ac.outputs[i].Address !== false) {
-                        adapter.log.info(`Ignore Output ${i} because no address provided: ${JSON.stringify(main.ac.outputs[i])}`);
-                        continue;
-                    }
                     main.ac.outputs[i].Address = main.ac.outputs[i].Address.toString();
                     main.ac.outputs[i].Address = main.ac.outputs[i].Address.replace(/\+/g, '');
                     parts = main.ac.outputs[i].Address.split('.');
-                    main.ac.outputs[i].offsetByte = parseInt(parts[0], 10);
+                    main.ac.outputs[i].offsetByte = parseInt(parts[0], 10) || 0;
                     main.ac.outputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     main.ac.outputs[i].id = `Outputs.${main.ac.outputs[i].offsetByte}.${main.ac.outputs[i].Name.replace(/[.\s]+/g, '_') || main.ac.outputs[i].offsetBit}`;
 
@@ -662,14 +686,10 @@ const main = {
 
             if (main.ac.markers.length > 0) {
                 for (i = main.ac.markers.length - 1; i >= 0; i--) {
-                    if (!main.ac.markers[i].Address && main.ac.markers[i].Address !== false) {
-                        adapter.log.info(`Ignore Marker ${i} because no address provided: ${JSON.stringify(main.ac.markers[i])}`);
-                        continue;
-                    }
                     main.ac.markers[i].Address = main.ac.markers[i].Address.toString();
                     main.ac.markers[i].Address = main.ac.markers[i].Address.replace(/\+/g, '');
                     parts = main.ac.markers[i].Address.split('.');
-                    main.ac.markers[i].offsetByte = parseInt(parts[0], 10);
+                    main.ac.markers[i].offsetByte = parseInt(parts[0], 10) || 0;
                     main.ac.markers[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     main.ac.markers[i].id = 'Markers.' + main.ac.markers[i].offsetByte + '.' + (main.ac.markers[i].Name.replace(/[.\s]+/g, '_') || main.ac.markers[i].offsetBit);
 
@@ -718,7 +738,7 @@ const main = {
                     main.ac.dbs[i].id     = 'DBs.' + main.ac.dbs[i].db + '.' + ((main.ac.dbs[i].Name.replace(/[.\s]+/g, '_')) || main.ac.dbs[i].offset.replace(/[.\s]+/g, '_'));
 
                     parts = main.ac.dbs[i].offset.split('.');
-                    main.ac.dbs[i].offsetByte = parseInt(parts[0], 10);
+                    main.ac.dbs[i].offsetByte = parseInt(parts[0], 10) || 0;
                     if (main.ac.dbs[i].Type === 'BOOL') {
                         main.ac.dbs[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     } else {
