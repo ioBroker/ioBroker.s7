@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "s7",
-    "version": "1.3.9",
+    "version": "1.3.10",
     "news": {
+      "1.3.10": {
+        "en": "Better handle invalid entries with empty Address",
+        "de": "Bessere Handhabung ungültiger Einträge mit leerer Adresse",
+        "ru": "Лучше обрабатывать недопустимые записи с пустым адресом",
+        "pt": "Melhor lidar com entradas inválidas com endereço vazio",
+        "nl": "Beter omgaan met ongeldige invoer met een leeg adres",
+        "fr": "Mieux gérer les entrées invalides avec une adresse vide",
+        "it": "Gestire meglio le voci non valide con l'indirizzo vuoto",
+        "es": "Maneje mejor las entradas inválidas con la dirección vacía",
+        "pl": "Lepiej obsługuj nieprawidłowe wpisy z pustym adresem",
+        "zh-cn": "更好地处理空地址的无效条目"
+      },
       "1.3.9": {
         "en": "make sure strings work correctly\nFix several crash cases (IOBROKER-S7-17, IOBROKER-S7-19, IOBROKER-S7-1C, IOBROKER-S7-18)",
         "de": "Stellen Sie sicher, dass die Saiten richtig funktionieren\nMehrere Crash-Fälle beheben (IOBROKER-S7-17, IOBROKER-S7-19, IOBROKER-S7-1C, IOBROKER-S7-18)",
@@ -74,18 +86,6 @@
         "es": "Cambiar el comportamiento del modo de edición",
         "pl": "Zmień zachowanie trybu edycji",
         "zh-cn": "更改编辑模式行为"
-      },
-      "1.3.3": {
-        "en": "Corrected the error in GUI",
-        "de": "Fehler in der GUI behoben",
-        "ru": "Исправлена ошибка в графическом интерфейсе.",
-        "pt": "Corrigido o erro na GUI",
-        "nl": "De fout in GUI gecorrigeerd",
-        "fr": "Correction de l'erreur dans l'interface graphique",
-        "it": "Corretto l'errore nella GUI",
-        "es": "Corregido el error en la GUI.",
-        "pl": "Poprawiono błąd w GUI",
-        "zh-cn": "更正了 GUI 中的错误"
       }
     },
     "title": "Siemens Simatic S7",

@@ -58,8 +58,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 1.3.10 (2021-11-13)
 * (Apollon77) Better handle invalid entries with empty Address
 
 ### 1.3.9 (2021-11-09)
