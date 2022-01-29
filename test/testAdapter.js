@@ -81,7 +81,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
     before('Test ' + adapterShortName + ' adapter: Start js-controller', function (_done) {
         this.timeout(600000); // because of first install from npm
 
-        setup.setupController(function () {
+        setup.setupController(async function () {
             var config = setup.getAdapterConfig();
             // enable adapter
             config.common.enabled  = true;
@@ -155,7 +155,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
 
             //config.native.dbtype   = 'sqlite';
 
-            setup.setAdapterConfig(config.common, config.native);
+            await setup.setAdapterConfig(config.common, config.native);
             //if (/^win/.test(process.platform) || /^darwin/.test(process.platform)) {
             let bindIp = '127.0.0.1';
             if (/^darwin/.test(process.platform)) bindIp = '0.0.0.0';
