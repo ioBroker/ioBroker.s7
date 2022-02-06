@@ -534,6 +534,27 @@ function updateConnection(_connected) {
     }
 }
 
+function getByteSize(type, length) {
+    switch (type)
+    {
+        case 'WORD':
+        case 'INT':
+        case 'S5TIME':
+            return 2;
+        case 'DWORD':
+        case 'DINT':
+        case 'REAL':
+            return 4;
+        case 'DWORD':
+            return 8;
+        case 'DWORD':
+        case 'DINT':
+        case 'REAL': 
+            return parseInt(length, 10);
+    }
+    return 1;
+}
+
 const main = {
     oldObjects: [],
     newObjects: [],
@@ -637,19 +658,7 @@ const main = {
                     main.ac.inputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     main.ac.inputs[i].id = `Inputs.${main.ac.inputs[i].offsetByte}.${main.ac.inputs[i].Name.replace(/[.\s]+/g, '_') || main.ac.inputs[i].offsetBit}`;
 
-                    main.ac.inputs[i].len = 1;
-                    if (main.ac.inputs[i].Type === 'WORD'  || main.ac.inputs[i].Type === 'INT'  || main.ac.inputs[i].Type === 'S5TIME') {
-                        main.ac.inputs[i].len = 2;
-                    } else
-                    if (main.ac.inputs[i].Type === 'DWORD' || main.ac.inputs[i].Type === 'DINT' || main.ac.inputs[i].Type === 'REAL') {
-                        main.ac.inputs[i].len = 4;
-                    } else
-                    if (main.ac.inputs[i].Type === 'S7TIME') {
-                        main.ac.inputs[i].len = 8;
-                    } else
-                    if (main.ac.inputs[i].Type === 'ARRAY' || main.ac.inputs[i].Type === 'STRING' || main.ac.inputs[i].Type === 'S7STRING') {
-                        main.ac.inputs[i].len = parseInt(main.ac.inputs[i].Length, 10);
-                    }
+                    main.ac.inputs[i].len = getByteSize(main.ac.inputs[i].Type, main.ac.inputs[i].Length);
                 }
                 main.input_lsb  = main.ac.inputs[0].offsetByte;
                 main.input_msb  = main.ac.inputs[main.ac.inputs.length - 1].offsetByte + main.ac.inputs[main.ac.inputs.length - 1].len;
@@ -665,19 +674,7 @@ const main = {
                     main.ac.outputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     main.ac.outputs[i].id = `Outputs.${main.ac.outputs[i].offsetByte}.${main.ac.outputs[i].Name.replace(/[.\s]+/g, '_') || main.ac.outputs[i].offsetBit}`;
 
-                    main.ac.outputs[i].len = 1;
-                    if (main.ac.outputs[i].Type === 'WORD'  || main.ac.outputs[i].Type === 'INT'  || main.ac.outputs[i].Type === 'S5TIME') {
-                        main.ac.outputs[i].len = 2;
-                    } else
-                    if (main.ac.outputs[i].Type === 'DWORD' || main.ac.outputs[i].Type === 'DINT' || main.ac.outputs[i].Type === 'REAL') {
-                        main.ac.outputs[i].len = 4;
-                    } else
-                    if (main.ac.outputs[i].Type === 'S7TIME') {
-                        main.ac.outputs[i].len = 8;
-                    } else
-                    if (main.ac.outputs[i].Type === 'ARRAY' || main.ac.outputs[i].Type === 'STRING' || main.ac.outputs[i].Type === 'S7STRING') {
-                        main.ac.outputs[i].len = parseInt(main.ac.outputs[i].Length, 10);
-                    }
+                    main.ac.outputs[i].len = getByteSize(main.ac.outputs[i].Type, main.ac.outputs[i].Length, 10);
                 }
                 main.output_lsb  = main.ac.outputs[0].offsetByte;
                 main.output_msb  = main.ac.outputs[main.ac.outputs.length - 1].offsetByte + main.ac.outputs[main.ac.outputs.length - 1].len;
@@ -693,19 +690,7 @@ const main = {
                     main.ac.markers[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     main.ac.markers[i].id = 'Markers.' + main.ac.markers[i].offsetByte + '.' + (main.ac.markers[i].Name.replace(/[.\s]+/g, '_') || main.ac.markers[i].offsetBit);
 
-                    main.ac.markers[i].len = 1;
-                    if (main.ac.markers[i].Type === 'WORD'  || main.ac.markers[i].Type === 'INT'  || main.ac.markers[i].Type === 'S5TIME') {
-                        main.ac.markers[i].len = 2;
-                    } else
-                    if (main.ac.markers[i].Type === 'DWORD' || main.ac.markers[i].Type === 'DINT' || main.ac.markers[i].Type === 'REAL') {
-                        main.ac.markers[i].len = 4;
-                    } else
-                    if (main.ac.markers[i].Type === 'S7TIME') {
-                        main.ac.markers[i].len = 8;
-                    } else
-                    if (main.ac.markers[i].Type === 'ARRAY' || main.ac.markers[i].Type === 'STRING' || main.ac.markers[i].Type === 'S7STRING') {
-                        main.ac.markers[i].len = parseInt(main.ac.markers[i].Length, 10);
-                    }
+                    main.ac.markers[i].len = getByteSize(main.ac.markers[i].Type, main.ac.markers[i].Length);
                 }
                 main.marker_lsb  = main.ac.markers[0].offsetByte;
                 main.marker_msb  = main.ac.markers[main.ac.markers.length - 1].offsetByte + main.ac.markers[main.ac.markers.length - 1].len;
@@ -755,20 +740,8 @@ const main = {
                         };
                     }
 
-                    main.ac.dbs[i].len = 1;
-                    if (main.ac.dbs[i].Type === 'WORD' || main.ac.dbs[i].Type === 'INT' || main.ac.dbs[i].Type === 'S5TIME') {
-                        main.ac.dbs[i].len = 2;
-                    } else
-                    if (main.ac.dbs[i].Type === 'DWORD' || main.ac.dbs[i].Type === 'DINT' || main.ac.dbs[i].Type === 'REAL') {
-                        main.ac.dbs[i].len = 4;
-                    } else
-                    if (main.ac.dbs[i].Type === 'S7TIME') {
-                        main.ac.dbs[i].len = 8;
-                    } else
-                    if (main.ac.dbs[i].Type === 'ARRAY' || main.ac.dbs[i].Type === 'STRING' || main.ac.dbs[i].Type === 'S7STRING') {
-                        main.ac.dbs[i].len = parseInt(main.ac.dbs[i].Length, 10);
-                    }
-
+                    main.ac.dbs[i].len = getByteSize(main.ac.dbs[i].Type, main.ac.dbs[i].Length);
+                    
                     // find size of DB
                     if (main.ac.dbs[i].offsetByte + main.ac.dbs[i].len > main.db_size[main.ac.dbs[i].db].msb) {
                         main.db_size[main.ac.dbs[i].db].msb = main.ac.dbs[i].offsetByte + main.ac.dbs[i].len;
