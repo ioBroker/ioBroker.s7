@@ -267,7 +267,6 @@ function send() {
         buf = Buffer.alloc(1);
         buf[0] = parseInt(val, 10) & 0xFF;
     } else if (type === 'WORD') {
-        val = parseInt(val, 10);
         buf = Buffer.alloc(2);
         buf.writeUInt16BE(parseInt(val, 10), 0, 2);
     } else if (type === 'DWORD') {
@@ -331,6 +330,39 @@ function send() {
             }
             buf[1] = s2;
         }
+    } else if (type === 'S5TIME') {
+        // Bin : xxxx 3333 | 2222 1111
+
+        // xxxx = Faktor 0 = 10 ms 1 = 100 ms 2 = 1s 3 = 10s
+
+        // 3333 3 Stelle vom BCD Code ( 0 - 9 )
+        // 2222 2 Stelle vom BCD Code ( 0 - 9 )
+        // 1111 1 Stelle vom BCD Code ( 0 - 9 )
+
+        if (val > 999 * 1)  {
+            factor = 3;  // 11 = 10   s
+            val = val / 10;
+        } else if (val > 999 * 0.1)  {
+            factor = 2; // 10 = 1000 ms = 1 s
+            val = val / 1;
+        } else if (val > 999 * 0.01)  {
+            factor = 1; // 01 = 100  ms
+            val = val / 0.1;
+        } else {
+            factor = 0; // 00 = 10   ms
+            val = val / 0.1;
+        }
+
+        if (val > 999) {
+            val = 999;
+        }
+
+        buf = Buffer.alloc(2);
+        buf[1] = Math.trunc(val / 100) | (factor >> 4);
+        val = val - Math.trunc(val / 100);
+        buf[0] = (Math.trunc(val / 10) >> 4);
+        val = val - Math.trunc(val / 10);
+        buf[0] =  buf[0] | Math.trunc(val);
     }
 
     let addr;
@@ -342,17 +374,8 @@ function send() {
                 addr = data.native.address * 8 + data.native.offsetBit;
                 s7client.WriteArea(s7client.S7AreaDB, data.native.dbId, addr, 1, s7client.S7WLBit, buf, err =>
                     next(err));
-            } else if (type === 'BYTE') {
-                s7client.DBWrite(data.native.dbId, data.native.address, 1, buf, err =>
-                    next(err));
-            } else if (type === 'INT' || type === 'WORD') {
-                s7client.DBWrite(data.native.dbId, data.native.address, 2, buf, err =>
-                    next(err));
-            } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-                s7client.DBWrite(data.native.dbId, data.native.address, 4, buf, err =>
-                    next(err));
-            } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-                s7client.DBWrite(data.native.dbId, data.native.address, parseInt(data.native.len), buf, err =>
+            } else {
+                s7client.DBWrite(data.native.dbId, data.native.address, getByteSize(type, data.native.len), buf, err =>
                     next(err));
             }
         }
@@ -362,17 +385,8 @@ function send() {
                 addr = data.native.address * 8 + data.native.offsetBit;
                 s7client.WriteArea(s7client.S7AreaPE, 0, addr, 1, s7client.S7WLBit, buf, err =>
                     next(err));
-            } else if (type === 'BYTE') {
-                s7client.EBWrite(data.native.address, data.native.address, 1, buf, err =>
-                    next(err));
-            } else if (type === 'INT' || type === 'WORD') {
-                s7client.EBWrite(data.native.address, data.native.address, 2, buf, err =>
-                    next(err));
-            } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-                s7client.EBWrite(data.native.address, data.native.address, 4, buf, err =>
-                    next(err));
-            } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-                s7client.EBWrite(data.native.address, data.native.address, parseInt(data.native.len), buf, err =>
+            } else {
+                s7client.EBWrite(data.native.address, data.native.address, getByteSize(type, data.native.len), buf, err =>
                     next(err));
             }
         }
@@ -382,17 +396,8 @@ function send() {
                 addr = data.native.address * 8 + data.native.offsetBit;
                 s7client.WriteArea(s7client.S7AreaPA, 0, addr, 1, s7client.S7WLBit, buf, err =>
                     next(err));
-            } else if (type === 'BYTE') {
-                s7client.ABWrite(data.native.address, data.native.address, 1, buf, err =>
-                    next(err));
-            } else if (type === 'INT' || type === 'WORD') {
-                s7client.ABWrite(data.native.address, data.native.address, 2, buf, err =>
-                    next(err));
-            } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-                s7client.ABWrite(data.native.address, data.native.address, 4, buf, err =>
-                    next(err));
-            } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-                s7client.ABWrite(data.native.address, data.native.address, parseInt(data.native.len), buf, err =>
+            } else {
+                s7client.ABWrite(data.native.address, data.native.address, getByteSize(type, data.native.len), buf, err =>
                     next(err));
             }
         }
@@ -402,17 +407,8 @@ function send() {
                 addr = data.native.address * 8 + data.native.offsetBit;
                 s7client.WriteArea(s7client.S7AreaMK, 0, addr, 1, s7client.S7WLBit, buf, err =>
                     next(err));
-            } else if (type === 'BYTE') {
-                s7client.MBWrite(data.native.address, 1, buf, err =>
-                    next(err));
-            } else if (type === 'INT' || type === 'WORD') {
-                s7client.MBWrite(data.native.address, 2, buf, err =>
-                    next(err));
-            } else if (type === 'REAL' || type === 'DINT' || type === 'DWORD') {
-                s7client.MBWrite(data.native.address, 4, buf, err =>
-                    next(err));
-            } else if (type === 'STRING' || type === 'ARRAY' || type === 'S7STRING') {
-                s7client.MBWrite(data.native.address, parseInt(data.native.len), buf, err =>
+            } else {
+                s7client.MBWrite(data.native.address, getByteSize(type, data.native.len), buf, err =>
                     next(err));
             }
         }
