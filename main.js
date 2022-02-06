@@ -1053,6 +1053,9 @@ const main = {
         if (!s7client) {
             return;
         }
+        if (main.acp.connectionType) {
+            s7client.SetConnectionType(main.acp.connectionType);
+        }
         if (main.acp.localTSAP && main.acp.remoteTSAP) {
             adapter.log.info(`Connect in LOGO! mode to ${main.acp.localTSAP} / ${main.acp.remoteTSAP}`);
             s7client.SetConnectionParams(main.acp.ip, main.acp.localTSAP, main.acp.remoteTSAP); // C++
