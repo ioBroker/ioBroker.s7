@@ -58,6 +58,9 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Updated releaser
+
 ### 1.3.10 (2021-11-13)
 * (Apollon77) Better handle invalid entries with empty Address
 
@@ -236,7 +239,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2021 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2022 bluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014-2016 smiling_Jack <steffen.schorling@googlemail.com>
 
