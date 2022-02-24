@@ -133,6 +133,7 @@
     "connectionType": "local",
     "dataSource": "poll",
     "tier": 2,
+    "eraseOnUpload": true,
     "compact": true,
     "plugins": {
       "sentry": {
