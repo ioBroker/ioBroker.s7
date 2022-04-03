@@ -59,10 +59,11 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 
 ## Changelog
 ### **WORK IN PROGRESS**
-
-### 1.3.11 (2022-02-13)
 * (jogibear9988) Removed duplicated code
 * (jogibear9988) Implemented S5TIME support (must be tested on real device)
+* 
+### 1.3.11 (2022-02-13)
+* (bluefox) Updated releaser
 
 ### 1.3.10 (2021-11-13)
 * (Apollon77) Better handle invalid entries with empty Address
