@@ -331,6 +331,7 @@ function send() {
             buf[1] = s2;
         }
     } else if (type === 'S5TIME') {
+        let factor;
         // Bin : xxxx 3333 | 2222 1111
 
         // xxxx = Faktor 0 = 10 ms 1 = 100 ms 2 = 1s 3 = 10s
@@ -339,7 +340,7 @@ function send() {
         // 2222 2 Stelle vom BCD Code ( 0 - 9 )
         // 1111 1 Stelle vom BCD Code ( 0 - 9 )
 
-        if (val > 999 * 1)  {
+        if (val > 999)  {
             factor = 3;  // 11 = 10   s
             val = val / 10;
         } else if (val > 999 * 0.1)  {
@@ -369,7 +370,6 @@ function send() {
 
     try {
         if (data.native.cat === 'db') {
-
             if (type === 'BOOL') {
                 addr = data.native.address * 8 + data.native.offsetBit;
                 s7client.WriteArea(s7client.S7AreaDB, data.native.dbId, addr, 1, s7client.S7WLBit, buf, err =>
@@ -379,7 +379,7 @@ function send() {
                     next(err));
             }
         }
-
+        else
         if (data.native.cat === 'input') {
             if (type === 'BOOL') {
                 addr = data.native.address * 8 + data.native.offsetBit;
@@ -389,8 +389,7 @@ function send() {
                 s7client.EBWrite(data.native.address, data.native.address, getByteSize(type, data.native.len), buf, err =>
                     next(err));
             }
-        }
-
+        } else
         if (data.native.cat === 'output') {
             if (type === 'BOOL') {
                 addr = data.native.address * 8 + data.native.offsetBit;
@@ -400,9 +399,8 @@ function send() {
                 s7client.ABWrite(data.native.address, data.native.address, getByteSize(type, data.native.len), buf, err =>
                     next(err));
             }
-        }
+        } else
         if (data.native.cat === 'marker') {
-
             if (type === 'BOOL') {
                 addr = data.native.address * 8 + data.native.offsetBit;
                 s7client.WriteArea(s7client.S7AreaMK, 0, addr, 1, s7client.S7WLBit, buf, err =>
@@ -540,6 +538,8 @@ function getByteSize(type, length) {
         case 'DINT':
         case 'REAL':
             return 4;
+        case 'S7TIME':
+            return 8;
         case 'STRING':
         case 'ARRAY':
         case 'S7STRING':
@@ -667,7 +667,7 @@ const main = {
                     main.ac.outputs[i].offsetBit  = parseInt(parts[1] || 0, 10);
                     main.ac.outputs[i].id = `Outputs.${main.ac.outputs[i].offsetByte}.${main.ac.outputs[i].Name.replace(/[.\s]+/g, '_') || main.ac.outputs[i].offsetBit}`;
 
-                    main.ac.outputs[i].len = getByteSize(main.ac.outputs[i].Type, main.ac.outputs[i].Length, 10);
+                    main.ac.outputs[i].len = getByteSize(main.ac.outputs[i].Type, main.ac.outputs[i].Length);
                 }
                 main.output_lsb  = main.ac.outputs[0].offsetByte;
                 main.output_msb  = main.ac.outputs[main.ac.outputs.length - 1].offsetByte + main.ac.outputs[main.ac.outputs.length - 1].len;
