@@ -531,8 +531,7 @@ function updateConnection(_connected) {
 }
 
 function getByteSize(type, length) {
-    switch (type)
-    {
+    switch (type) {
         case 'WORD':
         case 'INT':
         case 'S5TIME':
@@ -541,11 +540,9 @@ function getByteSize(type, length) {
         case 'DINT':
         case 'REAL':
             return 4;
-        case 'DWORD':
-            return 8;
-        case 'DWORD':
-        case 'DINT':
-        case 'REAL': 
+        case 'STRING':
+        case 'ARRAY':
+        case 'S7STRING':
             return parseInt(length, 10);
     }
     return 1;
@@ -737,7 +734,7 @@ const main = {
                     }
 
                     main.ac.dbs[i].len = getByteSize(main.ac.dbs[i].Type, main.ac.dbs[i].Length);
-                    
+
                     // find size of DB
                     if (main.ac.dbs[i].offsetByte + main.ac.dbs[i].len > main.db_size[main.ac.dbs[i].db].msb) {
                         main.db_size[main.ac.dbs[i].db].msb = main.ac.dbs[i].offsetByte + main.ac.dbs[i].len;
@@ -1061,7 +1058,7 @@ const main = {
             s7client.SetConnectionParams(main.acp.ip, main.acp.localTSAP, main.acp.remoteTSAP); // C++
             s7client.Connect(err => {
                 if (err) {
-                    adapter.log.error(`Connection failed. Code #${err}${sysErrors[err] ? '(' + sysErrors[err] + ')' : ''}`);
+                    adapter.log.error(`Connection failed. Code #${err}${sysErrors[err] ? `(${sysErrors[err]})` : ''}`);
                     updateConnection(false);
                     reconTimer && clearTimeout(reconTimer);
                     reconTimer = setTimeout(() => {
