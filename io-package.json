@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "s7",
-    "version": "1.3.10",
+    "version": "1.3.11",
     "news": {
+      "1.3.11": {
+        "en": "Updated releaser",
+        "de": "Releaser aktualisiert",
+        "ru": "Обновленный релиз",
+        "pt": "Liberador atualizado",
+        "nl": "Bijgewerkte releaser",
+        "fr": "Outil de libération mis à jour",
+        "it": "Rilascio aggiornato",
+        "es": "Liberador actualizado",
+        "pl": "Zaktualizowany wydawca",
+        "zh-cn": "更新的发布者"
+      },
       "1.3.10": {
         "en": "Better handle invalid entries with empty Address",
         "de": "Bessere Handhabung ungültiger Einträge mit leerer Adresse",
@@ -74,18 +86,6 @@
         "es": "Cambiar el comportamiento del modo de edición",
         "pl": "Zmień zachowanie trybu edycji",
         "zh-cn": "更改编辑模式行为"
-      },
-      "1.3.4": {
-        "en": "Change edit mode behaviour",
-        "de": "Verhalten im Bearbeitungsmodus ändern",
-        "ru": "Изменить поведение режима редактирования",
-        "pt": "Alterar o comportamento do modo de edição",
-        "nl": "Gedrag van bewerkingsmodus wijzigen",
-        "fr": "Modifier le comportement du mode édition",
-        "it": "Modifica il comportamento della modalità di modifica",
-        "es": "Cambiar el comportamiento del modo de edición",
-        "pl": "Zmień zachowanie trybu edycji",
-        "zh-cn": "更改编辑模式行为"
       }
     },
     "title": "Siemens Simatic S7",
@@ -133,6 +133,7 @@
     "connectionType": "local",
     "dataSource": "poll",
     "tier": 2,
+    "eraseOnUpload": true,
     "compact": true,
     "plugins": {
       "sentry": {
