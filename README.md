@@ -58,6 +58,9 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Added preparations for ioBroker cloud
+
 ### 1.3.12 (2022-04-03)
 * (jogibear9988) Removed duplicated code
 * (jogibear9988) Implemented S5TIME support (must be tested on real device)
