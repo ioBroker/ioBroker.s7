@@ -169,7 +169,7 @@
         "platform": "Javascript/Node.js",
         "mode": "daemon",
         "loglevel": "info",
-        "icon": "S7.png",
+        "icon": "s7.png",
         "messagebox": true,
         "docs": {
             "en": "docs/en/s7.md"
