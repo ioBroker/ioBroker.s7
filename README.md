@@ -33,7 +33,7 @@ sudo apt-get update
 sudo apt-get install build-essential
 ```
 
-Under windows is Visual Studio 2013 (Community Edition is enough) or later is required to get it run.
+Under windows is Visual Studio 2013 (Community Edition is enough) or later is required to get it running.
 Python 2.x is required too. Not 3.x.
 
 ## Time offset
@@ -45,6 +45,14 @@ You can use 4 time offset modes for S7TIME:
 
 ## S5TIME
 S5 decoded as described here: http://www.plccenter.cn/Siemens_Step7/Format_des_Datentyps_S5TIME_Zeitdauer.htm
+
+## Tia Portal
+To use ioBroker with Tia Portal, ou need to disable the optimisation of blocks:
+
+Right-click on the data block and then on 'Properties'. Under attributes, you will find the option "Optimized block access". Take off the hook.
+After recompiling, the addresses are displayed in the data block ("Offset" column). 
+
+You can read about it [here](https://github.com/ioBroker/ioBroker.s7/issues/113) too.
 
 ## More information
 More description could be found [here](https://github.com/ioBroker/ioBroker.s7/blob/master/docs/en/s7.md).
@@ -110,7 +118,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 * (Apollon77) Prevent warnings in js-controller 3.2
 
 ### 1.2.1 (2021-01-25)
-* (Apollon77) fix info.connection state
+* (Apollon77) fix `info.connection` state
 
 ### 1.2.0 (2021-01-25)
 * (Apollon77) Prevent error case (Sentry IOBROKER-S7-4)
@@ -184,7 +192,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 * (bluefox) add translation
 
 ### 0.2.3 (2015.09.24)
-* (bluefox) add suppor of Logo!
+* (bluefox) added support of Logo!
 
 ### 0.2.2 (2015.09.11)
 * (bluefox) add S7time
@@ -220,7 +228,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 ### 0.1.3 (2015.06.04)
 * (bluefox) translate admin
 * (bluefox) remove jshint warnings
-* (bluefox) add info.connected and rename info.connection to info.state
+* (bluefox) add `info.connected` and rename `info.connection` to `info.state`
 
 ### 0.1.2
 * Bugfix startup
