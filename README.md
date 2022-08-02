@@ -66,7 +66,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 1.3.13 (2022-08-02)
 * (bluefox) Added preparations for ioBroker cloud
 * (bluefox) Migrate GUI tu muiV5
 

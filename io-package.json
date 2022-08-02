@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "s7",
-    "version": "1.3.12",
+    "version": "1.3.13",
     "news": {
+      "1.3.13": {
+        "en": "Added preparations for ioBroker cloud\nMigrate GUI tu muiV5",
+        "de": "Weitere Präparate für ioBroker Cloud\nMigrate GUI tu muiV5",
+        "ru": "Добавлена подготовка к облаку ioBroker\nМиграт GUI tu muiV5",
+        "pt": "Adicionados preparativos para ioBroker cloud\nMigrar GUI tu muiV5",
+        "nl": "Voegde voorbereidingen voor ioBrokerwolk\nMigrant GUI tu muiV5",
+        "fr": "Préparations supplémentaires pour ioBroker cloud\nMigrate GUI tu muiV5",
+        "it": "Aggiunto preparazioni per ioBroker cloud\nMigrare GUI tu muiV5",
+        "es": "Preparativos adicionales para la nube de yoBroker\nMigrar GUI tu muiV5",
+        "pl": "Zamknięte przygotowania do ioBrokera\nGUI tu muiV5",
+        "zh-cn": "增 编\n米格尔·古伊拖拉·穆伊特·瓦5"
+      },
       "1.3.12": {
         "en": "Removed duplicated code\nImplemented S5TIME support (must be tested on real device)\n",
         "de": "Doppelter Code entfernt\nImplementierte S5TIME-Unterstützung (muss auf einem realen Gerät getestet werden)\n",
@@ -74,18 +86,6 @@
         "es": "Tipo corregido de atributo \"escribir\"",
         "pl": "Poprawiony typ atrybutu „zapis”",
         "zh-cn": "更正了“写入”属性的类型"
-      },
-      "1.3.6": {
-        "en": "Corrected import of last line",
-        "de": "Korrigierter Import der letzten Zeile",
-        "ru": "Исправлен импорт последней строки",
-        "pt": "Importação corrigida da última linha",
-        "nl": "Gecorrigeerde import van laatste regel",
-        "fr": "Importation corrigée de la dernière ligne",
-        "it": "Importazione corretta dell'ultima riga",
-        "es": "Importación corregida de la última línea",
-        "pl": "Poprawiony import ostatniej linii",
-        "zh-cn": "更正了最后一行的导入"
       }
     },
     "title": "Siemens Simatic S7",
