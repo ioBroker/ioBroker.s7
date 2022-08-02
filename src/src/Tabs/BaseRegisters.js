@@ -1,12 +1,12 @@
 import {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 
 import roles from '../data/roles';
 import types from '../data/types';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import RegisterTable from '../Components/RegisterTable';
 

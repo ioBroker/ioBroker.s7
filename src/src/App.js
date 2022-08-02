@@ -1,15 +1,14 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
-import { MuiThemeProvider } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import AppBar from '@mui/material/AppBar';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
-import GenericApp from '@iobroker/adapter-react/GenericApp';
-import Loader from '@iobroker/adapter-react/Components/Loader'
-import I18n from '@iobroker/adapter-react/i18n';
+import GenericApp from '@iobroker/adapter-react-v5/GenericApp';
+import { I18n, Loader } from '@iobroker/adapter-react-v5';
 
 import TabOptions from './Tabs/Options';
 import TabInputs from './Tabs/Inputs';
@@ -81,6 +80,8 @@ class App extends GenericApp {
             'zh-cn': require('./i18n/zh-cn'),
         };
 
+        extendedProps.sentryDSN = window.sentryDSN;
+
         super(props, extendedProps);
         this.state.moreLoaded = false;
         this.state.rooms = null;
@@ -90,7 +91,7 @@ class App extends GenericApp {
         super.onConnectionReady()
         this.socket.getForeignObjects('enum.rooms.*', 'enum')
             .then(rooms =>
-                this.setState({moreLoaded: true, rooms}));
+                this.setState({ moreLoaded: true, rooms }));
     }
 
     getSelectedTab() {
@@ -104,62 +105,66 @@ class App extends GenericApp {
 
     render() {
         if (!this.state.loaded || !this.state.moreLoaded) {
-            return <MuiThemeProvider theme={this.state.theme}>
-                <Loader theme={this.state.themeType} />
-            </MuiThemeProvider>;
+            return <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.state.theme}>
+                    <Loader theme={this.state.themeType} />
+                </ThemeProvider>
+            </StyledEngineProvider>;
         }
 
-        return <MuiThemeProvider theme={this.state.theme}>
-            <SnackbarProvider>
-                <div className="App" style={{background: this.state.theme.palette.background.default, color: this.state.theme.palette.text.primary}}>
-                    <AppBar position="static">
-                        <Tabs
-                            value={this.getSelectedTab()}
-                            onChange={(e, index) => this.selectTab(tabs[index].name, index)}
-                            variant="scrollable" scrollButtons="auto">
-                            {tabs.map(tab => <Tab
-                                label={tab.icon ? <>{tab.icon}{I18n.t(tab.title)}</> : I18n.t(tab.title)}
-                                data-name={tab.name}
-                                key={tab.name}
-                                title={tab.tooltip ? I18n.t(tab.tooltip) : undefined}
-                            />)}
-                        </Tabs>
-                    </AppBar>
-                    <div className={this.isIFrame ? this.props.classes.tabContentIFrame : this.props.classes.tabContent}>
-                        {tabs.map((tab, index) => {
-                            const TabComponent = tab.component;
-                            if (this.state.selectedTab) {
-                                if (this.state.selectedTab !== tab.name) {
-                                    return null;
+        return <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={this.state.theme}>
+                <SnackbarProvider>
+                    <div className="App" style={{background: this.state.theme.palette.background.default, color: this.state.theme.palette.text.primary}}>
+                        <AppBar position="static">
+                            <Tabs
+                                value={this.getSelectedTab()}
+                                onChange={(e, index) => this.selectTab(tabs[index].name, index)}
+                                variant="scrollable" scrollButtons="auto">
+                                {tabs.map(tab => <Tab
+                                    label={tab.icon ? <>{tab.icon}{I18n.t(tab.title)}</> : I18n.t(tab.title)}
+                                    data-name={tab.name}
+                                    key={tab.name}
+                                    title={tab.tooltip ? I18n.t(tab.tooltip) : undefined}
+                                />)}
+                            </Tabs>
+                        </AppBar>
+                        <div className={this.isIFrame ? this.props.classes.tabContentIFrame : this.props.classes.tabContent}>
+                            {tabs.map((tab, index) => {
+                                const TabComponent = tab.component;
+                                if (this.state.selectedTab) {
+                                    if (this.state.selectedTab !== tab.name) {
+                                        return null;
+                                    }
+                                } else {
+                                    if (index !== 0) {
+                                        return null;
+                                    }
                                 }
-                            } else {
-                                if (index !== 0) {
-                                    return null;
-                                }
-                            }
-                            return <TabComponent
-                                key={tab.name}
-                                themeType={this.state.themeType}
-                                common={this.common}
-                                socket={this.socket}
-                                native={this.state.native}
-                                onError={text => this.setState({errorText: (text || text === 0) && typeof text !== 'string' ? text.toString() : text})}
-                                onLoad={native => this.onLoadConfig(native)}
-                                instance={this.instance}
-                                adapterName={this.adapterName}
-                                changed={this.state.changed}
-                                onChange={(attr, value, cb) => this.updateNativeValue(attr, value, cb)}
-                                changeNative={value => this.setState({native: value, changed: this.getIsChanged(value)})}
-                                rooms={this.state.rooms}
-                            />
-                        })}
-                        {/*<pre>{JSON.stringify(this.state.native, null, 2)}</pre>*/}
+                                return <TabComponent
+                                    key={tab.name}
+                                    themeType={this.state.themeType}
+                                    common={this.common}
+                                    socket={this.socket}
+                                    native={this.state.native}
+                                    onError={text => this.setState({errorText: (text || text === 0) && typeof text !== 'string' ? text.toString() : text})}
+                                    onLoad={native => this.onLoadConfig(native)}
+                                    instance={this.instance}
+                                    adapterName={this.adapterName}
+                                    changed={this.state.changed}
+                                    onChange={(attr, value, cb) => this.updateNativeValue(attr, value, cb)}
+                                    changeNative={value => this.setState({native: value, changed: this.getIsChanged(value)})}
+                                    rooms={this.state.rooms}
+                                />
+                            })}
+                            {/*<pre>{JSON.stringify(this.state.native, null, 2)}</pre>*/}
+                        </div>
+                        {this.renderError()}
+                        {this.renderSaveCloseButtons()}
                     </div>
-                    {this.renderError()}
-                    {this.renderSaveCloseButtons()}
-                </div>
-            </SnackbarProvider>
-        </MuiThemeProvider>;
+                </SnackbarProvider>
+            </ThemeProvider>
+        </StyledEngineProvider>;
     }
 }
 

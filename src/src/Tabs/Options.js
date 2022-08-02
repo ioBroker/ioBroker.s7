@@ -1,24 +1,24 @@
-import {Component, useCallback} from 'react';
-import {useDropzone} from 'react-dropzone';
+import { Component, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Checkbox from '@material-ui/core/Checkbox';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Checkbox from '@mui/material/Checkbox';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import connectionInputs from '../data/optionsConnection';
 import generalInputs from '../data/optionsGeneral';
@@ -33,7 +33,7 @@ const styles = theme => ({
     optionContainer: {
     },
     optionsContainer: {
-        width: `calc(100% - ${theme.spacing(4)}px)`,
+        width: `calc(100% - ${parseInt(theme.spacing(4), 10)}px)`,
         padding: theme.spacing(2),
         marginBottom: 20,
         display: 'inline-block',
@@ -70,7 +70,7 @@ let FileInput = function (props) {
 
       const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, accept: props.accept});
 
-      return <FormControl style={{padding: 3, paddingRight: 40}}>
+      return <FormControl style={{padding: 3, paddingRight: 40}} variant="standard">
         <Typography variant="h6" gutterBottom>{ I18n.t(props.label)}</Typography>
         <div {...getRootProps()} className={props.classes.fileInput} style={isDragActive ? {backgroundColor: 'rgba(0, 255, 0, 0.1)'} : {cursor: 'pointer'}}>
             <input {...getInputProps()} />
@@ -139,9 +139,10 @@ class Options extends Component {
                                 />}/> {input.dimension ? I18n.t(input.dimension) : null}</Grid>;
                     } else if (input.type === 'select') {
                         return <Grid item className={this.props.classes.optionContainer} key={input.name}>
-                            <FormControl>
+                            <FormControl variant="standard">
                                 <InputLabel shrink>{I18n.t(input.title)}</InputLabel>
                                 <Select
+                                    variant="standard"
                                     className={this.props.classes.optionsSelect}
                                     displayEmpty
                                     disabled={this.inputDisabled(input)}
@@ -187,6 +188,7 @@ class Options extends Component {
                     } else {
                         return <Grid item className={this.props.classes.optionContainer} key={input.name}><TextField
                             type={input.type}
+                            variant="standard"
                             label={I18n.t(input.title)}
                             className={this.props.classes.optionsTextField}
                             disabled={this.inputDisabled(input)}
