@@ -66,7 +66,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 1.3.14 (2022-09-27)
 * (bluefox) Updated GUI packages
 
 ### 1.3.13 (2022-08-02)
