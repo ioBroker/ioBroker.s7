@@ -18,7 +18,7 @@
         "react-icons": "^4.6.0",
         "react-scripts": "^5.0.1",
         "tsv-json": "^2.0.0",
-        "copy-to-clipboard": "^3.3.2"
+        "copy-to-clipboard": "^3.3.3"
     },
     "scripts": {
         "start": "react-scripts start",
