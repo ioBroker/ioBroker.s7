@@ -66,7 +66,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 1.3.15 (2022-12-23)
 * (bluefox) Updated GUI packages
 * (bluefox) Added ukrainian translation
 
