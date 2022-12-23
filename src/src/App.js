@@ -64,19 +64,20 @@ const tabs = [
 
 class App extends GenericApp {
     constructor(props) {
-        const extendedProps = {...props};
+        const extendedProps = { ...props };
         extendedProps.encryptedFields = ['pass'];
 
         extendedProps.translations = {
-            'en': require('./i18n/en'),
-            'de': require('./i18n/de'),
-            'ru': require('./i18n/ru'),
-            'pt': require('./i18n/pt'),
-            'nl': require('./i18n/nl'),
-            'fr': require('./i18n/fr'),
-            'it': require('./i18n/it'),
-            'es': require('./i18n/es'),
-            'pl': require('./i18n/pl'),
+            en: require('./i18n/en'),
+            de: require('./i18n/de'),
+            ru: require('./i18n/ru'),
+            pt: require('./i18n/pt'),
+            nl: require('./i18n/nl'),
+            fr: require('./i18n/fr'),
+            it: require('./i18n/it'),
+            es: require('./i18n/es'),
+            pl: require('./i18n/pl'),
+            uk: require('./i18n/uk'),
             'zh-cn': require('./i18n/zh-cn'),
         };
 
@@ -115,12 +116,13 @@ class App extends GenericApp {
         return <StyledEngineProvider injectFirst>
             <ThemeProvider theme={this.state.theme}>
                 <SnackbarProvider>
-                    <div className="App" style={{background: this.state.theme.palette.background.default, color: this.state.theme.palette.text.primary}}>
+                    <div className="App" style={{ background: this.state.theme.palette.background.default, color: this.state.theme.palette.text.primary }}>
                         <AppBar position="static">
                             <Tabs
                                 value={this.getSelectedTab()}
                                 onChange={(e, index) => this.selectTab(tabs[index].name, index)}
-                                variant="scrollable" scrollButtons="auto">
+                                variant="scrollable" scrollButtons="auto"
+                            >
                                 {tabs.map(tab => <Tab
                                     label={tab.icon ? <>{tab.icon}{I18n.t(tab.title)}</> : I18n.t(tab.title)}
                                     data-name={tab.name}
@@ -147,13 +149,13 @@ class App extends GenericApp {
                                     common={this.common}
                                     socket={this.socket}
                                     native={this.state.native}
-                                    onError={text => this.setState({errorText: (text || text === 0) && typeof text !== 'string' ? text.toString() : text})}
+                                    onError={text => this.setState({ errorText: (text || text === 0) && typeof text !== 'string' ? text.toString() : text })}
                                     onLoad={native => this.onLoadConfig(native)}
                                     instance={this.instance}
                                     adapterName={this.adapterName}
                                     changed={this.state.changed}
                                     onChange={(attr, value, cb) => this.updateNativeValue(attr, value, cb)}
-                                    changeNative={value => this.setState({native: value, changed: this.getIsChanged(value)})}
+                                    changeNative={value => this.setState({ native: value, changed: this.getIsChanged(value) })}
                                     rooms={this.state.rooms}
                                 />
                             })}

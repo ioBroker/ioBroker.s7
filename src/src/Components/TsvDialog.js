@@ -5,7 +5,6 @@ import { withStyles } from '@mui/styles';
 import { tsv2json, json2tsv } from 'tsv-json';
 import { useSnackbar } from 'notistack';
 import AceEditor from 'react-ace';
-import copy from 'copy-to-clipboard';
 import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import Dialog from '@mui/material/Dialog';
@@ -18,6 +17,8 @@ import Button from '@mui/material/Button';
 import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
+
+import { Utils } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     tsvEditor: {
@@ -104,8 +105,7 @@ const TsvDialog = props => {
         </DialogContent>
         <DialogActions>
             <Button variant="outlined" color="primary" onClick={() => {
-                //Utils.copyToClipboard(tsv);
-                copy(tsv);
+                Utils.copyToClipboard(tsv);
                 enqueueSnackbar(I18n.t('TSV was copied to clipboard'));
             }} startIcon={<FileCopyIcon />}>{I18n.t('Copy to clipboard')}</Button>
             <Button variant="contained" color="primary" onClick={saveTsv} startIcon={<SaveIcon />}>{I18n.t('Import')}</Button>
