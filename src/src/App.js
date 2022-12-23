@@ -31,7 +31,13 @@ const styles = theme => ({
     tab: {
         width: '100%',
         minHeight: '100%'
-    }
+    },
+    selected: {
+        color: theme.palette.mode === 'dark' ? undefined : '#FFF !important',
+    },
+    indicator: {
+        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.secondary.main : '#FFF',
+    },
 });
 
 const tabs = [
@@ -121,9 +127,12 @@ class App extends GenericApp {
                             <Tabs
                                 value={this.getSelectedTab()}
                                 onChange={(e, index) => this.selectTab(tabs[index].name, index)}
-                                variant="scrollable" scrollButtons="auto"
+                                variant="scrollable"
+                                scrollButtons="auto"
+                                classes={{ indicator: this.props.classes.indicator }}
                             >
                                 {tabs.map(tab => <Tab
+                                    classes={{ selected: this.props.classes.selected }}
                                     label={tab.icon ? <>{tab.icon}{I18n.t(tab.title)}</> : I18n.t(tab.title)}
                                     data-name={tab.name}
                                     key={tab.name}
