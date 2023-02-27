@@ -6,6 +6,7 @@ admin/i18n/flat.txt
 admin/i18n/*/flat.txt
 iob_npm.done
 package-lock.json
-package-lock.json
+/src/package-lock.json
+/src/build
 /src/node_modules
 /src/.eslintcache
