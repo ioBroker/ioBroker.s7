@@ -24,7 +24,7 @@
     "Offset (with day saving time)": "Zeit-Offset (mit Sommerzeit)",
     "Outputs": "Ausgänge",
     "PLC Connection": "SPS Verbindung",
-    "PLC IP Address": "SPS IP Adresse",
+    "PLC IP Address": "SPS IP-Adresse",
     "PLC Rack": "SPS Rack",
     "PLC Slot": "SPS Slot",
     "Poll delay": "Poll delay",
