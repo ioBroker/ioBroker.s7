@@ -8,7 +8,7 @@
         "@mui/icons-material": "^5.14.19",
         "@mui/styles": "^5.14.19",
         "babel-eslint": "^10.1.0",
-        "@sentry/browser": "^7.81.1",
+        "@sentry/browser": "^7.84.0",
         "@sentry/integrations": "^7.81.1",
         "notistack": "^2.0.8",
         "react": "^18.2.0",
