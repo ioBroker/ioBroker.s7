@@ -38,9 +38,15 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-
       - name: Install Dependencies
         run: npm install
+
+      - name: React build
+        run: |
+          cd src
+          npm install -f
+          cd ..
+          npm run build
 
 #      - name: Perform a type check
 #        run: npm run check:ts
@@ -131,6 +137,13 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
+
+      - name: React build
+        run: |
+          cd src
+          npm install -f
+          cd ..
+          npm run build
 
       - name: Publish package to npm
         run: |
