@@ -66,6 +66,10 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+### _WORK IN PROGRESS_
+* IMPORTANT: Node.js 16+ is required to run this version!
+* (Apollon77) Update dependencies to make adapter work with Node.js 20+
+
 ### 1.3.15 (2022-12-23)
 * (bluefox) Updated GUI packages
 * (bluefox) Added ukrainian translation
