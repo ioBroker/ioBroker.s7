@@ -3,19 +3,6 @@
     "name": "s7",
     "version": "1.4.1",
     "news": {
-      "1.4.1": {
-        "en": "IMPORTANT: Node.js 16+ is required to run this version!\nUpdate dependencies to make adapter work with Node.js 20+",
-        "de": "WICHTIG: Node.js 16+ muss diese Version ausführen!\nAktualisieren Sie Abhängigkeiten, um Adapter mit Node.js 20+ zu arbeiten",
-        "ru": "ВАЖНО: Node.js 16+ требуется для запуска этой версии!\nОбновить зависимости, чтобы сделать адаптер работать с Node.js 20+",
-        "pt": "IMPORTANTE: Node.js 16+ é obrigado a executar esta versão!\nAtualizar dependências para fazer o trabalho do adaptador com Node.js 20+",
-        "nl": "Neede, 16 + moet deze versie leiden!\nUpdate afhankelijkheid om adapter te laten werken met Node",
-        "fr": "IMPORTANT: Node.js 16+ est nécessaire pour exécuter cette version!\nMettre à jour les dépendances pour faire fonctionner l'adaptateur avec Node.js 20+",
-        "it": "IMPORTANTE: Node.js 16+ è necessario eseguire questa versione!\nAggiornare le dipendenze per rendere il lavoro adattatore con Node.js 20+",
-        "es": "IMPORTANTE: Node.js 16+ es necesario para ejecutar esta versión!\nActualizar las dependencias para hacer que el adaptador funcione con Node.js 20+",
-        "pl": "IMPORTANT: Nodejs 16+ jest zobowiązany do uruchomienia tej wersji!\nW zależności od użytkowania pracy adapterowej Nodejs 20+",
-        "uk": "ВАЖЛИВО: Node.js 16+ потрібно запустити цю версію!\nОновлення залежності, щоб зробити роботу адаптера з Node.js 20+",
-        "zh-cn": "IMPORTANT:Nodejs 16+必须使用这个版本!\n适应工作的最新依赖性 20+"
-      },
       "1.3.15": {
         "en": "Updated GUI packages\nAdded ukrainian translation",
         "de": "Aktualisierte GUI-Pakete\nHinzugefügt ukrainische Übersetzung",

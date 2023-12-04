@@ -11,7 +11,7 @@
 
 ## English
 The Siemens S7 adapter is based on Snap7, with Snap7 when the
-S7 adapter is also installed and the actual S7 communication between ioBroker and the S7 is organized via TCP / IP.
+S7 adapter is also installed, and the actual S7 communication between ioBroker and the S7 is organized via TCP / IP.
 
 It is therefore necessary that the S7 has an Ethernet interface
 (integrated in the CPU or as a separate CP) and can communicate via TCP / IP with the hardware on which ioBroker is running.
@@ -22,11 +22,11 @@ Proficient use of a PC and various operating systems is also a prerequisite.
 These requirements are certainly not a challenge for someone
 who is considering communication between ioBroker and an S7.
 
-Format of the addresses for Inputs, Outputs or markers is "X.Y", where X is byte offset and Y is the bit offset in the byte.
-Format of the addresses for DBs is `DBZ +X.Y`, where `z` is number of `DB`, like `DB34 +12.0`
+The format of the addresses for Inputs, Outputs or markers is "X.Y", where X is byte offset and Y is the bit offset in the byte.
+The format of the addresses for DBs is `DBZ +X.Y`, where `z` is number of `DB`, like `DB34 +12.0`
 
 ### Installation
-On some Linux systems the build essentials must be installed to get this adapter work. You can install it with:
+On some Linux systems, the build essentials must be installed to get this adapter work. You can install it with:
 
 ```
 sudo apt-get update
@@ -39,8 +39,8 @@ Python 2.x is required too. Not 3.x.
 ## Time offset
 You can use 4 time offset modes for S7TIME:
 - Local: the time value will be not modified
-- UTC: local time offset will be added to received time. E.g. for Germany: -60 Minutes in winter and -120 Minutes in summer.
-- Set offset (use summer/winter): Given offset in minutes will be subtracted from received time and in summer additionally 60 minutes will be subtracted.
+- UTC: local time offset will be added to received time. E.g., for Germany: -60 Minutes in winter and -120 Minutes in summer.
+- Set offset (use summer/winter): Given offset in minutes will be subtracted from received time and in summer additionally, 60 minutes will be subtracted.
 - Set offset (no summer/winter): Just the given offset in minutes will be subtracted from received time. No matter in winter or in summer.
 
 ## S5TIME
@@ -66,7 +66,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### 1.4.1 (2023-12-04)
+### **WORK IN PROGRESS**
 * IMPORTANT: Node.js 16+ is required to run this version!
 * (Apollon77) Update dependencies to make adapter work with Node.js 20+
 
@@ -83,7 +83,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 
 ### 1.3.12 (2022-04-03)
 * (jogibear9988) Removed duplicated code
-* (jogibear9988) Implemented S5TIME support (must be tested on real device)
+* (jogibear9988) Implemented S5TIME support (must be tested on a real device)
 
 ### 1.3.11 (2022-02-13)
 * (bluefox) Updated releaser
