@@ -80,6 +80,13 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: React build
+        run: |
+          cd src
+          npm install -f
+          cd ..
+          npm run build
+
       - name: Local tests
         if: startsWith(runner.OS, 'linux')
         run: |
