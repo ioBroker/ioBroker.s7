@@ -66,7 +66,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 1.4.2 (2023-12-04)
 * IMPORTANT: Node.js 16+ is required to run this version!
 * (Apollon77) Update dependencies to make adapter work with Node.js 20+
 
