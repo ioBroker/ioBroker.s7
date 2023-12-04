@@ -1,11 +1,14 @@
 import React from 'react';
 import { withStyles } from '@mui/styles';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
-import { SnackbarProvider } from 'notistack';
 
-import AppBar from '@mui/material/AppBar';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import {
+    AppBar,
+    Tabs,
+    Tab,
+    Paper,
+    Typography,
+} from '@mui/material';
 
 import GenericApp from '@iobroker/adapter-react-v5/GenericApp';
 import { I18n, Loader } from '@iobroker/adapter-react-v5';
@@ -26,11 +29,11 @@ const styles = theme => ({
     tabContentIFrame: {
         padding: 10,
         height: 'calc(100% - 64px - 48px - 20px - 38px)',
-        overflow: 'auto'
+        overflow: 'auto',
     },
     tab: {
         width: '100%',
-        minHeight: '100%'
+        minHeight: '100%',
     },
     selected: {
         color: theme.palette.mode === 'dark' ? undefined : '#FFF !important',
@@ -66,7 +69,7 @@ const tabs = [
         title: 'DBs',
         component: TabDbs,
     },
-]
+];
 
 class App extends GenericApp {
     constructor(props) {
@@ -91,6 +94,7 @@ class App extends GenericApp {
 
         super(props, extendedProps);
         this.state.moreLoaded = false;
+        this.state.snackbar = null;
         this.state.rooms = null;
     }
 
@@ -121,59 +125,72 @@ class App extends GenericApp {
 
         return <StyledEngineProvider injectFirst>
             <ThemeProvider theme={this.state.theme}>
-                <SnackbarProvider>
-                    <div className="App" style={{ background: this.state.theme.palette.background.default, color: this.state.theme.palette.text.primary }}>
-                        <AppBar position="static">
-                            <Tabs
-                                value={this.getSelectedTab()}
-                                onChange={(e, index) => this.selectTab(tabs[index].name, index)}
-                                variant="scrollable"
-                                scrollButtons="auto"
-                                classes={{ indicator: this.props.classes.indicator }}
-                            >
-                                {tabs.map(tab => <Tab
-                                    classes={{ selected: this.props.classes.selected }}
-                                    label={tab.icon ? <>{tab.icon}{I18n.t(tab.title)}</> : I18n.t(tab.title)}
-                                    data-name={tab.name}
-                                    key={tab.name}
-                                    title={tab.tooltip ? I18n.t(tab.tooltip) : undefined}
-                                />)}
-                            </Tabs>
-                        </AppBar>
-                        <div className={this.isIFrame ? this.props.classes.tabContentIFrame : this.props.classes.tabContent}>
-                            {tabs.map((tab, index) => {
-                                const TabComponent = tab.component;
-                                if (this.state.selectedTab) {
-                                    if (this.state.selectedTab !== tab.name) {
-                                        return null;
-                                    }
-                                } else {
-                                    if (index !== 0) {
-                                        return null;
-                                    }
-                                }
-                                return <TabComponent
-                                    key={tab.name}
-                                    themeType={this.state.themeType}
-                                    common={this.common}
-                                    socket={this.socket}
-                                    native={this.state.native}
-                                    onError={text => this.setState({ errorText: (text || text === 0) && typeof text !== 'string' ? text.toString() : text })}
-                                    onLoad={native => this.onLoadConfig(native)}
-                                    instance={this.instance}
-                                    adapterName={this.adapterName}
-                                    changed={this.state.changed}
-                                    onChange={(attr, value, cb) => this.updateNativeValue(attr, value, cb)}
-                                    changeNative={value => this.setState({ native: value, changed: this.getIsChanged(value) })}
-                                    rooms={this.state.rooms}
-                                />
-                            })}
-                            {/*<pre>{JSON.stringify(this.state.native, null, 2)}</pre>*/}
-                        </div>
-                        {this.renderError()}
-                        {this.renderSaveCloseButtons()}
-                    </div>
-                </SnackbarProvider>
+                {this.state.snackbar ? <div
+                    style={{
+                        zIndex: 10000,
+                        position: 'absolute',
+                        bottom: 10,
+                        left: 10,
+                    }}
+                >
+                    <Paper style={{ backgroundColor: this.state.snackbar.options?.variant === 'error' ? 'red' : undefined }}>
+                        <Typography sx={{ p: 2 }}>{this.state.snackbar.text}</Typography>
+                    </Paper>
+                </div> : null}
+                <div className="App" style={{ background: this.state.theme.palette.background.default, color: this.state.theme.palette.text.primary }}>
+                <AppBar position="static">
+                    <Tabs
+                        value={this.getSelectedTab()}
+                        onChange={(e, index) => this.selectTab(tabs[index].name, index)}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        classes={{ indicator: this.props.classes.indicator }}
+                    >
+                        {tabs.map(tab => <Tab
+                            classes={{ selected: this.props.classes.selected }}
+                            label={tab.icon ? <>{tab.icon}{I18n.t(tab.title)}</> : I18n.t(tab.title)}
+                            data-name={tab.name}
+                            key={tab.name}
+                            title={tab.tooltip ? I18n.t(tab.tooltip) : undefined}
+                        />)}
+                    </Tabs>
+                </AppBar>
+                <div className={this.isIFrame ? this.props.classes.tabContentIFrame : this.props.classes.tabContent}>
+                    {tabs.map((tab, index) => {
+                        const TabComponent = tab.component;
+                        if (this.state.selectedTab) {
+                            if (this.state.selectedTab !== tab.name) {
+                                return null;
+                            }
+                        } else {
+                            if (index !== 0) {
+                                return null;
+                            }
+                        }
+                        return <TabComponent
+                            key={tab.name}
+                            themeType={this.state.themeType}
+                            common={this.common}
+                            socket={this.socket}
+                            native={this.state.native}
+                            onError={text => this.setState({ errorText: (text || text === 0) && typeof text !== 'string' ? text.toString() : text })}
+                            onLoad={native => this.onLoadConfig(native)}
+                            instance={this.instance}
+                            adapterName={this.adapterName}
+                            changed={this.state.changed}
+                            onChange={(attr, value, cb) => this.updateNativeValue(attr, value, cb)}
+                            changeNative={value => this.setState({ native: value, changed: this.getIsChanged(value) })}
+                            rooms={this.state.rooms}
+                            showSnackbar={(text, options) =>
+                                this.setState({ snackbar: { text, options } }, () =>
+                                    setTimeout(() =>
+                                        this.setState({ snackbar: null }), 3_000))}
+                        />
+                    })}
+                </div>
+                {this.renderError()}
+                {this.renderSaveCloseButtons()}
+            </div>
             </ThemeProvider>
         </StyledEngineProvider>;
     }

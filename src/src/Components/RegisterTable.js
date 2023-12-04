@@ -315,7 +315,7 @@ const RegisterTable = props => {
         </div>
         {tsvDialogOpen ?
             <TsvDialog
-                open={true}
+                showSnackbar={props.showSnackbar}
                 save={data => {
                     if (props.prefix) {
                         data.forEach(line => {
@@ -332,16 +332,14 @@ const RegisterTable = props => {
                 fields={props.fields}
             /> : null
         }
-        <DeleteAllDialog
-            open={deleteAllDialog.open}
+        {deleteAllDialog.open ? <DeleteAllDialog
             action={deleteAllDialog.action}
             onClose={() => setDeleteAllDialog({
                 open: false,
                 action: null,
             })}
-        />
-        <DeleteDialog
-            open={deleteDialog.open}
+        /> : null}
+        {deleteDialog.open ? <DeleteDialog
             action={deleteDialog.action}
             onClose={() => setDeleteDialog({
                 open: false,
@@ -349,7 +347,7 @@ const RegisterTable = props => {
                 item: null
             })}
             item={deleteDialog.item}
-        />
+        /> : null}
     </div>;
 }
 
@@ -365,6 +363,7 @@ RegisterTable.propTypes = {
     getSortedData: PropTypes.func,
     themeType: PropTypes.string,
     prefix: PropTypes.string,
+    showSnackbar: PropTypes.func,
 };
 
 export default withStyles(styles)(RegisterTable);

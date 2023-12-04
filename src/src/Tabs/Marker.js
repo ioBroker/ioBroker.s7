@@ -16,6 +16,7 @@ Marker.propTypes = {
     onChange: PropTypes.func,
     changed: PropTypes.bool,
     socket: PropTypes.object.isRequired,
+    showSnackbar: PropTypes.func,
 };
 
 export default Marker;

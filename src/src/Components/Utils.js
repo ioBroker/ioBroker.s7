@@ -73,5 +73,5 @@ export {
     address2alias,
     alias2address,
     nonDirect2direct,
-    direct2nonDirect
+    direct2nonDirect,
 };

@@ -1,7 +1,7 @@
-import {Component} from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import Paper from '@mui/material/Paper';
+import { Paper } from '@mui/material';
 
 import roles from '../data/roles';
 import types from '../data/types';
@@ -33,22 +33,22 @@ class BaseRegisters extends Component {
         rooms.unshift({value: '', title: ''});
 
         let result = [
-            {name: 'Address', title: 'Address', type: 'text', sorted: true, width: 20},
-            {name: 'Name', title: 'Name', type: 'text', sorted: true},
-            {name: 'Description', title: 'Description', type: 'text', sorted: true},
-            {name: 'Type', title: 'Type', type: 'select', options: types, sorted: true},
-            {name: 'Length', title: 'Length', type: 'text', width: 20},
-            {name: 'Unit', title: 'Unit', type: 'text', width: 30},
-            {name: 'Role', title: 'Role', type: 'select', options: roles, sorted: true},
-            {name: 'Room', title: 'Room', type: 'rooms', options: rooms, sorted: true},
-            {name: 'poll', title: 'Poll', type: 'checkbox'},
-            {name: 'RW', title: 'RW', type: 'checkbox', expert: true},
-            {name: 'WP', title: 'WP', type: 'checkbox', expert: true},
-        ]
+            { name: 'Address', title: 'Address', type: 'text', sorted: true, width: 20 },
+            { name: 'Name', title: 'Name', type: 'text', sorted: true },
+            { name: 'Description', title: 'Description', type: 'text', sorted: true },
+            { name: 'Type', title: 'Type', type: 'select', options: types, sorted: true },
+            { name: 'Length', title: 'Length', type: 'text', width: 20 },
+            { name: 'Unit', title: 'Unit', type: 'text', width: 30 },
+            { name: 'Role', title: 'Role', type: 'select', options: roles, sorted: true },
+            { name: 'Room', title: 'Room', type: 'rooms', options: rooms, sorted: true },
+            { name: 'poll', title: 'Poll', type: 'checkbox' },
+            { name: 'RW', title: 'RW', type: 'checkbox', expert: true },
+            { name: 'WP', title: 'WP', type: 'checkbox', expert: true },
+        ];
 
         if (this.props.native.params.multiDeviceId) {
             result.splice(1, 0,
-                {name: 'deviceId', title: 'Slave ID', type: 'number', sorted: true, width: 20},
+                { name: 'deviceId', title: 'Slave ID', type: 'number', sorted: true, width: 20 },
             );
         }
 
@@ -61,16 +61,16 @@ class BaseRegisters extends Component {
             const db = parseInt(parts[0].replace('DB', '').replace('db', '').trim(), 10);
             if (parts[1] && parts[1].includes('.')) {
                 const a = parseFloat(parts[1]);
-                return {db, byte: Math.floor(a), bit: (a * 10) % 10};
+                return { db, byte: Math.floor(a), bit: (a * 10) % 10 };
             } else {
-                return {db, byte: parseInt(parts[1], 10)};
+                return { db, byte: parseInt(parts[1], 10) };
             }
         } else {
             if (address.includes('.')) {
                 const a = parseFloat(address);
-                return {byte: Math.floor(a), bit: (a * 10) % 10};
+                return { byte: Math.floor(a), bit: (a * 10) % 10 };
             } else {
-                return {byte: parseInt(address, 10)};
+                return { byte: parseInt(address, 10) };
             }
         }
     }
@@ -83,7 +83,7 @@ class BaseRegisters extends Component {
                 return `DB${struct.db} ${struct.byte}`;
             }
         } else if (struct.bit !== undefined) {
-            return struct.byte + '.' + struct.bit;
+            return `${struct.byte}.${struct.bit}`;
         } else  {
             return struct.byte;
         }
@@ -265,6 +265,7 @@ class BaseRegisters extends Component {
                 rooms={this.props.rooms}
                 order={this.state.order}
                 orderBy={this.state.orderBy}
+                showSnackbar={this.props.showSnackbar}
                 onChangeOrder={(orderBy, order) => {
                     this.setState({orderBy, order});
                     window.localStorage.setItem('Modbus.orderBy', orderBy);
@@ -286,6 +287,7 @@ BaseRegisters.propTypes = {
     changed: PropTypes.bool,
     socket: PropTypes.object.isRequired,
     themeType: PropTypes.string,
+    showSnackbar: PropTypes.func,
 };
 
 export default BaseRegisters;

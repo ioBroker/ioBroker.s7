@@ -1,22 +1,23 @@
-import { Component, useCallback } from 'react';
+import React, { Component, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Checkbox from '@mui/material/Checkbox';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import Input from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
+import {
+    Typography,
+    TextField,
+    Checkbox,
+    Select,
+    MenuItem,
+    FormControlLabel,
+    FormControl,
+    Input,
+    InputLabel,
+    InputAdornment,
+    Grid,
+    Paper,
+    Box,
+} from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
@@ -25,10 +26,10 @@ import generalInputs from '../data/optionsGeneral';
 
 const styles = theme => ({
     optionsSelect: {
-        width: 280
+        width: 280,
     },
     optionsTextField: {
-        width: 280
+        width: 280,
     },
     optionContainer: {
     },
@@ -57,27 +58,27 @@ const styles = theme => ({
         border: '2px dashed #777',
         borderRadius: 10,
         marginTop: 12,
-        padding: 4
-    }
+        padding: 4,
+    },
 });
 
 let FileInput = function (props) {
-    const { enqueueSnackbar } = useSnackbar();
     const onDrop = useCallback(acceptedFiles => {
         props.onChange(acceptedFiles);
-        enqueueSnackbar(I18n.t('Data updated'));
+        props.showSnackbar(I18n.t('Data updated'));
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-      const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, accept: props.accept});
+    const { getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, accept: props.accept});
 
-      return <FormControl style={{padding: 3, paddingRight: 40}} variant="standard">
-        <Typography variant="h6" gutterBottom>{ I18n.t(props.label)}</Typography>
-        <div {...getRootProps()} className={props.classes.fileInput} style={isDragActive ? {backgroundColor: 'rgba(0, 255, 0, 0.1)'} : {cursor: 'pointer'}}>
+    return <FormControl style={{ padding: 3, paddingRight: 40 }} variant="standard">
+        <Typography variant="h6" gutterBottom>{I18n.t(props.label)}</Typography>
+        <div {...getRootProps()} className={props.classes.fileInput}
+             style={isDragActive ? { backgroundColor: 'rgba(0, 255, 0, 0.1)' } : { cursor: 'pointer' } }>
             <input {...getInputProps()} />
             {
                 isDragActive ?
-                <p>{I18n.t('Drop the file here ...')}</p> :
-                <p>{I18n.t(`Drag 'n' drop file here, or click to select file`)}</p>
+                    <p>{I18n.t('Drop the file here ...')}</p> :
+                    <p>{I18n.t(`Drag 'n' drop file here, or click to select file`)}</p>
             }
         </div>
     </FormControl>;
@@ -186,19 +187,21 @@ class Options extends Component {
                             />
                         </Grid>;
                     } else {
-                        return <Grid item className={this.props.classes.optionContainer} key={input.name}><TextField
-                            type={input.type}
-                            variant="standard"
-                            label={I18n.t(input.title)}
-                            className={this.props.classes.optionsTextField}
-                            disabled={this.inputDisabled(input)}
-                            value={this.getValue(input.name)}
-                            InputProps={{
-                                endAdornment: input.dimension ?
-                                    <InputAdornment position="end">{I18n.t(input.dimension)}</InputAdornment> : null
-                            }}
-                            onChange={e => this.changeParam(input.name, e.target.value)}
-                        /></Grid>;
+                        return <Grid item className={this.props.classes.optionContainer} key={input.name}>
+                            <TextField
+                                type={input.type}
+                                variant="standard"
+                                label={I18n.t(input.title)}
+                                className={this.props.classes.optionsTextField}
+                                disabled={this.inputDisabled(input)}
+                                value={this.getValue(input.name)}
+                                InputProps={{
+                                    endAdornment: input.dimension ?
+                                        <InputAdornment position="end">{I18n.t(input.dimension)}</InputAdornment> : null
+                                }}
+                                onChange={e => this.changeParam(input.name, e.target.value)}
+                            />
+                        </Grid>;
                     }
                 })}
             </Grid>
@@ -206,23 +209,35 @@ class Options extends Component {
     }
 
     getImportsBlock() {
-        return <><Paper className={this.props.classes.optionsContainer}>
+        return <Paper className={this.props.classes.optionsContainer}>
             <Typography variant="h4" gutterBottom className={this.props.classes.header}>{I18n.t('Import')}</Typography>
-                <Box className={this.props.classes.optionContainer}>
-                <FileInput classes={this.props.classes} onChange={this.loadSymbols} label="Load symbols" accept=".asc"/>
-                <FileInput classes={this.props.classes} onChange={this.addDb} label="Add DB" accept=".csv,.prn"/>
-                </Box>
-        </Paper></>;
+            <Box className={this.props.classes.optionContainer}>
+                <FileInput
+                    classes={this.props.classes}
+                    onChange={this.loadSymbols}
+                    label="Load symbols"
+                    accept=".asc"
+                    showSnackbar={this.props.showSnackbar}
+                />
+                <FileInput
+                    classes={this.props.classes}
+                    onChange={this.addDb}
+                    label="Add DB"
+                    accept=".csv,.prn"
+                    showSnackbar={this.props.showSnackbar}
+                />
+            </Box>
+        </Paper>;
     }
 
     render() {
-        return <form className={ this.props.classes.tab }>
+        return <form className={this.props.classes.tab}>
             <Grid container spacing={2} >
-                <Grid item xs={12} md={6} className={ this.props.classes.optionsGrid }>
+                <Grid item xs={12} md={6} className={this.props.classes.optionsGrid}>
                     {this.getInputsBlock(connectionInputs, 'PLC Connection')}
                     {this.getImportsBlock()}
                 </Grid>
-                <Grid item xs={12} md={6} className={ this.props.classes.optionsGrid }>{this.getInputsBlock(generalInputs, 'General')}</Grid>
+                <Grid item xs={12} md={6} className={this.props.classes.optionsGrid}>{this.getInputsBlock(generalInputs, 'General')}</Grid>
             </Grid>
         </form>;
     }
@@ -356,13 +371,13 @@ class Options extends Component {
                                 return f;
                             }
                         }},
-                        'SPS-Format':       {attr: 'Type',          process: function (f) {return f;} },
-                        'Byteanzahl':       {attr: 'Length',        process: function (f) {return parseInt(f, 10);} },
-                        'Zugriff':          {attr: 'RW',            process: function (f) {return f !== 'read';} },
-                        'Leseanforderung':  {attr: 'poll',          process: function (f) {return f === 'zyklisch';} },
-                        'AktZeit (ms)':     {attr: ''},
-                        'Kommentar':        {attr: 'Description'},
-                        'Clients (Anzahl)': {attr: ''}
+                        'SPS-Format':       { attr: 'Type',          process: function (f) {return f;} },
+                        'Byteanzahl':       { attr: 'Length',        process: function (f) {return parseInt(f, 10);} },
+                        'Zugriff':          { attr: 'RW',            process: function (f) {return f !== 'read';} },
+                        'Leseanforderung':  { attr: 'poll',          process: function (f) {return f === 'zyklisch';} },
+                        'AktZeit (ms)':     { attr: '' },
+                        'Kommentar':        { attr: 'Description' },
+                        'Clients (Anzahl)': { attr: '' }
                     };
                     // First line
                     // "Name","Typ","Operand","SPS-Format","Byteanzahl","Zugriff","Leseanforderung","AktZeit (ms)","Kommentar","Clients (Anzahl)"
@@ -378,13 +393,13 @@ class Options extends Component {
                         if (!lines[l]) continue;
                         sFields = lines[l].trim().split(',');
                         let obj = {
-                            Type:           'ARRAY',
-                            Unit:           '',
-                            Role:           '',
-                            Room:           '',
-                            poll:           true,
-                            RW:             false,
-                            WP:             false
+                            Type: 'ARRAY',
+                            Unit: '',
+                            Role: '',
+                            Room: '',
+                            poll: true,
+                            RW:   false,
+                            WP:   false,
                         };
                         for (let f = 0; f < fields.length; f++) {
                             if (!fields[f].attr) {
@@ -456,7 +471,7 @@ class Options extends Component {
                             x.shift();
 
                             let obj = {
-                                Address:        db + ' ' + x.shift(),
+                                Address:        `${db} ${x.shift()}`,
                                 Name:           x.shift(),
                                 Type:           x.shift(),
                                 dec:            x.shift(),
@@ -466,7 +481,7 @@ class Options extends Component {
                                 Room:           '',
                                 poll:           true,
                                 RW:             false,
-                                WP:             false
+                                WP:             false,
                             };
 
                             // try to find same address
@@ -541,6 +556,7 @@ Options.propTypes = {
     onChange: PropTypes.func,
     changed: PropTypes.bool,
     socket: PropTypes.object.isRequired,
+    showSnackbar: PropTypes.func,
 };
 
 export default withStyles(styles)(Options);
