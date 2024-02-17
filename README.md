@@ -66,6 +66,10 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Bettman66) Fix REAL number parsing error
+
 ### 1.4.2 (2023-12-04)
 * IMPORTANT: Node.js 16+ is required to run this version!
 * (Apollon77) Update dependencies to make adapter work with Node.js 20+
@@ -266,7 +270,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2023 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014-2016 smiling_Jack <steffen.schorling@googlemail.com>
 
