@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "s7",
-    "version": "1.4.2",
+    "version": "1.4.3",
     "news": {
+      "1.4.3": {
+        "en": "Fix REAL number parsing error",
+        "de": "Fehler bei REAL-Nummernkorrektur behoben",
+        "ru": "Исправление ошибки",
+        "pt": "Corrigir erro de análise de número real",
+        "nl": "Fix REAL number ontleden fout",
+        "fr": "Correction de l'erreur d'analyse du numéro REAL",
+        "it": "Risolvere l'errore di parsing del numero REAL",
+        "es": "Corrección número REAL pareando error",
+        "pl": "Naprawiono błąd przetwarzania numeru REAL",
+        "uk": "Виправлення помилки пароля",
+        "zh-cn": "修正真实数字解析错误"
+      },
       "1.4.2": {
         "en": "IMPORTANT: Node.js 16+ is required to run this version!\nUpdate dependencies to make adapter work with Node.js 20+",
         "de": "WICHTIG: Node.js 16+ muss diese Version ausführen!\nAktualisieren Sie Abhängigkeiten, um Adapter mit Node.js 20+ zu arbeiten",
@@ -76,18 +89,6 @@
         "es": "Liberador actualizado",
         "pl": "Zaktualizowany wydawca",
         "zh-cn": "更新的发布者"
-      },
-      "1.3.10": {
-        "en": "Better handle invalid entries with empty Address",
-        "de": "Bessere Handhabung ungültiger Einträge mit leerer Adresse",
-        "ru": "Лучше обрабатывать недопустимые записи с пустым адресом",
-        "pt": "Melhor lidar com entradas inválidas com endereço vazio",
-        "nl": "Beter omgaan met ongeldige invoer met een leeg adres",
-        "fr": "Mieux gérer les entrées invalides avec une adresse vide",
-        "it": "Gestire meglio le voci non valide con l'indirizzo vuoto",
-        "es": "Maneje mejor las entradas inválidas con la dirección vacía",
-        "pl": "Lepiej obsługuj nieprawidłowe wpisy z pustym adresem",
-        "zh-cn": "更好地处理空地址的无效条目"
       }
     },
     "title": "Siemens Simatic S7",
