@@ -13,6 +13,7 @@ let iconvFrom;
 let iconvTo;
 let iconvToL;
 const encoding = 'iso-8859-1';
+let buf;
 
 /*try {
     const Iconv  = require('iconv').Iconv;
@@ -255,7 +256,7 @@ function send() {
     if (!s7client) {
         return next('s7client not exists');
     }
-    let buf;
+    buf = null;
 
     if (type === 'BOOL') {
         if (val === true || val === 1 || val === 'true' || val === '1') {
