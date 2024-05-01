@@ -9,7 +9,7 @@
         "@mui/styles": "5.14.14",
         "babel-eslint": "^10.1.0",
         "@sentry/browser": "^7.101.1",
-        "@sentry/integrations": "^7.101.1",
+        "@sentry/integrations": "^7.112.2",
         "react": "^18.2.0",
         "react-ace": "^10.1.0",
         "react-dom": "^18.2.0",
