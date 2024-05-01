@@ -42,7 +42,7 @@
     "node-snap7": "^1.0.7",
     "iconv-lite": "0.6.3",
     "async": "^3.2.5",
-    "@iobroker/adapter-core": "^3.0.4"
+    "@iobroker/adapter-core": "^3.1.4"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.7.0",
