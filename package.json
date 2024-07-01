@@ -51,7 +51,7 @@
     "@iobroker/legacy-testing": "^1.0.12",
     "axios": "^1.7.2",
     "gulp": "^4.0.2",
-    "mocha": "^10.3.0",
+    "mocha": "^10.5.2",
     "chai": "^4.4.1",
     "nan": "2.18.0"
   },
