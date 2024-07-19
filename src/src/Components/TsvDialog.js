@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import { tsv2json, json2tsv } from 'tsv-json';
 import AceEditor from 'react-ace';
@@ -22,7 +21,7 @@ import {
 
 import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
+const styles = {
     tsvEditor: {
         width: '100%',
         height: 400,
@@ -30,7 +29,7 @@ const styles = theme => ({
     tsvEditorTextarea: {
         fontFamily: 'monospace',
     },
-});
+};
 
 const TsvDialog = props => {
     let tsvResult = [];
@@ -91,7 +90,7 @@ const TsvDialog = props => {
                     height="400px"
                     showPrintMargin={false}
                     value={tsv}
-                    className={props.classes.tsvEditor}
+                    style={styles.tsvEditor}
                     width="100%"
                     setOptions={{ firstLineNumber: 0 }}
                     mode={null}
@@ -118,11 +117,10 @@ const TsvDialog = props => {
 
 TsvDialog.propTypes = {
     onClose: PropTypes.func,
-    classes: PropTypes.object,
     save: PropTypes.func,
     fields: PropTypes.array,
     data: PropTypes.array,
     showSnackbar: PropTypes.func,
 };
 
-export default withStyles(styles)(TsvDialog);
+export default TsvDialog;

@@ -66,6 +66,9 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Updated GUI packages
+
 ### 1.4.3 (2024-02-17)
 * (Bettman66) Fix REAL number parsing error
 

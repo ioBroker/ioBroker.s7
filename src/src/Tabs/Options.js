@@ -1,7 +1,6 @@
 import React, { Component, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     Typography,
@@ -24,7 +23,7 @@ import { I18n } from '@iobroker/adapter-react-v5';
 import connectionInputs from '../data/optionsConnection';
 import generalInputs from '../data/optionsGeneral';
 
-const styles = theme => ({
+const styles = {
     optionsSelect: {
         width: 280,
     },
@@ -34,15 +33,15 @@ const styles = theme => ({
     optionContainer: {
     },
     optionsContainer: {
-        width: `calc(100% - ${parseInt(theme.spacing(4), 10)}px)`,
-        padding: theme.spacing(2),
+        width: `calc(100% - 32px)`,
+        padding: 16,
         marginBottom: 20,
         display: 'inline-block',
         textAlign: 'left'
     },
     optionsGrid: {
         textAlign: 'center',
-        padding: theme.spacing(2),
+        padding: 16,
     },
     optionsLabel: {
         fontSize: 12,
@@ -60,7 +59,7 @@ const styles = theme => ({
         marginTop: 12,
         padding: 4,
     },
-});
+};
 
 let FileInput = function (props) {
     const onDrop = useCallback(acceptedFiles => {
@@ -72,8 +71,13 @@ let FileInput = function (props) {
 
     return <FormControl style={{ padding: 3, paddingRight: 40 }} variant="standard">
         <Typography variant="h6" gutterBottom>{I18n.t(props.label)}</Typography>
-        <div {...getRootProps()} className={props.classes.fileInput}
-             style={isDragActive ? { backgroundColor: 'rgba(0, 255, 0, 0.1)' } : { cursor: 'pointer' } }>
+        <div
+            {...getRootProps()}
+            style={{
+                ...styles.fileInput,
+                ...(isDragActive ? { backgroundColor: 'rgba(0, 255, 0, 0.1)' } : { cursor: 'pointer' }),
+            }}
+        >
             <input {...getInputProps()} />
             {
                 isDragActive ?
@@ -120,31 +124,31 @@ class Options extends Component {
     }
 
     getInputsBlock(inputs, title) {
-        return <Paper className={this.props.classes.optionsContainer}>
-            <Typography variant="h4" gutterBottom className={this.props.classes.header}>{I18n.t(title)}</Typography>
+        return <Paper style={styles.optionsContainer}>
+            <Typography variant="h4" gutterBottom style={styles.header}>{I18n.t(title)}</Typography>
             <Grid container spacing={2} direction="column">
                 {inputs.map(input => {
                     if (!this.inputDisplay(input)) {
                         return null;
                     }
                     if (input.type === 'checkbox') {
-                        return <Grid item className={this.props.classes.optionContainer} key={input.name}>
+                        return <Grid item style={styles.optionContainer} key={input.name}>
                             <FormControlLabel
                                 label={I18n.t(input.title)}
                                 control={<Checkbox
                                     label={I18n.t(input.title)}
-                                    className={this.props.classes.optionsCheckbox}
+                                    style={styles.optionsCheckbox}
                                     disabled={this.inputDisabled(input)}
                                     checked={this.getValue(input.name)}
                                     onChange={e => this.changeParam(input.name, e.target.checked)}
                                 />}/> {input.dimension ? I18n.t(input.dimension) : null}</Grid>;
                     } else if (input.type === 'select') {
-                        return <Grid item className={this.props.classes.optionContainer} key={input.name}>
+                        return <Grid item style={styles.optionContainer} key={input.name}>
                             <FormControl variant="standard">
                                 <InputLabel shrink>{I18n.t(input.title)}</InputLabel>
                                 <Select
                                     variant="standard"
-                                    className={this.props.classes.optionsSelect}
+                                    style={styles.optionsSelect}
                                     displayEmpty
                                     disabled={this.inputDisabled(input)}
                                     value={this.getValue(input.name)}
@@ -161,8 +165,8 @@ class Options extends Component {
                         let top = (value >> 8) & 0xFF;
                         let bottom = value & 0xFF;
 
-                        return <Grid item className={this.props.classes.optionContainer} key={input.name}>
-                            <InputLabel className={this.props.classes.optionsLabel}>{I18n.t(input.title)}</InputLabel>
+                        return <Grid item style={styles.optionContainer} key={input.name}>
+                            <InputLabel style={styles.optionsLabel}>{I18n.t(input.title)}</InputLabel>
                             <Input
                                 title={I18n.t('Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic')}
                                 style={{width: '6ch'}}
@@ -187,12 +191,12 @@ class Options extends Component {
                             />
                         </Grid>;
                     } else {
-                        return <Grid item className={this.props.classes.optionContainer} key={input.name}>
+                        return <Grid item style={styles.optionContainer} key={input.name}>
                             <TextField
                                 type={input.type}
                                 variant="standard"
                                 label={I18n.t(input.title)}
-                                className={this.props.classes.optionsTextField}
+                                style={styles.optionsTextField}
                                 disabled={this.inputDisabled(input)}
                                 value={this.getValue(input.name)}
                                 InputProps={{
@@ -209,18 +213,16 @@ class Options extends Component {
     }
 
     getImportsBlock() {
-        return <Paper className={this.props.classes.optionsContainer}>
-            <Typography variant="h4" gutterBottom className={this.props.classes.header}>{I18n.t('Import')}</Typography>
-            <Box className={this.props.classes.optionContainer}>
+        return <Paper style={styles.optionsContainer}>
+            <Typography variant="h4" gutterBottom style={styles.header}>{I18n.t('Import')}</Typography>
+            <Box style={styles.optionContainer}>
                 <FileInput
-                    classes={this.props.classes}
                     onChange={this.loadSymbols}
                     label="Load symbols"
                     accept=".asc"
                     showSnackbar={this.props.showSnackbar}
                 />
                 <FileInput
-                    classes={this.props.classes}
                     onChange={this.addDb}
                     label="Add DB"
                     accept=".csv,.prn"
@@ -231,13 +233,13 @@ class Options extends Component {
     }
 
     render() {
-        return <form className={this.props.classes.tab}>
+        return <form style={styles.tab}>
             <Grid container spacing={2} >
-                <Grid item xs={12} md={6} className={this.props.classes.optionsGrid}>
+                <Grid item xs={12} md={6} style={styles.optionsGrid}>
                     {this.getInputsBlock(connectionInputs, 'PLC Connection')}
                     {this.getImportsBlock()}
                 </Grid>
-                <Grid item xs={12} md={6} className={this.props.classes.optionsGrid}>{this.getInputsBlock(generalInputs, 'General')}</Grid>
+                <Grid item xs={12} md={6} style={styles.optionsGrid}>{this.getInputsBlock(generalInputs, 'General')}</Grid>
             </Grid>
         </form>;
     }
@@ -559,4 +561,4 @@ Options.propTypes = {
     showSnackbar: PropTypes.func,
 };
 
-export default withStyles(styles)(Options);
+export default Options;

@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 import { Paper } from '@mui/material';
 
+import { I18n } from '@iobroker/adapter-react-v5';
+
 import roles from '../data/roles';
 import types from '../data/types';
-
-import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import RegisterTable from '../Components/RegisterTable';
 

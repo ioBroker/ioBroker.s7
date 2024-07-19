@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
 import {
@@ -10,8 +9,7 @@ import {
     Typography,
 } from '@mui/material';
 
-import GenericApp from '@iobroker/adapter-react-v5/GenericApp';
-import { I18n, Loader } from '@iobroker/adapter-react-v5';
+import { I18n, Loader, GenericApp } from '@iobroker/adapter-react-v5';
 
 import TabOptions from './Tabs/Options';
 import TabInputs from './Tabs/Inputs';
@@ -19,7 +17,7 @@ import TabOutputs from './Tabs/Outputs';
 import TabMarker from './Tabs/Marker';
 import TabDbs from './Tabs/DBs';
 
-const styles = theme => ({
+const styles = {
     root: {},
     tabContent: {
         padding: 10,
@@ -35,13 +33,13 @@ const styles = theme => ({
         width: '100%',
         minHeight: '100%',
     },
-    selected: {
+    selected: theme => ({
         color: theme.palette.mode === 'dark' ? undefined : '#FFF !important',
-    },
-    indicator: {
+    }),
+    indicator: theme => ({
         backgroundColor: theme.palette.mode === 'dark' ? theme.palette.secondary.main : '#FFF',
-    },
-});
+    }),
+};
 
 const tabs = [
     {
@@ -144,10 +142,10 @@ class App extends GenericApp {
                         onChange={(e, index) => this.selectTab(tabs[index].name, index)}
                         variant="scrollable"
                         scrollButtons="auto"
-                        classes={{ indicator: this.props.classes.indicator }}
+                        sx={{ '& .MuiTabs-indicator': styles.indicator }}
                     >
                         {tabs.map(tab => <Tab
-                            classes={{ selected: this.props.classes.selected }}
+                            sx={{ '& .MuiTab-selected': styles.selected }}
                             label={tab.icon ? <>{tab.icon}{I18n.t(tab.title)}</> : I18n.t(tab.title)}
                             data-name={tab.name}
                             key={tab.name}
@@ -155,7 +153,7 @@ class App extends GenericApp {
                         />)}
                     </Tabs>
                 </AppBar>
-                <div className={this.isIFrame ? this.props.classes.tabContentIFrame : this.props.classes.tabContent}>
+                <div style={this.isIFrame ? styles.tabContentIFrame : styles.tabContent}>
                     {tabs.map((tab, index) => {
                         const TabComponent = tab.component;
                         if (this.state.selectedTab) {
@@ -196,4 +194,4 @@ class App extends GenericApp {
     }
 }
 
-export default withStyles(styles)(App);
+export default App;
