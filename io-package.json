@@ -143,6 +143,10 @@
         "dsn": "https://d7dff297e602417087d181577d34482f@sentry.iobroker.net/113"
       }
     },
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
     "dependencies": [
       {
         "js-controller": ">=2.0.0"
