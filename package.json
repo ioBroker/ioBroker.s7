@@ -39,7 +39,7 @@
   },
   "optionalDependencies": {},
   "dependencies": {
-    "node-snap7": "^1.0.7",
+    "node-snap7": "^1.0.8",
     "iconv-lite": "0.6.3",
     "async": "^3.2.6",
     "@iobroker/adapter-core": "^3.1.6"
