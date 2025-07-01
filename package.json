@@ -50,7 +50,7 @@
     "@alcalzone/release-script-plugin-license": "^3.7.0",
     "@iobroker/legacy-testing": "^1.0.13",
     "axios": "^1.10.0",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.1",
     "mocha": "^10.8.2",
     "chai": "^4.4.1",
     "nan": "2.22.2"
