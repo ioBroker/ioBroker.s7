@@ -67,6 +67,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (Apollon77) Ensures that the adapter works with node.js 22.x and 24.x
 * (bluefox) Updated GUI packages
 
 ### 1.4.3 (2024-02-17)
