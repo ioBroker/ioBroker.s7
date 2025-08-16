@@ -42,17 +42,17 @@
     "node-snap7": "^1.0.8",
     "iconv-lite": "0.6.3",
     "async": "^3.2.6",
-    "@iobroker/adapter-core": "^3.1.6"
+    "@iobroker/adapter-core": "^3.3.1"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.8.0",
     "@alcalzone/release-script-plugin-iobroker": "^3.7.2",
     "@alcalzone/release-script-plugin-license": "^3.7.0",
-    "@iobroker/legacy-testing": "^1.0.13",
+    "@iobroker/legacy-testing": "^2.0.2",
     "axios": "^1.11.0",
     "gulp": "^4.0.2",
-    "mocha": "^10.8.2",
-    "chai": "^4.4.1",
+    "mocha": "^11.7.1",
+    "chai": "^4.5.0",
     "nan": "2.23.0"
   },
   "bugs": {
