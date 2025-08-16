@@ -1,6 +1,6 @@
 {
     "name": "s7-admin",
-    "version": "1.4.3",
+    "version": "1.4.4",
     "private": true,
     "dependencies": {
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
