@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "s7",
-    "version": "1.4.3",
+    "version": "1.4.4",
     "news": {
+      "1.4.4": {
+        "en": "Ensures that the adapter works with node.js 22.x and 24.x\nUpdated GUI packages",
+        "de": "Stellt sicher, dass der Adapter mit node.js 22.x und 24.x arbeitet\nAktualisierte GUI-Pakete",
+        "ru": "Убедитесь, что адаптер работает с node.js 22.x и 24.x\nОбновленные пакеты GUI",
+        "pt": "Garante que o adaptador funciona com nod.js 22.x e 24.x\nPacotes GUI atualizados",
+        "nl": "Zorgt ervoor dat de adapter werkt met node.js 22.x en 24.x\nBijgewerkte GUI pakketten",
+        "fr": "S'assure que l'adaptateur fonctionne avec node.js 22.x et 24.x\nMise à jour des paquets GUI",
+        "it": "Assicura che l'adattatore funzioni con node.js 22.x e 24.x\nPacchetti GUI aggiornati",
+        "es": "Garantiza que el adaptador funcione con node.js 22.x y 24.x\nPaquetes GUI actualizados",
+        "pl": "Zapewnia, że adapter działa z node.js 22.x i 24.x\nAktualizacja pakietów GUI",
+        "uk": "Забезпечує, що адаптер працює з node.js 22.x і 24.x\nОновлені пакети GUI",
+        "zh-cn": "确保适配器与节点.js 22.x和24x工作\n更新的图形用户界面软件包"
+      },
       "1.4.3": {
         "en": "Fix REAL number parsing error",
         "de": "Fehler bei REAL-Nummernkorrektur behoben",
@@ -77,18 +90,6 @@
         "es": "Código duplicado eliminado\nCompatibilidad con S5TIME implementada (debe probarse en un dispositivo real)\n",
         "pl": "Usunięto zduplikowany kod\nWdrożona obsługa S5TIME (musi być przetestowana na prawdziwym urządzeniu)\n",
         "zh-cn": "删除了重复的代码\n实现 S5TIME 支持（必须在真实设备上测试）\n"
-      },
-      "1.3.11": {
-        "en": "Updated releaser",
-        "de": "Releaser aktualisiert",
-        "ru": "Обновленный релиз",
-        "pt": "Liberador atualizado",
-        "nl": "Bijgewerkte releaser",
-        "fr": "Outil de libération mis à jour",
-        "it": "Rilascio aggiornato",
-        "es": "Liberador actualizado",
-        "pl": "Zaktualizowany wydawca",
-        "zh-cn": "更新的发布者"
       }
     },
     "title": "Siemens Simatic S7",

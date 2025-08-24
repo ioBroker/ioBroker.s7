@@ -66,7 +66,8 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 1.4.4 (2025-08-16)
+* (Apollon77) Ensures that the adapter works with node.js 22.x and 24.x
 * (bluefox) Updated GUI packages
 
 ### 1.4.3 (2024-02-17)
@@ -272,7 +273,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2025 bluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014-2016 smiling_Jack <steffen.schorling@googlemail.com>
 
