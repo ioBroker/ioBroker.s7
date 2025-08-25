@@ -3,7 +3,14 @@ import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
 import { AppBar, Tabs, Tab, Paper, Typography } from '@mui/material';
 
-import { I18n, Loader, GenericApp } from '@iobroker/adapter-react-v5';
+import {
+    I18n,
+    Loader,
+    GenericApp,
+    type GenericAppProps,
+    type GenericAppState,
+    type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
 import TabOptions from './Tabs/Options';
 import TabInputs from './Tabs/Inputs';
@@ -22,8 +29,9 @@ import esLang from './i18n/es.json';
 import plLang from './i18n/pl.json';
 import ukLang from './i18n/uk.json';
 import zhCnLang from './i18n/zh-cn.json';
+import type { S7AdapterConfig } from './types';
 
-const styles = {
+const styles: Record<string, any> = {
     root: {},
     tabContent: {
         padding: 10,
@@ -39,15 +47,21 @@ const styles = {
         width: '100%',
         minHeight: '100%',
     },
-    selected: theme => ({
+    selected: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? undefined : '#FFF !important',
     }),
-    indicator: theme => ({
+    indicator: (theme: IobTheme): React.CSSProperties => ({
         backgroundColor: theme.palette.mode === 'dark' ? theme.palette.secondary.main : '#FFF',
     }),
 };
 
-const tabs = [
+const tabs: {
+    name: 'general' | 'inputs' | 'outputs' | 'marker' | 'dbs';
+    title: string;
+    component: any;
+    icon?: string;
+    tooltip?: string;
+}[] = [
     {
         name: 'general',
         title: 'General',
@@ -75,8 +89,14 @@ const tabs = [
     },
 ];
 
-class App extends GenericApp {
-    constructor(props) {
+interface AppState extends GenericAppState {
+    moreLoaded: boolean;
+    rooms: Record<string, ioBroker.EnumObject> | null;
+    snackbar: { text: string | number; options?: { variant: 'error' | 'info' | 'success' | 'warning' } } | null;
+}
+
+export default class App extends GenericApp<GenericAppProps, AppState> {
+    constructor(props: GenericAppProps) {
         const extendedProps = { ...props };
         extendedProps.encryptedFields = ['pass'];
 
@@ -97,31 +117,34 @@ class App extends GenericApp {
         extendedProps.sentryDSN = window.sentryDSN;
 
         super(props, extendedProps);
-        this.state.moreLoaded = false;
-        this.state.snackbar = null;
-        this.state.rooms = null;
+        this.state = {
+            ...this.state,
+            moreLoaded: false,
+            rooms: null,
+            snackbar: null,
+        };
     }
 
-    onConnectionReady() {
+    onConnectionReady(): void {
         super.onConnectionReady();
         this.socket.getForeignObjects('enum.rooms.*', 'enum').then(rooms => this.setState({ moreLoaded: true, rooms }));
     }
 
-    getSelectedTab() {
+    getSelectedTab(): number {
         const selectedTab = this.state.selectedTab;
         if (!selectedTab) {
             return 0;
-        } else {
-            return tabs.findIndex(tab => tab.name === selectedTab);
         }
+
+        return tabs.findIndex(tab => tab.name === selectedTab);
     }
 
-    render() {
+    render(): React.JSX.Element {
         if (!this.state.loaded || !this.state.moreLoaded) {
             return (
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
-                        <Loader theme={this.state.themeType} />
+                        <Loader themeType={this.state.themeType} />
                     </ThemeProvider>
                 </StyledEngineProvider>
             );
@@ -203,24 +226,29 @@ class App extends GenericApp {
                                         common={this.common}
                                         socket={this.socket}
                                         native={this.state.native}
-                                        onError={text =>
+                                        onError={(text: string | Error): void =>
                                             this.setState({
                                                 errorText:
-                                                    (text || text === 0) && typeof text !== 'string'
-                                                        ? text.toString()
+                                                    (text || (text as any) === 0) && typeof text !== 'string'
+                                                        ? (text as any).toString()
                                                         : text,
                                             })
                                         }
-                                        onLoad={native => this.onLoadConfig(native)}
+                                        onLoad={(native: S7AdapterConfig): void => this.onLoadConfig(native)}
                                         instance={this.instance}
                                         adapterName={this.adapterName}
                                         changed={this.state.changed}
-                                        onChange={(attr, value, cb) => this.updateNativeValue(attr, value, cb)}
-                                        changeNative={value =>
+                                        onChange={(attr: keyof S7AdapterConfig, value: any, cb?: () => void) =>
+                                            this.updateNativeValue(attr, value, cb)
+                                        }
+                                        changeNative={(value: S7AdapterConfig): void =>
                                             this.setState({ native: value, changed: this.getIsChanged(value) })
                                         }
                                         rooms={this.state.rooms}
-                                        showSnackbar={(text, options) =>
+                                        showSnackbar={(
+                                            text: string,
+                                            options?: { variant: 'error' | 'success' | 'info' | 'warning' },
+                                        ): void =>
                                             this.setState({ snackbar: { text, options } }, () =>
                                                 setTimeout(() => this.setState({ snackbar: null }), 3_000),
                                             )
@@ -237,5 +265,3 @@ class App extends GenericApp {
         );
     }
 }
-
-export default App;

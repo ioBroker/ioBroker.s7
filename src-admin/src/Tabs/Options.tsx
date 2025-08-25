@@ -1,6 +1,5 @@
 import React, { Component, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
-import PropTypes from 'prop-types';
+import { type DropEvent, type FileRejection, useDropzone } from 'react-dropzone';
 
 import {
     Typography,
@@ -18,12 +17,13 @@ import {
     Box,
 } from '@mui/material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 
-import connectionInputs from '../data/optionsConnection';
-import generalInputs from '../data/optionsGeneral';
+import connectionInputs from '../data/optionsConnection.json';
+import generalInputs from '../data/optionsGeneral.json';
+import type { DBEntry, S7AdapterConfig } from '../types';
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
     optionsSelect: {
         width: 280,
     },
@@ -60,12 +60,22 @@ const styles = {
         padding: 4,
     },
 };
-
-let FileInput = function (props) {
-    const onDrop = useCallback(acceptedFiles => {
-        props.onChange(acceptedFiles);
-        props.showSnackbar(I18n.t('Data updated'));
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+interface FileInputProps {
+    onChange: (file: File[]) => void;
+    showSnackbar: (message: string) => void;
+    accept: {
+        [key: string]: readonly string[];
+    };
+    label: string;
+}
+function FileInput(props: FileInputProps): React.JSX.Element {
+    const onDrop = useCallback<(acceptedFiles: File[], fileRejections: FileRejection[], event: DropEvent) => void>(
+        acceptedFiles => {
+            props.onChange(acceptedFiles);
+            props.showSnackbar(I18n.t('Data updated'));
+        },
+        [],
+    );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: props.accept });
 
@@ -96,27 +106,41 @@ let FileInput = function (props) {
             </div>
         </FormControl>
     );
+}
+
+type InputsType = {
+    name: keyof S7AdapterConfig['params'] | 's7logo';
+    type: 'text' | 'number' | 'checkbox' | 'hex' | 'select';
+    title: string;
+    options?: { value: string; title: string }[];
+    dimension?: string;
 };
 
-class Options extends Component {
-    constructor(props) {
-        super(props);
+interface OptionsProps {
+    common: ioBroker.InstanceCommon;
+    native: S7AdapterConfig;
+    instance: number;
+    adapterName: string;
+    onError?: (e: Error) => void;
+    changed?: boolean;
+    socket: AdminConnection;
+    changeNative: (native: S7AdapterConfig) => void;
+    showSnackbar: (message: string) => void;
+}
 
-        this.state = {};
-    }
-
-    getValue(name) {
+export default class Options extends Component<OptionsProps> {
+    getValue(name: 's7logo' | keyof S7AdapterConfig['params']): string | number | boolean | null {
         if (name === 's7logo') {
             return this.props.native.params.slot === null;
         }
         return this.props.native.params[name];
     }
 
-    inputDisabled = input => {
+    inputDisabled = (_input: InputsType): boolean => {
         return false;
     };
 
-    inputDisplay = input => {
+    inputDisplay = (input: InputsType): boolean => {
         if (this.props.native.params.slot === null) {
             if (['rack', 'slot'].includes(input.name)) {
                 return false;
@@ -132,7 +156,7 @@ class Options extends Component {
         return true;
     };
 
-    getInputsBlock(inputs, title) {
+    getInputsBlock(inputs: InputsType[], title: string): React.JSX.Element {
         return (
             <Paper style={styles.optionsContainer}>
                 <Typography
@@ -162,10 +186,9 @@ class Options extends Component {
                                         label={I18n.t(input.title)}
                                         control={
                                             <Checkbox
-                                                label={I18n.t(input.title)}
                                                 style={styles.optionsCheckbox}
                                                 disabled={this.inputDisabled(input)}
-                                                checked={this.getValue(input.name)}
+                                                checked={!!this.getValue(input.name)}
                                                 onChange={e => this.changeParam(input.name, e.target.checked)}
                                             />
                                         }
@@ -188,9 +211,9 @@ class Options extends Component {
                                             displayEmpty
                                             disabled={this.inputDisabled(input)}
                                             value={this.getValue(input.name)}
-                                            onChange={e => this.changeParam(input.name, e.target.value)}
+                                            onChange={e => this.changeParam(input.name, e.target.value as string)}
                                         >
-                                            {input.options.map(option => (
+                                            {input.options?.map(option => (
                                                 <MenuItem
                                                     key={option.value}
                                                     value={option.value}
@@ -204,9 +227,11 @@ class Options extends Component {
                                 </Grid>
                             );
                         } else if (input.type === 'hex') {
-                            let value = parseInt(this.getValue(input.name)) ? parseInt(this.getValue(input.name)) : 0;
-                            let top = (value >> 8) & 0xff;
-                            let bottom = value & 0xff;
+                            const value = parseInt(this.getValue(input.name) as string)
+                                ? parseInt(this.getValue(input.name) as string)
+                                : 0;
+                            const top = (value >> 8) & 0xff;
+                            const bottom = value & 0xff;
 
                             return (
                                 <Grid
@@ -245,39 +270,40 @@ class Options extends Component {
                                     />
                                 </Grid>
                             );
-                        } else {
-                            return (
-                                <Grid
-                                    item
-                                    style={styles.optionContainer}
-                                    key={input.name}
-                                >
-                                    <TextField
-                                        type={input.type}
-                                        variant="standard"
-                                        label={I18n.t(input.title)}
-                                        style={styles.optionsTextField}
-                                        disabled={this.inputDisabled(input)}
-                                        value={this.getValue(input.name)}
-                                        InputProps={{
+                        }
+                        return (
+                            <Grid
+                                item
+                                style={styles.optionContainer}
+                                key={input.name}
+                            >
+                                <TextField
+                                    type={input.type}
+                                    variant="standard"
+                                    label={I18n.t(input.title)}
+                                    style={styles.optionsTextField}
+                                    disabled={this.inputDisabled(input)}
+                                    value={this.getValue(input.name)}
+                                    slotProps={{
+                                        input: {
                                             endAdornment: input.dimension ? (
                                                 <InputAdornment position="end">
                                                     {I18n.t(input.dimension)}
                                                 </InputAdornment>
-                                            ) : null,
-                                        }}
-                                        onChange={e => this.changeParam(input.name, e.target.value)}
-                                    />
-                                </Grid>
-                            );
-                        }
+                                            ) : undefined,
+                                        },
+                                    }}
+                                    onChange={e => this.changeParam(input.name, e.target.value)}
+                                />
+                            </Grid>
+                        );
                     })}
                 </Grid>
             </Paper>
         );
     }
 
-    getImportsBlock() {
+    getImportsBlock(): React.JSX.Element {
         return (
             <Paper style={styles.optionsContainer}>
                 <Typography
@@ -291,13 +317,13 @@ class Options extends Component {
                     <FileInput
                         onChange={this.loadSymbols}
                         label="Load symbols"
-                        accept=".asc"
+                        accept={{ 'text/plain': ['.asc'] }}
                         showSnackbar={this.props.showSnackbar}
                     />
                     <FileInput
                         onChange={this.addDb}
                         label="Add DB"
-                        accept=".csv,.prn"
+                        accept={{ 'text/csv': ['.csv'], 'text/plain': ['.prn'] }}
                         showSnackbar={this.props.showSnackbar}
                     />
                 </Box>
@@ -305,7 +331,7 @@ class Options extends Component {
         );
     }
 
-    render() {
+    render(): React.JSX.Element {
         return (
             <form style={styles.tab}>
                 <Grid
@@ -318,7 +344,7 @@ class Options extends Component {
                         md={6}
                         style={styles.optionsGrid}
                     >
-                        {this.getInputsBlock(connectionInputs, 'PLC Connection')}
+                        {this.getInputsBlock(connectionInputs as InputsType[], 'PLC Connection')}
                         {this.getImportsBlock()}
                     </Grid>
                     <Grid
@@ -327,15 +353,15 @@ class Options extends Component {
                         md={6}
                         style={styles.optionsGrid}
                     >
-                        {this.getInputsBlock(generalInputs, 'General')}
+                        {this.getInputsBlock(generalInputs as InputsType[], 'General')}
                     </Grid>
                 </Grid>
             </form>
         );
     }
 
-    changeParam = (name, value) => {
-        let native = JSON.parse(JSON.stringify(this.props.native));
+    changeParam = (name: keyof S7AdapterConfig['params'] | 's7logo', value: string | boolean | number): void => {
+        const native: S7AdapterConfig = JSON.parse(JSON.stringify(this.props.native));
         if (name === 's7logo') {
             if (value) {
                 native.params.localTSAP = '';
@@ -349,34 +375,35 @@ class Options extends Component {
                 native.params.slot = '';
             }
         } else {
-            native.params[name] = value;
+            native.params[name] = value as string;
         }
         this.props.changeNative(native);
     };
 
-    loadSymbols = e => {
-        let native = JSON.parse(JSON.stringify(this.props.native));
+    loadSymbols = (e: File[]): void => {
+        const native: S7AdapterConfig = JSON.parse(JSON.stringify(this.props.native));
         const reader = new FileReader();
 
-        reader.onload = e => {
-            const localData = {
+        reader.onload = (): void => {
+            const localData: {
+                inputs: DBEntry[];
+                outputs: DBEntry[];
+                markers: DBEntry[];
+            } = {
                 inputs: [],
                 outputs: [],
                 markers: [],
-                //                counter: [],
-                //                timer: [],
-                //                dbs: []
             };
-            let text = reader.result;
+            const text = (reader.result as string)?.toString() || '';
 
-            text = text.split('126,');
-            text.forEach(line => {
+            const lines: string[] = text.split('126,');
+            lines.forEach(line => {
                 const typ = line.slice(23, 29).replace(/( )/g, '');
 
-                const d = {
+                const d: DBEntry = {
                     Name: line.slice(0, 23).replace(/( ){2,}/g, ''),
                     Address: line.slice(29, 36).replace(/( )/g, ''),
-                    Type: line.slice(36, 41).replace(/( )/g, ''),
+                    Type: line.slice(36, 41).replace(/( )/g, '') as DBEntry['Type'],
                     Description: line.slice(46, 126).replace(/( ){2,}/, ''),
                     Unit: '',
                     //                    Role:         '',
@@ -388,15 +415,21 @@ class Options extends Component {
 
                 //                    if (typ == 'E' || typ == 'EB' ||typ == 'EW' ||typ == 'ED'||typ == 'PEB'||typ == 'PEW'||typ == 'PED')data.inputs.push(d);
                 //                    if (typ == 'A' || typ == 'AB' ||typ == 'AW' ||typ == 'AD'||typ == 'PAB'||typ == 'PAW'||typ == 'PAD')data.outputs.push(d);
-                if (typ === 'E' || typ === 'EB' || typ === 'EW' || typ === 'ED') localData.inputs.push(d);
-                if (typ === 'A' || typ === 'AB' || typ === 'AW' || typ === 'AD') localData.outputs.push(d);
-                if (typ === 'M' || typ === 'MB' || typ === 'MW' || typ === 'MD') localData.markers.push(d);
+                if (typ === 'E' || typ === 'EB' || typ === 'EW' || typ === 'ED') {
+                    localData.inputs.push(d);
+                }
+                if (typ === 'A' || typ === 'AB' || typ === 'AW' || typ === 'AD') {
+                    localData.outputs.push(d);
+                }
+                if (typ === 'M' || typ === 'MB' || typ === 'MW' || typ === 'MD') {
+                    localData.markers.push(d);
+                }
                 //                if (typ == 'C')data.counter.push(d);
                 //                if (typ == 'T')data.timer.push(d);
                 //                if (typ == 'DB')data.dbs.push(d);
             });
 
-            ['inputs', 'outputs', 'markers'].forEach(table => {
+            ['inputs', 'outputs', 'markers'].forEach((table: 'inputs' | 'outputs' | 'markers'): void => {
                 native[table] = localData[table];
             });
             this.props.changeNative(native);
@@ -405,13 +438,13 @@ class Options extends Component {
         reader.readAsText(e[0], 'ISO-8859-1');
     };
 
-    addDb = e => {
-        let native = JSON.parse(JSON.stringify(this.props.native));
+    addDb = (e: File[]): void => {
+        const native: S7AdapterConfig = JSON.parse(JSON.stringify(this.props.native));
         const reader = new FileReader();
 
-        reader.onload = e => {
+        reader.onload = (): void => {
             setTimeout(function () {
-                const text = reader.result;
+                const text = (reader.result as string)?.toString() || '';
                 const changes = {
                     inputs: false,
                     outputs: false,
@@ -425,15 +458,20 @@ class Options extends Component {
                     dbs: native.dbs || [],
                 };
 
-                if (text.indexOf('Leseanforderung') !== -1) {
+                if (text.includes('Leseanforderung')) {
                     // Graphpic format
                     const lines = text.replace(/\r\n/g, '\n').split('\n');
-                    const mapping = {
+                    const mapping: {
+                        [fieldName: string]: {
+                            attr: keyof DBEntry | '';
+                            process?: (f: string) => string | number | boolean;
+                        };
+                    } = {
                         Name: { attr: 'Name' },
                         Typ: { attr: '' },
                         Operand: {
                             attr: 'Address',
-                            process: f => {
+                            process: (f: string): string => {
                                 // DB 504.DBW 1462 => DB504 1462
                                 f = f.trim();
                                 const db = f.match(/^DB (\d+)/);
@@ -442,53 +480,47 @@ class Options extends Component {
                                     // MB
                                     let m = f.match(/^MB? (\d+)\.?(\d+)?$/);
                                     if (m) {
-                                        return 'M ' + parseInt(m[1], 10) + (m[2] !== undefined ? '.' + m[2] : '');
-                                    } else {
-                                        m = f.match(/^AB? (\d+)\.?(\d+)?$/);
-                                        if (m) {
-                                            return 'OUT ' + parseInt(m[1], 10) + (m[2] !== undefined ? '.' + m[2] : '');
-                                        } else {
-                                            m = f.match(/^EB? (\d+)\.?(\d+)?$/);
-                                            if (m) {
-                                                return (
-                                                    'IN ' + parseInt(m[1], 10) + (m[2] !== undefined ? '.' + m[2] : '')
-                                                );
-                                            } else {
-                                                return f;
-                                            }
-                                        }
+                                        return `M ${parseInt(m[1], 10)}${m[2] !== undefined ? `.${m[2]}` : ''}`;
                                     }
+                                    m = f.match(/^AB? (\d+)\.?(\d+)?$/);
+                                    if (m) {
+                                        return `OUT ${parseInt(m[1], 10)}${m[2] !== undefined ? `.${m[2]}` : ''}`;
+                                    }
+                                    m = f.match(/^EB? (\d+)\.?(\d+)?$/);
+                                    if (m) {
+                                        return `IN ${parseInt(m[1], 10)}${m[2] !== undefined ? `.${m[2]}` : ''}`;
+                                    }
+                                    return f;
                                 }
 
                                 const offset = f.match(/(\d+).?(\d+)?$/);
                                 if (db && offset) {
-                                    return `DB${db[1]} ${offset[1]}${offset[2] !== undefined ? '.' + offset[2] : ''}`;
-                                } else {
-                                    return f;
+                                    return `DB${db[1]} ${offset[1]}${offset[2] !== undefined ? `.${offset[2]}` : ''}`;
                                 }
+                                return f;
                             },
                         },
                         'SPS-Format': {
                             attr: 'Type',
-                            process: function (f) {
+                            process: function (f: string): string {
                                 return f;
                             },
                         },
                         Byteanzahl: {
                             attr: 'Length',
-                            process: function (f) {
+                            process: function (f: string): number {
                                 return parseInt(f, 10);
                             },
                         },
                         Zugriff: {
                             attr: 'RW',
-                            process: function (f) {
+                            process: function (f: string): boolean {
                                 return f !== 'read';
                             },
                         },
                         Leseanforderung: {
                             attr: 'poll',
-                            process: function (f) {
+                            process: function (f: string): boolean {
                                 return f === 'zyklisch';
                             },
                         },
@@ -500,16 +532,22 @@ class Options extends Component {
                     // "Name","Typ","Operand","SPS-Format","Byteanzahl","Zugriff","Leseanforderung","AktZeit (ms)","Kommentar","Clients (Anzahl)"
                     let sFields = lines[0].split(',');
                     // create mapping
-                    const fields = [];
+                    const fields: {
+                        attr: keyof DBEntry | '';
+                        process?: (f: string) => string | number | boolean;
+                    }[] = [];
                     for (let m = 0; m < sFields.length; m++) {
                         sFields[m] = sFields[m].replace(/"/g, '');
                         fields.push(mapping[sFields[m]]);
                     }
                     for (let l = 1; l < lines.length; l++) {
                         lines[l] = lines[l].trim();
-                        if (!lines[l]) continue;
+                        if (!lines[l]) {
+                            continue;
+                        }
                         sFields = lines[l].trim().split(',');
-                        let obj = {
+                        let obj: DBEntry | null = {
+                            Address: '',
                             Type: 'ARRAY',
                             Unit: '',
                             Role: '',
@@ -519,7 +557,8 @@ class Options extends Component {
                             WP: false,
                         };
                         for (let f = 0; f < fields.length; f++) {
-                            if (!fields[f].attr) {
+                            const attr = fields[f].attr;
+                            if (!attr) {
                                 continue;
                             }
                             if (!sFields[f]) {
@@ -527,9 +566,11 @@ class Options extends Component {
                                 break;
                             }
                             sFields[f] = sFields[f].replace(/"/g, '');
-                            obj[fields[f].attr] = fields[f].process ? fields[f].process(sFields[f]) : sFields[f];
+                            (obj as Record<string, any>)[attr] = fields[f].process
+                                ? fields[f].process!(sFields[f])
+                                : sFields[f];
 
-                            if (obj.Name.match(/^@/)) {
+                            if (obj.Name?.match(/^@/)) {
                                 obj = null;
                                 break;
                             }
@@ -538,13 +579,13 @@ class Options extends Component {
                             if (obj.Type === 'BYTE' && obj.Length !== 1) {
                                 obj.Type = 'ARRAY';
                             }
-                            if (obj.Type === 'CHAR') {
+                            if ((obj.Type as any) === 'CHAR') {
                                 obj.Type = 'STRING';
                             }
                             if (obj.Type === 'BYTE' || obj.Type === 'BOOL' || obj.Type === 'INT') {
                                 obj.Length = '';
                             }
-                            let _attr;
+                            let _attr: 'dbs' | 'inputs' | 'outputs' | 'markers';
                             if (obj.Address.match(/^DB/)) {
                                 _attr = 'dbs';
                             } else if (obj.Address.match(/^IN/)) {
@@ -557,10 +598,10 @@ class Options extends Component {
                                 _attr = 'markers';
                                 obj.Address = obj.Address.replace(/^M\s?/, '');
                             } else {
-                                console.error('Unknown TYPE: ' + obj.Address);
+                                console.error(`Unknown TYPE: ${obj.Address}`);
                                 continue;
                             }
-                            // try to find same address
+                            // try to find the same address
                             for (let aaa = 0; aaa < newParts[_attr].length; aaa++) {
                                 if (newParts[_attr][aaa].Address === obj.Address) {
                                     newParts[_attr][aaa] = obj;
@@ -587,10 +628,10 @@ class Options extends Component {
                             const x = item.split(/\s+/g);
                             x.shift();
 
-                            let obj = {
+                            let obj: DBEntry | null = {
                                 Address: `${db} ${x.shift()}`,
                                 Name: x.shift(),
-                                Type: x.shift(),
+                                Type: x.shift() as DBEntry['Type'],
                                 dec: x.shift(),
                                 Description: x.join(' '),
                                 Unit: '',
@@ -601,7 +642,7 @@ class Options extends Component {
                                 WP: false,
                             };
 
-                            // try to find same address
+                            // try to find the same address
                             for (let aaa = 0; aaa < newParts.dbs.length; aaa++) {
                                 if (newParts.dbs[aaa].Address === obj.Address) {
                                     newParts.dbs[aaa] = obj;
@@ -618,10 +659,10 @@ class Options extends Component {
                     });
                 }
                 for (const attr in newParts) {
-                    if (!newParts.hasOwnProperty(attr)) {
+                    if (!Object.prototype.hasOwnProperty.call(newParts, attr)) {
                         continue;
                     }
-                    newParts[attr].sort((a, b) => {
+                    newParts[attr as 'dbs' | 'inputs' | 'outputs' | 'markers'].sort((a, b) => {
                         const aDB = a.Address.match(/^D?B?\s?(\d+)/);
                         const bDB = b.Address.match(/^D?B?\s?(\d+)/);
                         if (!aDB) {
@@ -688,18 +729,3 @@ class Options extends Component {
         reader.readAsText(e[0], 'ISO-8859-1');
     };
 }
-
-Options.propTypes = {
-    common: PropTypes.object.isRequired,
-    native: PropTypes.object.isRequired,
-    instance: PropTypes.number.isRequired,
-    adapterName: PropTypes.string.isRequired,
-    onError: PropTypes.func,
-    onLoad: PropTypes.func,
-    onChange: PropTypes.func,
-    changed: PropTypes.bool,
-    socket: PropTypes.object.isRequired,
-    showSnackbar: PropTypes.func,
-};
-
-export default Options;

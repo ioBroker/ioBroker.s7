@@ -1,176 +1,170 @@
 {
-  "common": {
-    "name": "s7",
-    "version": "1.4.4",
-    "news": {
-      "1.4.4": {
-        "en": "Ensures that the adapter works with node.js 22.x and 24.x\nUpdated GUI packages",
-        "de": "Stellt sicher, dass der Adapter mit node.js 22.x und 24.x arbeitet\nAktualisierte GUI-Pakete",
-        "ru": "Убедитесь, что адаптер работает с node.js 22.x и 24.x\nОбновленные пакеты GUI",
-        "pt": "Garante que o adaptador funciona com nod.js 22.x e 24.x\nPacotes GUI atualizados",
-        "nl": "Zorgt ervoor dat de adapter werkt met node.js 22.x en 24.x\nBijgewerkte GUI pakketten",
-        "fr": "S'assure que l'adaptateur fonctionne avec node.js 22.x et 24.x\nMise à jour des paquets GUI",
-        "it": "Assicura che l'adattatore funzioni con node.js 22.x e 24.x\nPacchetti GUI aggiornati",
-        "es": "Garantiza que el adaptador funcione con node.js 22.x y 24.x\nPaquetes GUI actualizados",
-        "pl": "Zapewnia, że adapter działa z node.js 22.x i 24.x\nAktualizacja pakietów GUI",
-        "uk": "Забезпечує, що адаптер працює з node.js 22.x і 24.x\nОновлені пакети GUI",
-        "zh-cn": "确保适配器与节点.js 22.x和24x工作\n更新的图形用户界面软件包"
-      },
-      "1.4.3": {
-        "en": "Fix REAL number parsing error",
-        "de": "Fehler bei REAL-Nummernkorrektur behoben",
-        "ru": "Исправление ошибки",
-        "pt": "Corrigir erro de análise de número real",
-        "nl": "Fix REAL number ontleden fout",
-        "fr": "Correction de l'erreur d'analyse du numéro REAL",
-        "it": "Risolvere l'errore di parsing del numero REAL",
-        "es": "Corrección número REAL pareando error",
-        "pl": "Naprawiono błąd przetwarzania numeru REAL",
-        "uk": "Виправлення помилки пароля",
-        "zh-cn": "修正真实数字解析错误"
-      },
-      "1.4.2": {
-        "en": "IMPORTANT: Node.js 16+ is required to run this version!\nUpdate dependencies to make adapter work with Node.js 20+",
-        "de": "WICHTIG: Node.js 16+ muss diese Version ausführen!\nAktualisieren Sie Abhängigkeiten, um Adapter mit Node.js 20+ zu arbeiten",
-        "ru": "ВАЖНО: Node.js 16+ требуется для запуска этой версии!\nОбновить зависимости, чтобы сделать адаптер работать с Node.js 20+",
-        "pt": "IMPORTANTE: Node.js 16+ é obrigado a executar esta versão!\nAtualizar dependências para fazer o trabalho do adaptador com Node.js 20+",
-        "nl": "Neede, 16 + moet deze versie leiden!\nUpdate afhankelijkheid om adapter te laten werken met Node",
-        "fr": "IMPORTANT: Node.js 16+ est nécessaire pour exécuter cette version!\nMettre à jour les dépendances pour faire fonctionner l'adaptateur avec Node.js 20+",
-        "it": "IMPORTANTE: Node.js 16+ è necessario eseguire questa versione!\nAggiornare le dipendenze per rendere il lavoro adattatore con Node.js 20+",
-        "es": "IMPORTANTE: Node.js 16+ es necesario para ejecutar esta versión!\nActualizar las dependencias para hacer que el adaptador funcione con Node.js 20+",
-        "pl": "IMPORTANT: Nodejs 16+ jest zobowiązany do uruchomienia tej wersji!\nW zależności od użytkowania pracy adapterowej Nodejs 20+",
-        "uk": "ВАЖЛИВО: Node.js 16+ потрібно запустити цю версію!\nОновлення залежності, щоб зробити роботу адаптера з Node.js 20+",
-        "zh-cn": "IMPORTANT:Nodejs 16+必须使用这个版本!\n适应工作的最新依赖性 20+"
-      },
-      "1.3.15": {
-        "en": "Updated GUI packages\nAdded ukrainian translation",
-        "de": "Aktualisierte GUI-Pakete\nHinzugefügt ukrainische Übersetzung",
-        "ru": "Обновленные пакеты GUI\nДобавлен украинский перевод",
-        "pt": "Pacotes de GUI atualizados\nAdicionado tradução ukrainian",
-        "nl": "Update GUI pakketten\nVertaling:",
-        "fr": "Paquets GUI mis à jour\nAjout de la traduction ukrainienne",
-        "it": "Pacchetti GUI aggiornati\nAggiunto ukrainian traduzione",
-        "es": "Paquetes GUI actualizados\nTraducción ucraniana",
-        "pl": "Pakiet GUI\nAddedukrainian translation",
-        "uk": "Оновлені пакети GUI\nДодано переклад українською мовою",
-        "zh-cn": "A. 最新古伊一揽子计划\n增加培训员"
-      },
-      "1.3.14": {
-        "en": "Updated GUI packages",
-        "de": "Aktualisierte GUI-Pakete",
-        "ru": "Обновленные пакеты GUI",
-        "pt": "Pacotes de GUI atualizados",
-        "nl": "Update GUI pakketten",
-        "fr": "Paquets GUI mis à jour",
-        "it": "Pacchetti GUI aggiornati",
-        "es": "Paquetes GUI actualizados",
-        "pl": "Pakiet GUI",
-        "zh-cn": "A. 最新古伊一揽子计划"
-      },
-      "1.3.13": {
-        "en": "Added preparations for ioBroker cloud\nMigrate GUI tu muiV5",
-        "de": "Weitere Präparate für ioBroker Cloud\nMigrate GUI tu muiV5",
-        "ru": "Добавлена подготовка к облаку ioBroker\nМиграт GUI tu muiV5",
-        "pt": "Adicionados preparativos para ioBroker cloud\nMigrar GUI tu muiV5",
-        "nl": "Voegde voorbereidingen voor ioBrokerwolk\nMigrant GUI tu muiV5",
-        "fr": "Préparations supplémentaires pour ioBroker cloud\nMigrate GUI tu muiV5",
-        "it": "Aggiunto preparazioni per ioBroker cloud\nMigrare GUI tu muiV5",
-        "es": "Preparativos adicionales para la nube de yoBroker\nMigrar GUI tu muiV5",
-        "pl": "Zamknięte przygotowania do ioBrokera\nGUI tu muiV5",
-        "zh-cn": "增 编\n米格尔·古伊拖拉·穆伊特·瓦5"
-      },
-      "1.3.12": {
-        "en": "Removed duplicated code\nImplemented S5TIME support (must be tested on real device)\n",
-        "de": "Doppelter Code entfernt\nImplementierte S5TIME-Unterstützung (muss auf einem realen Gerät getestet werden)\n",
-        "ru": "Удален повторяющийся код\nРеализована поддержка S5TIME (необходимо протестировать на реальном устройстве)\n",
-        "pt": "Código duplicado removido\nSuporte S5TIME implementado (deve ser testado em dispositivo real)\n",
-        "nl": "Dubbele code verwijderd\nGeïmplementeerde S5TIME-ondersteuning (moet worden getest op een echt apparaat)\n",
-        "fr": "Suppression du code en double\nPrise en charge S5TIME implémentée (doit être testé sur un appareil réel)\n",
-        "it": "Rimosso il codice duplicato\nSupporto S5TIME implementato (deve essere testato su dispositivo reale)\n",
-        "es": "Código duplicado eliminado\nCompatibilidad con S5TIME implementada (debe probarse en un dispositivo real)\n",
-        "pl": "Usunięto zduplikowany kod\nWdrożona obsługa S5TIME (musi być przetestowana na prawdziwym urządzeniu)\n",
-        "zh-cn": "删除了重复的代码\n实现 S5TIME 支持（必须在真实设备上测试）\n"
-      }
+    "common": {
+        "name": "s7",
+        "version": "1.4.4",
+        "news": {
+            "1.4.4": {
+                "en": "Ensures that the adapter works with node.js 22.x and 24.x\nUpdated GUI packages",
+                "de": "Stellt sicher, dass der Adapter mit node.js 22.x und 24.x arbeitet\nAktualisierte GUI-Pakete",
+                "ru": "Убедитесь, что адаптер работает с node.js 22.x и 24.x\nОбновленные пакеты GUI",
+                "pt": "Garante que o adaptador funciona com nod.js 22.x e 24.x\nPacotes GUI atualizados",
+                "nl": "Zorgt ervoor dat de adapter werkt met node.js 22.x en 24.x\nBijgewerkte GUI pakketten",
+                "fr": "S'assure que l'adaptateur fonctionne avec node.js 22.x et 24.x\nMise à jour des paquets GUI",
+                "it": "Assicura che l'adattatore funzioni con node.js 22.x e 24.x\nPacchetti GUI aggiornati",
+                "es": "Garantiza que el adaptador funcione con node.js 22.x y 24.x\nPaquetes GUI actualizados",
+                "pl": "Zapewnia, że adapter działa z node.js 22.x i 24.x\nAktualizacja pakietów GUI",
+                "uk": "Забезпечує, що адаптер працює з node.js 22.x і 24.x\nОновлені пакети GUI",
+                "zh-cn": "确保适配器与节点.js 22.x和24x工作\n更新的图形用户界面软件包"
+            },
+            "1.4.3": {
+                "en": "Fix REAL number parsing error",
+                "de": "Fehler bei REAL-Nummernkorrektur behoben",
+                "ru": "Исправление ошибки",
+                "pt": "Corrigir erro de análise de número real",
+                "nl": "Fix REAL number ontleden fout",
+                "fr": "Correction de l'erreur d'analyse du numéro REAL",
+                "it": "Risolvere l'errore di parsing del numero REAL",
+                "es": "Corrección número REAL pareando error",
+                "pl": "Naprawiono błąd przetwarzania numeru REAL",
+                "uk": "Виправлення помилки пароля",
+                "zh-cn": "修正真实数字解析错误"
+            },
+            "1.4.2": {
+                "en": "IMPORTANT: Node.js 16+ is required to run this version!\nUpdate dependencies to make adapter work with Node.js 20+",
+                "de": "WICHTIG: Node.js 16+ muss diese Version ausführen!\nAktualisieren Sie Abhängigkeiten, um Adapter mit Node.js 20+ zu arbeiten",
+                "ru": "ВАЖНО: Node.js 16+ требуется для запуска этой версии!\nОбновить зависимости, чтобы сделать адаптер работать с Node.js 20+",
+                "pt": "IMPORTANTE: Node.js 16+ é obrigado a executar esta versão!\nAtualizar dependências para fazer o trabalho do adaptador com Node.js 20+",
+                "nl": "Neede, 16 + moet deze versie leiden!\nUpdate afhankelijkheid om adapter te laten werken met Node",
+                "fr": "IMPORTANT: Node.js 16+ est nécessaire pour exécuter cette version!\nMettre à jour les dépendances pour faire fonctionner l'adaptateur avec Node.js 20+",
+                "it": "IMPORTANTE: Node.js 16+ è necessario eseguire questa versione!\nAggiornare le dipendenze per rendere il lavoro adattatore con Node.js 20+",
+                "es": "IMPORTANTE: Node.js 16+ es necesario para ejecutar esta versión!\nActualizar las dependencias para hacer que el adaptador funcione con Node.js 20+",
+                "pl": "IMPORTANT: Nodejs 16+ jest zobowiązany do uruchomienia tej wersji!\nW zależności od użytkowania pracy adapterowej Nodejs 20+",
+                "uk": "ВАЖЛИВО: Node.js 16+ потрібно запустити цю версію!\nОновлення залежності, щоб зробити роботу адаптера з Node.js 20+",
+                "zh-cn": "IMPORTANT:Nodejs 16+必须使用这个版本!\n适应工作的最新依赖性 20+"
+            },
+            "1.3.15": {
+                "en": "Updated GUI packages\nAdded ukrainian translation",
+                "de": "Aktualisierte GUI-Pakete\nHinzugefügt ukrainische Übersetzung",
+                "ru": "Обновленные пакеты GUI\nДобавлен украинский перевод",
+                "pt": "Pacotes de GUI atualizados\nAdicionado tradução ukrainian",
+                "nl": "Update GUI pakketten\nVertaling:",
+                "fr": "Paquets GUI mis à jour\nAjout de la traduction ukrainienne",
+                "it": "Pacchetti GUI aggiornati\nAggiunto ukrainian traduzione",
+                "es": "Paquetes GUI actualizados\nTraducción ucraniana",
+                "pl": "Pakiet GUI\nAddedukrainian translation",
+                "uk": "Оновлені пакети GUI\nДодано переклад українською мовою",
+                "zh-cn": "A. 最新古伊一揽子计划\n增加培训员"
+            },
+            "1.3.14": {
+                "en": "Updated GUI packages",
+                "de": "Aktualisierte GUI-Pakete",
+                "ru": "Обновленные пакеты GUI",
+                "pt": "Pacotes de GUI atualizados",
+                "nl": "Update GUI pakketten",
+                "fr": "Paquets GUI mis à jour",
+                "it": "Pacchetti GUI aggiornati",
+                "es": "Paquetes GUI actualizados",
+                "pl": "Pakiet GUI",
+                "zh-cn": "A. 最新古伊一揽子计划"
+            },
+            "1.3.13": {
+                "en": "Added preparations for ioBroker cloud\nMigrate GUI tu muiV5",
+                "de": "Weitere Präparate für ioBroker Cloud\nMigrate GUI tu muiV5",
+                "ru": "Добавлена подготовка к облаку ioBroker\nМиграт GUI tu muiV5",
+                "pt": "Adicionados preparativos para ioBroker cloud\nMigrar GUI tu muiV5",
+                "nl": "Voegde voorbereidingen voor ioBrokerwolk\nMigrant GUI tu muiV5",
+                "fr": "Préparations supplémentaires pour ioBroker cloud\nMigrate GUI tu muiV5",
+                "it": "Aggiunto preparazioni per ioBroker cloud\nMigrare GUI tu muiV5",
+                "es": "Preparativos adicionales para la nube de yoBroker\nMigrar GUI tu muiV5",
+                "pl": "Zamknięte przygotowania do ioBrokera\nGUI tu muiV5",
+                "zh-cn": "增 编\n米格尔·古伊拖拉·穆伊特·瓦5"
+            },
+            "1.3.12": {
+                "en": "Removed duplicated code\nImplemented S5TIME support (must be tested on real device)\n",
+                "de": "Doppelter Code entfernt\nImplementierte S5TIME-Unterstützung (muss auf einem realen Gerät getestet werden)\n",
+                "ru": "Удален повторяющийся код\nРеализована поддержка S5TIME (необходимо протестировать на реальном устройстве)\n",
+                "pt": "Código duplicado removido\nSuporte S5TIME implementado (deve ser testado em dispositivo real)\n",
+                "nl": "Dubbele code verwijderd\nGeïmplementeerde S5TIME-ondersteuning (moet worden getest op een echt apparaat)\n",
+                "fr": "Suppression du code en double\nPrise en charge S5TIME implémentée (doit être testé sur un appareil réel)\n",
+                "it": "Rimosso il codice duplicato\nSupporto S5TIME implementato (deve essere testato su dispositivo reale)\n",
+                "es": "Código duplicado eliminado\nCompatibilidad con S5TIME implementada (debe probarse en un dispositivo real)\n",
+                "pl": "Usunięto zduplikowany kod\nWdrożona obsługa S5TIME (musi być przetestowana na prawdziwym urządzeniu)\n",
+                "zh-cn": "删除了重复的代码\n实现 S5TIME 支持（必须在真实设备上测试）\n"
+            }
+        },
+        "title": "Siemens Simatic S7",
+        "titleLang": {
+            "en": "Siemens Simatic S7"
+        },
+        "desc": {
+            "en": "Siemens SIMATIC S7 connection via Snap7",
+            "de": "Siemens SIMATIC S7-Anbindung über Snap7",
+            "ru": "Подключение Siemens SIMATIC S7 через Snap7",
+            "pt": "Conexão Siemens SIMATIC S7 via Snap7",
+            "nl": "Siemens SIMATIC S7-verbinding via Snap7",
+            "fr": "Connexion Siemens SIMATIC S7 via Snap7",
+            "it": "Collegamento Siemens SIMATIC S7 tramite Snap7",
+            "es": "Conexión Siemens SIMATIC S7 a través de Snap7",
+            "pl": "Połączenie Siemens SIMATIC S7 za pomocą Snap7",
+            "zh-cn": "通过Snap7的西门子SIMATIC S7连接"
+        },
+        "authors": ["smiling_Jack <steffen.schorling@googlemail.com>", "bluefox <dogafox@gmail.com>"],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "mode": "daemon",
+        "loglevel": "info",
+        "icon": "s7.png",
+        "messagebox": true,
+        "docs": {
+            "en": "docs/en/s7.md",
+            "de": "docs/de/s7.md"
+        },
+        "keywords": ["S7", "SPS"],
+        "enabled": false,
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/s7.png",
+        "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
+        "type": "iot-systems",
+        "materialize": true,
+        "adminUI": {
+            "config": "materialize"
+        },
+        "connectionType": "local",
+        "dataSource": "poll",
+        "tier": 2,
+        "eraseOnUpload": true,
+        "compact": true,
+        "plugins": {
+            "sentry": {
+                "dsn": "https://d7dff297e602417087d181577d34482f@sentry.iobroker.net/113"
+            }
+        },
+        "licenseInformation": {
+            "type": "free",
+            "license": "MIT"
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=2.0.0"
+            }
+        ]
     },
-    "title": "Siemens Simatic S7",
-    "titleLang": {
-      "en": "Siemens Simatic S7"
-    },
-    "desc": {
-      "en": "Siemens SIMATIC S7 connection via Snap7",
-      "de": "Siemens SIMATIC S7-Anbindung über Snap7",
-      "ru": "Подключение Siemens SIMATIC S7 через Snap7",
-      "pt": "Conexão Siemens SIMATIC S7 via Snap7",
-      "nl": "Siemens SIMATIC S7-verbinding via Snap7",
-      "fr": "Connexion Siemens SIMATIC S7 via Snap7",
-      "it": "Collegamento Siemens SIMATIC S7 tramite Snap7",
-      "es": "Conexión Siemens SIMATIC S7 a través de Snap7",
-      "pl": "Połączenie Siemens SIMATIC S7 za pomocą Snap7",
-      "zh-cn": "通过Snap7的西门子SIMATIC S7连接"
-    },
-    "authors": [
-      "smiling_Jack <steffen.schorling@googlemail.com>",
-      "bluefox <dogafox@gmail.com>"
-    ],
-    "license": "MIT",
-    "platform": "Javascript/Node.js",
-    "mode": "daemon",
-    "loglevel": "info",
-    "icon": "s7.png",
-    "messagebox": true,
-    "docs": {
-      "en": "docs/en/s7.md",
-      "de": "docs/de/s7.md"
-    },
-    "keywords": [
-      "S7",
-      "SPS"
-    ],
-    "enabled": false,
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/s7.png",
-    "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
-    "type": "iot-systems",
-    "materialize": true,
-    "adminUI": {
-      "config": "materialize"
-    },
-    "connectionType": "local",
-    "dataSource": "poll",
-    "tier": 2,
-    "eraseOnUpload": true,
-    "compact": true,
-    "plugins": {
-      "sentry": {
-        "dsn": "https://d7dff297e602417087d181577d34482f@sentry.iobroker.net/113"
-      }
-    },
-    "licenseInformation": {
-      "type": "free",
-      "license": "MIT"
-    },
-    "dependencies": [
-      {
-        "js-controller": ">=2.0.0"
-      }
-    ]
-  },
-  "native": {
-    "params": {
-      "ip": "192.168.0.1",
-      "rack": "0",
-      "slot": "2",
-      "round": "2",
-      "poll": "1000",
-      "recon": "60000",
-      "pulsetime": "1000",
-      "localTSAP": 0,
-      "remoteTSAP": 0,
-      "timeFormat": "",
-      "timeOffset": 0
-    },
-    "inputs": [],
-    "outputs": [],
-    "markers": [],
-    "dbs": []
-  }
+    "native": {
+        "params": {
+            "ip": "192.168.0.1",
+            "rack": "0",
+            "slot": "2",
+            "round": "2",
+            "poll": "1000",
+            "recon": "60000",
+            "pulsetime": "1000",
+            "localTSAP": 0,
+            "remoteTSAP": 0,
+            "timeFormat": "",
+            "timeOffset": 0
+        },
+        "inputs": [],
+        "outputs": [],
+        "markers": [],
+        "dbs": []
+    }
 }

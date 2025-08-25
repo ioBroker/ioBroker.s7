@@ -1,5 +1,4 @@
-import { useState, useRef } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useRef } from 'react';
 
 import {
     Table,
@@ -18,20 +17,28 @@ import {
 
 import { Delete as DeleteIcon, Add as AddIcon, ImportExport } from '@mui/icons-material';
 
-import { I18n, Utils, IconExpert, TextWithIcon, SelectWithIcon } from '@iobroker/adapter-react-v5';
+import {
+    I18n,
+    IconExpert,
+    TextWithIcon,
+    SelectWithIcon,
+    type IobTheme,
+    type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
 import TsvDialog from './TsvDialog';
 import DeleteAllDialog from './DeleteAllDialog';
 import DeleteDialog from './DeleteDialog';
+import type { DBEntry } from '../types';
 
-const styles = {
+const styles: Record<string, any> = {
     tableHeader: {
         whiteSpace: 'nowrap',
         fontWeight: 'bold',
         fontSize: '80%',
         padding: '0px 8px',
     },
-    tableHeaderExtended: theme => ({
+    tableHeaderExtended: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark,
     }),
     tableCell: {
@@ -59,16 +66,36 @@ const styles = {
         cursor: 'pointer',
     },
 };
+interface DataCellProps {
+    sortedItem: { item: DBEntry; $index: number };
+    field: {
+        name: keyof DBEntry;
+        type: string;
+        title: string;
+        width?: number;
+        options?: { value: string; title: string }[];
+        expert?: boolean;
+        tooltip?: string;
+        sorted?: boolean;
+        formulaDisabled?: boolean;
+    };
+    editMode: boolean;
+    setEditMode: (editMode: boolean) => void;
+    changeParam: (index: number, param: string, value: any) => void;
+    getDisable: (index: number, param: string) => boolean;
+    rooms: Record<string, ioBroker.EnumObject>;
+    themeType: ThemeType;
+}
 
-const DataCell = props => {
+function DataCell(props: DataCellProps): React.JSX.Element {
     const sortedItem = props.sortedItem;
     const field = props.field;
     const editMode = props.editMode;
     const setEditMode = props.setEditMode;
 
-    const ref = useRef();
+    const ref = useRef<any>(null);
 
-    let item = sortedItem.item;
+    const item = sortedItem.item;
     let result;
     if (field.type === 'checkbox') {
         result = (
@@ -86,17 +113,20 @@ const DataCell = props => {
         if (!editMode) {
             result = (
                 <TextWithIcon
+                    lang={I18n.getLanguage()}
                     list={props.rooms}
-                    value={item[field.name]}
+                    value={item[field.name] as string}
                     themeType={props.themeType}
                 />
             );
         } else {
             result = (
                 <SelectWithIcon
+                    lang={I18n.getLanguage()}
+                    t={I18n.t}
                     list={props.rooms}
                     allowNone
-                    value={item[field.name]}
+                    value={item[field.name] as string}
                     dense
                     themeType={props.themeType}
                     inputProps={{ ref, style: styles.tableSelect }}
@@ -108,7 +138,7 @@ const DataCell = props => {
         }
     } else if (field.type === 'select') {
         if (!editMode) {
-            let option = field.options.find(option => option.value === item[field.name]);
+            const option = field.options?.find(option => option.value === item[field.name]);
             result = option ? option.title : '';
         } else {
             result = (
@@ -125,7 +155,7 @@ const DataCell = props => {
                     onChange={e => props.changeParam(sortedItem.$index, field.name, e.target.value)}
                     style={styles.tableSelectContainer}
                 >
-                    {field.options.map(option => (
+                    {field.options?.map(option => (
                         <MenuItem
                             key={option.value}
                             value={option.value}
@@ -171,29 +201,71 @@ const DataCell = props => {
             {result}
         </TableCell>
     );
-};
+}
 
-const RegisterTable = props => {
+interface RegisterTableProps {
+    data: DBEntry[];
+    fields: {
+        name: keyof DBEntry;
+        type: string;
+        title: string;
+        width?: number;
+        options?: { value: string; title: string }[];
+        expert?: boolean;
+        tooltip?: string;
+        sorted?: boolean;
+        formulaDisabled?: boolean;
+    }[];
+    addItem: () => void;
+    changeData: (data: DBEntry[]) => void;
+    deleteItem: (index: number) => void;
+    changeParam: (index: number, param: string, value: any) => void;
+    getDisable: (index: number, param: string) => boolean;
+    rooms: Record<string, ioBroker.EnumObject>;
+    formulaDisabled?: boolean;
+    getSortedData: (
+        data: DBEntry[],
+        orderBy: keyof DBEntry | '$index',
+        order: 'asc' | 'desc',
+    ) => { item: DBEntry; $index: number }[];
+    orderBy: keyof DBEntry | '$index';
+    order: 'asc' | 'desc';
+    onChangeOrder: (orderBy: keyof DBEntry | '$index', order: 'asc' | 'desc') => void;
+    themeType: ThemeType;
+    prefix: string;
+    showSnackbar: (
+        text: string | React.JSX.Element,
+        options?: { variant: 'error' | 'success' | 'info' | 'warning' },
+    ) => void;
+}
+export default function RegisterTable(props: RegisterTableProps): React.JSX.Element {
     const [tsvDialogOpen, setTsvDialogOpen] = useState(false);
-    const [editMode, setEditMode] = useState(parseInt(window.localStorage.getItem('Modbus.editMode'), 10) || 0);
+    const [editMode, setEditMode] = useState(parseInt(window.localStorage.getItem('Modbus.editMode') || '0', 10) || 0);
     const [extendedMode, setExtendedMode] = useState(window.localStorage.getItem('Modbus.extendedMode') === 'true');
-    const [deleteAllDialog, setDeleteAllDialog] = useState({
+    const [deleteAllDialog, setDeleteAllDialog] = useState<{
+        open: boolean;
+        action: null | (() => void);
+    }>({
         open: false,
         action: null,
     });
-    const [deleteDialog, setDeleteDialog] = useState({
+    const [deleteDialog, setDeleteDialog] = useState<{
+        open: boolean;
+        item: Record<string, any> | null;
+        action: null | ((result?: boolean) => void);
+    }>({
         open: false,
         item: null,
         action: null,
     });
 
-    let sortedData = props.getSortedData(props.data, props.orderBy, props.order);
+    const sortedData = props.getSortedData(props.data, props.orderBy, props.order);
 
     return (
         <div>
             <div>
                 <Tooltip title={I18n.t('Add line')}>
-                    <IconButton onClick={e => props.addItem()}>
+                    <IconButton onClick={() => props.addItem()}>
                         <AddIcon />
                     </IconButton>
                 </Tooltip>
@@ -233,7 +305,7 @@ const RegisterTable = props => {
                                     let indeterminate = false;
                                     let trueFound = false;
                                     let falseFound = false;
-                                    for (let k in props.data) {
+                                    for (const k in props.data) {
                                         if (props.data[k][field.name]) {
                                             isChecked = true;
                                             trueFound = true;
@@ -257,7 +329,7 @@ const RegisterTable = props => {
                                                 width: field.type === 'checkbox' ? 20 : field.width,
                                             }}
                                             sx={field.expert ? styles.tableHeaderExtended : undefined}
-                                            title={field.tooltip ? I18n.t(field.tooltip) : null}
+                                            title={field.tooltip ? I18n.t(field.tooltip) : undefined}
                                         >
                                             {field.type === 'checkbox' ? (
                                                 <Tooltip title={I18n.t('Change all')}>
@@ -265,9 +337,13 @@ const RegisterTable = props => {
                                                         indeterminate={indeterminate}
                                                         checked={isChecked}
                                                         onChange={e => {
-                                                            let newData = JSON.parse(JSON.stringify(props.data));
+                                                            const newData: DBEntry[] = JSON.parse(
+                                                                JSON.stringify(props.data),
+                                                            );
                                                             newData.forEach(
-                                                                item => (item[field.name] = e.target.checked),
+                                                                item =>
+                                                                    ((item as Record<string, any>)[field.name] =
+                                                                        e.target.checked),
                                                             );
                                                             props.changeData(newData);
                                                         }}
@@ -278,7 +354,7 @@ const RegisterTable = props => {
                                                 <TableSortLabel
                                                     active={field.name === props.orderBy}
                                                     direction={props.order}
-                                                    onClick={e => {
+                                                    onClick={() => {
                                                         const isAsc =
                                                             props.orderBy === field.name && props.order === 'asc';
                                                         props.onChangeOrder(field.name, isAsc ? 'desc' : 'asc');
@@ -297,7 +373,7 @@ const RegisterTable = props => {
                                     <div>
                                         <IconButton
                                             size="small"
-                                            onClick={e =>
+                                            onClick={() =>
                                                 setDeleteAllDialog({
                                                     open: true,
                                                     action: () => props.changeData([]),
@@ -327,13 +403,14 @@ const RegisterTable = props => {
                                     .map(field => (
                                         <DataCell
                                             key={field.name}
-                                            themeType={props.themeType}
                                             sortedItem={sortedItem}
                                             field={field}
                                             editMode={editMode === sortedItem.$index}
-                                            rooms={props.rooms}
                                             setEditMode={() => setEditMode(sortedItem.$index)}
-                                            {...props}
+                                            changeParam={props.changeParam}
+                                            getDisable={props.getDisable}
+                                            rooms={props.rooms}
+                                            themeType={props.themeType}
                                         />
                                     ))}
                                 <TableCell>
@@ -341,10 +418,13 @@ const RegisterTable = props => {
                                         <div>
                                             <IconButton
                                                 size="small"
-                                                onClick={e => {
-                                                    let lastTime =
+                                                onClick={() => {
+                                                    const lastTime =
                                                         window.sessionStorage.getItem('disableDeleteDialogs');
-                                                    if (lastTime && new Date() - new Date(lastTime) < 1000 * 60 * 5) {
+                                                    if (
+                                                        lastTime &&
+                                                        Date.now() - new Date(lastTime).getTime() < 1000 * 60 * 5
+                                                    ) {
                                                         props.deleteItem(sortedItem.$index);
                                                         return;
                                                     }
@@ -394,7 +474,7 @@ const RegisterTable = props => {
             ) : null}
             {deleteAllDialog.open ? (
                 <DeleteAllDialog
-                    action={deleteAllDialog.action}
+                    action={deleteAllDialog.action!}
                     onClose={() =>
                         setDeleteAllDialog({
                             open: false,
@@ -405,7 +485,7 @@ const RegisterTable = props => {
             ) : null}
             {deleteDialog.open ? (
                 <DeleteDialog
-                    action={deleteDialog.action}
+                    action={deleteDialog.action!}
                     onClose={() =>
                         setDeleteDialog({
                             open: false,
@@ -413,26 +493,9 @@ const RegisterTable = props => {
                             item: null,
                         })
                     }
-                    item={deleteDialog.item}
+                    item={deleteDialog.item!}
                 />
             ) : null}
         </div>
     );
-};
-
-RegisterTable.propTypes = {
-    data: PropTypes.array,
-    fields: PropTypes.array,
-    classes: PropTypes.object,
-    addItem: PropTypes.func,
-    changeData: PropTypes.func,
-    deleteItem: PropTypes.func,
-    rooms: PropTypes.object,
-    formulaDisabled: PropTypes.bool,
-    getSortedData: PropTypes.func,
-    themeType: PropTypes.string,
-    prefix: PropTypes.string,
-    showSnackbar: PropTypes.func,
-};
-
-export default RegisterTable;
+}
