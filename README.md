@@ -66,7 +66,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 1.5.0 (2025-08-25)
 * (Apollon77) Dependency updates
 * (bluefox) GUI was moved to vite
 
