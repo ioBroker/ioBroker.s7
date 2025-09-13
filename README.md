@@ -1,4 +1,4 @@
-![Logo](admin/S7.png)
+![Logo](admin/s7.png)
 # iobroker.s7
 
 ![Number of Installations](http://iobroker.live/badges/s7-installed.svg)
