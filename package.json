@@ -40,7 +40,7 @@
   "optionalDependencies": {},
   "dependencies": {
     "node-snap7": "^1.0.9",
-    "iconv-lite": "0.7.0",
+    "iconv-lite": "^0.7.0",
     "async": "^3.2.6",
     "@iobroker/adapter-core": "^3.3.2"
   },
@@ -51,9 +51,9 @@
     "@iobroker/build-tools": "^2.0.15",
     "@iobroker/eslint-config": "^2.1.0",
     "@iobroker/legacy-testing": "^2.0.2",
-    "axios": "^1.11.0",
+    "axios": "^1.12.2",
     "gulp": "^4.0.2",
-    "mocha": "^11.7.1",
+    "mocha": "^11.7.2",
     "chai": "^4.5.0",
     "nan": "2.23.0"
   },
