@@ -93,9 +93,18 @@
         "zh-cn": "增 编\n米格尔·古伊拖拉·穆伊特·瓦5"
       }
     },
-    "title": "Siemens Simatic S7",
     "titleLang": {
-      "en": "Siemens Simatic S7"
+      "en": "Siemens Simatic S7",
+      "de": "Siemens Simatic S7",
+      "ru": "Сименс Simatic S7",
+      "pt": "Siemens Simatic S7",
+      "nl": "Siemens Simatic S7",
+      "fr": "Siemens Simatic S7",
+      "it": "Siemens Simatic S7",
+      "es": "Siemens Simatic S7",
+      "pl": "Siemens Simatic S7",
+      "uk": "Siemens Simatic S7",
+      "zh-cn": "西门子Simatic S7"
     },
     "desc": {
       "en": "Siemens SIMATIC S7 connection via Snap7",
@@ -113,7 +122,6 @@
       "smiling_Jack <steffen.schorling@googlemail.com>",
       "bluefox <dogafox@gmail.com>"
     ],
-    "license": "MIT",
     "platform": "Javascript/Node.js",
     "mode": "daemon",
     "loglevel": "info",
@@ -131,7 +139,6 @@
     "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.s7/master/admin/s7.png",
     "readme": "https://github.com/ioBroker/ioBroker.s7/blob/master/README.md",
     "type": "iot-systems",
-    "materialize": true,
     "adminUI": {
       "config": "materialize"
     },
@@ -151,7 +158,12 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=2.0.0"
+        "js-controller": ">=5.0.19"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=6.17.14"
       }
     ]
   },
