@@ -160,7 +160,7 @@
       {
         "js-controller": ">=5.0.19"
       }
-    ];
+    ],
     "globalDependencies": [
       {
         "admin": ">=6.17.14"
