@@ -53,7 +53,7 @@
     "@iobroker/legacy-testing": "^2.0.2",
     "axios": "^1.13.1",
     "gulp": "^4.0.2",
-    "mocha": "^11.7.3",
+    "mocha": "^11.7.4",
     "chai": "^4.5.0",
     "nan": "2.23.0"
   },
