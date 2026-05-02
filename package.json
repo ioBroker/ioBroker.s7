@@ -35,7 +35,7 @@
     "url": "https://github.com/ioBroker/ioBroker.s7"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "optionalDependencies": {},
   "dependencies": {
