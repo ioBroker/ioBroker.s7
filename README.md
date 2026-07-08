@@ -68,6 +68,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 ## Changelog
 
 ### **WORK IN PROGRESS**
+- (ioBroker-Bot) Adapter requires js-controller >= 6.0.11 now.
 * IMPORTANT: js-controller 5+ is required to install this version!
 
 ### 1.5.0 (2025-08-25)
