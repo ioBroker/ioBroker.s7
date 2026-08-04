@@ -3,25 +3,23 @@
     "version": "1.5.0",
     "private": true,
     "dependencies": {
-        "@iobroker/adapter-react-v5": "^7.7.2",
-        "@iobroker/types": "^7.0.7",
-        "@mui/icons-material": "^6.5.0",
-        "@mui/material": "^6.5.0",
-        "@sentry/browser": "^10.11.0",
-        "@vitejs/plugin-react": "^4.5.0",
-        "react": "^18.3.1",
-        "react-ace": "^14.0.1",
-        "react-dom": "^18.3.1",
-        "react-dropzone": "^14.3.8",
+        "@iobroker/gui-components": "^10.0.12",
+        "@iobroker/types": "^7.2.2",
+        "@mui/icons-material": "^9.2.0",
+        "@mui/material": "^9.2.0",
+        "@sentry/browser": "^10.69.0",
+        "@vitejs/plugin-react": "^6.0.5",
+        "react": "^19.2.8",
+        "react-ace": "^15.0.0",
+        "react-dom": "^19.2.8",
+        "react-dropzone": "^20.0.0",
         "tsv-json": "^2.0.0"
     },
     "scripts": {
         "start": "vite",
         "build": "vite build",
-        "lint": "eslint --fix --ext .js,.jsx src"
-    },
-    "eslintConfig": {
-        "extends": "react-app"
+        "lint": "eslint -c eslint.config.mjs src",
+        "check:ts": "tsc --noEmit -p tsconfig.json"
     },
     "homepage": ".",
     "browserslist": [

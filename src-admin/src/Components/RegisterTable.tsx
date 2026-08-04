@@ -24,7 +24,7 @@ import {
     SelectWithIcon,
     type IobTheme,
     type ThemeType,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import TsvDialog from './TsvDialog';
 import DeleteAllDialog from './DeleteAllDialog';
@@ -81,8 +81,8 @@ interface DataCellProps {
     };
     editMode: boolean;
     setEditMode: (editMode: boolean) => void;
-    changeParam: (index: number, param: string, value: any) => void;
-    getDisable: (index: number, param: string) => boolean;
+    changeParam: (index: number, param: keyof DBEntry, value: any) => void;
+    getDisable: (index: number, param: keyof DBEntry) => boolean;
     rooms: Record<string, ioBroker.EnumObject>;
     themeType: ThemeType;
 }
@@ -219,8 +219,8 @@ interface RegisterTableProps {
     addItem: () => void;
     changeData: (data: DBEntry[]) => void;
     deleteItem: (index: number) => void;
-    changeParam: (index: number, param: string, value: any) => void;
-    getDisable: (index: number, param: string) => boolean;
+    changeParam: (index: number, param: keyof DBEntry, value: any) => void;
+    getDisable: (index: number, param: keyof DBEntry) => boolean;
     rooms: Record<string, ioBroker.EnumObject>;
     formulaDisabled?: boolean;
     getSortedData: (

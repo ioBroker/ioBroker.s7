@@ -1,0 +1,12 @@
+// Specialized tsconfig, which compiles the backend from `src` into `build-backend`
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "noEmit": false,
+        "declaration": false,
+        "rootDir": "./src",
+        "outDir": "./build-backend"
+    },
+    "include": ["src/**/*.ts", "src/**/*.d.ts"],
+    "exclude": ["build-backend/**", "node_modules/**", "src-admin/**", "admin/**", "test/**"]
+}

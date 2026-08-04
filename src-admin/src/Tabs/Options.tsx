@@ -13,11 +13,12 @@ import {
     InputLabel,
     InputAdornment,
     Grid,
+    Stack,
     Paper,
     Box,
 } from '@mui/material';
 
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/gui-components';
 
 import connectionInputs from '../data/optionsConnection.json';
 import generalInputs from '../data/optionsGeneral.json';
@@ -166,19 +167,14 @@ export default class Options extends Component<OptionsProps> {
                 >
                     {I18n.t(title)}
                 </Typography>
-                <Grid
-                    container
-                    spacing={2}
-                    direction="column"
-                >
+                <Stack spacing={2}>
                     {inputs.map(input => {
                         if (!this.inputDisplay(input)) {
                             return null;
                         }
                         if (input.type === 'checkbox') {
                             return (
-                                <Grid
-                                    item
+                                <Box
                                     style={styles.optionContainer}
                                     key={input.name}
                                 >
@@ -194,12 +190,11 @@ export default class Options extends Component<OptionsProps> {
                                         }
                                     />{' '}
                                     {input.dimension ? I18n.t(input.dimension) : null}
-                                </Grid>
+                                </Box>
                             );
                         } else if (input.type === 'select') {
                             return (
-                                <Grid
-                                    item
+                                <Box
                                     style={styles.optionContainer}
                                     key={input.name}
                                 >
@@ -224,7 +219,7 @@ export default class Options extends Component<OptionsProps> {
                                         </Select>
                                     </FormControl>{' '}
                                     {input.dimension ? I18n.t(input.dimension) : null}
-                                </Grid>
+                                </Box>
                             );
                         } else if (input.type === 'hex') {
                             const value = parseInt(this.getValue(input.name) as string)
@@ -234,8 +229,7 @@ export default class Options extends Component<OptionsProps> {
                             const bottom = value & 0xff;
 
                             return (
-                                <Grid
-                                    item
+                                <Box
                                     style={styles.optionContainer}
                                     key={input.name}
                                 >
@@ -268,12 +262,11 @@ export default class Options extends Component<OptionsProps> {
                                             this.changeParam(input.name, (top << 8) | parseInt(e.target.value, 16));
                                         }}
                                     />
-                                </Grid>
+                                </Box>
                             );
                         }
                         return (
-                            <Grid
-                                item
+                            <Box
                                 style={styles.optionContainer}
                                 key={input.name}
                             >
@@ -295,10 +288,10 @@ export default class Options extends Component<OptionsProps> {
                                     }}
                                     onChange={e => this.changeParam(input.name, e.target.value)}
                                 />
-                            </Grid>
+                            </Box>
                         );
                     })}
-                </Grid>
+                </Stack>
             </Paper>
         );
     }
@@ -339,18 +332,14 @@ export default class Options extends Component<OptionsProps> {
                     spacing={2}
                 >
                     <Grid
-                        item
-                        xs={12}
-                        md={6}
+                        size={{ xs: 12, md: 6 }}
                         style={styles.optionsGrid}
                     >
                         {this.getInputsBlock(connectionInputs as InputsType[], 'PLC Connection')}
                         {this.getImportsBlock()}
                     </Grid>
                     <Grid
-                        item
-                        xs={12}
-                        md={6}
+                        size={{ xs: 12, md: 6 }}
                         style={styles.optionsGrid}
                     >
                         {this.getInputsBlock(generalInputs as InputsType[], 'General')}
@@ -429,7 +418,7 @@ export default class Options extends Component<OptionsProps> {
                 //                if (typ == 'DB')data.dbs.push(d);
             });
 
-            ['inputs', 'outputs', 'markers'].forEach((table: 'inputs' | 'outputs' | 'markers'): void => {
+            (['inputs', 'outputs', 'markers'] as const).forEach((table): void => {
                 native[table] = localData[table];
             });
             this.props.changeNative(native);

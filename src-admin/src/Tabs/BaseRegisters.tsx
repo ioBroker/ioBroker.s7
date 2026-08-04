@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { Paper } from '@mui/material';
 
-import { type AdminConnection, I18n, type ThemeType } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type ThemeType } from '@iobroker/gui-components';
 
 import roles from '../data/roles.json';
 import types from '../data/types.json';

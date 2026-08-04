@@ -4,7 +4,7 @@
     "compilerOptions": {
         "noEmit": true,
         "allowJs": true,
-        "checkJs": true,
+        "checkJs": false,
 
         "skipLibCheck": true, // Don't report errors in 3rd party definitions
         "noEmitOnError": true,
@@ -22,9 +22,6 @@
         "useUnknownInCatchVariables": false,
         "types": ["node", "@iobroker/types"]
     },
-    "include": [
-        "src-admin/**/*.*",
-        "src-admin/**/*.d.*"
-    ],
-    "exclude": ["build/**", "node_modules/**", "src-admin/**"]
+    "include": ["src/**/*.ts", "src/**/*.d.ts"],
+    "exclude": ["build-backend/**", "node_modules/**", "src-admin/**", "admin/**", "test/**"]
 }

@@ -69,6 +69,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 
 ### **WORK IN PROGRESS**
 * IMPORTANT: js-controller 5+ is required to install this version!
+* IMPORTANT: Migrated to TypeScript and Vite for GUI
 
 ### 1.5.0 (2025-08-25)
 * (Apollon77) Dependency updates
@@ -281,7 +282,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2025 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014-2016 smiling_Jack <steffen.schorling@googlemail.com>
 

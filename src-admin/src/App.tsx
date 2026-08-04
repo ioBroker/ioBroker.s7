@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
-import { AppBar, Tabs, Tab, Paper, Typography } from '@mui/material';
+import { AppBar, Tabs, Tab, Paper, Typography, CssBaseline } from '@mui/material';
 
 import {
     I18n,
@@ -10,7 +10,8 @@ import {
     type GenericAppProps,
     type GenericAppState,
     type IobTheme,
-} from '@iobroker/adapter-react-v5';
+    ScrollbarStyles,
+} from '@iobroker/gui-components';
 
 import TabOptions from './Tabs/Options';
 import TabInputs from './Tabs/Inputs';
@@ -144,6 +145,7 @@ export default class App extends GenericApp<GenericAppProps, AppState> {
             return (
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
+                        <CssBaseline />
                         <Loader themeType={this.state.themeType} />
                     </ThemeProvider>
                 </StyledEngineProvider>
@@ -153,6 +155,8 @@ export default class App extends GenericApp<GenericAppProps, AppState> {
         return (
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.state.theme}>
+                    <CssBaseline />
+                    <ScrollbarStyles theme={this.state.theme} />
                     {this.state.snackbar ? (
                         <div
                             style={{

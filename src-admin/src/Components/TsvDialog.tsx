@@ -7,7 +7,7 @@ import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, B
 
 import { Clear as ClearIcon, Save as SaveIcon, FileCopy as FileCopyIcon } from '@mui/icons-material';
 
-import { Utils, I18n } from '@iobroker/adapter-react-v5';
+import { Utils, I18n } from '@iobroker/gui-components';
 import type { DBEntry } from '../types';
 
 const styles: Record<string, React.CSSProperties> = {
