@@ -8,7 +8,7 @@
 
         "skipLibCheck": true, // Don't report errors in 3rd party definitions
         "noEmitOnError": true,
-        "outDir": "./build-backend",
+        "outDir": "./build",
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "module": "Node16",
