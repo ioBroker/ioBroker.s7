@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "s7",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "news": {
+      "3.0.0": {
+        "en": "IMPORTANT: js-controller 5+ is required to install this version!\nIMPORTANT: Migrated to TypeScript and Vite for GUI",
+        "de": "WICHTIG: Für die Installation dieser Version wird js-controller 5+ benötigt!\nWICHTIG: Migration zu TypeScript und Vite für die grafische Benutzeroberfläche.",
+        "ru": "ВАЖНО: для установки этой версии требуется js-controller 5+!\nВАЖНО: Перешёл на TypeScript и Vite для графического интерфейса.",
+        "pt": "IMPORTANTE: É necessário ter o js-controller versão 5 ou superior para instalar esta versão!\nIMPORTANTE: Migração para TypeScript e Vite para a interface gráfica.",
+        "nl": "BELANGRIJK: js-controller 5 of hoger is vereist om deze versie te installeren!\nBELANGRIJK: Overgestapt op TypeScript en Vite voor de grafische gebruikersinterface (GUI).",
+        "fr": "IMPORTANT : js-controller 5+ est requis pour installer cette version !\nIMPORTANT : Migration vers TypeScript et Vite pour l’interface graphique",
+        "it": "IMPORTANTE: per installare questa versione è necessario js-controller 5 o versioni successive!\nIMPORTANTE: Migrazione a TypeScript e Vite per l'interfaccia grafica",
+        "es": "IMPORTANTE: ¡Para instalar esta versión se requiere js-controller 5 o superior!\nIMPORTANTE: Se migró a TypeScript y Vite para la interfaz gráfica de usuario.",
+        "pl": "WAŻNE: do zainstalowania tej wersji wymagany jest js-controller 5+!\nWAŻNE: Migracja do TypeScript i Vite dla GUI",
+        "uk": "ВАЖЛИВО: для встановлення цієї версії потрібен js-controller 5+!\nВАЖЛИВО: Перенесено на TypeScript та Vite для графічного інтерфейсу",
+        "zh-cn": "重要提示：安装此版本需要 js-controller 5+！\n重要提示：已迁移至 TypeScript 和 Vite 实现 GUI"
+      },
       "1.5.0": {
         "en": "Dependency updates\nGUI was moved to vite",
         "de": "Änderung der Abhängigkeit\nGUI wurde nach Vite bewegt",
