@@ -11,6 +11,8 @@ let onStateChanged = null;
 let sendToID = 1;
 const Server = require('./lib/s7Server.js');
 let server;
+/** false if the S7 server could not bind the ISO-TSAP port 102 */
+let serverStarted = false;
 
 const adapterShortName = setup.adapterName.substring(setup.adapterName.indexOf('.') + 1);
 const runningMode = require('../io-package.json').common.mode;
@@ -152,14 +154,17 @@ describe(`Test ${adapterShortName} adapter`, function () {
             //config.native.dbtype   = 'sqlite';
 
             await setup.setAdapterConfig(config.common, config.native);
-            //if (/^win/.test(process.platform) || /^darwin/.test(process.platform)) {
             let bindIp = '127.0.0.1';
             if (/^darwin/.test(process.platform)) {
                 bindIp = '0.0.0.0';
             }
             server = new Server();
-            server.start(bindIp);
-            //}
+            serverStarted = server.start(bindIp);
+            if (!serverStarted) {
+                console.warn(
+                    'Cannot start the S7 server: it listens on the ISO-TSAP port 102 and binding a port below 1024 requires root rights. All tests, which require a connection, will be skipped.',
+                );
+            }
 
             setup.startController(
                 true,
@@ -196,33 +201,35 @@ describe(`Test ${adapterShortName} adapter`, function () {
     });
 
     it(`Test ${adapterShortName} adapter: Read words`, function (done) {
-        this.timeout(10000);
-        // Linux required sudo for ports < 1000. S7 Server runs on TCP 102
-        if (server) {
-            setTimeout(() => {
-                states.getState(`${adapterShortName}.0.DBs.DB1.10`, (err, state) => {
-                    //s7.0.DBs.DB1.10
-                    assert.strictEqual(state.val, 0x0a0b);
-                    states.getState(`${adapterShortName}.0.DBs.DB1.12`, (err, state) => {
-                        //s7.0.DBs.DB1.10
-                        assert.strictEqual(state.val, 0x0c0d);
-
-                        states.getState(`${adapterShortName}.0.DBs.DB1.14_0`, (err, state) => {
-                            //s7.0.DBs.DB1.10
-                            assert.strictEqual(state.val, false);
-
-                            states.getState(`${adapterShortName}.0.DBs.DB1.14_1`, (err, state) => {
-                                //s7.0.DBs.DB1.10
-                                assert.strictEqual(state.val, true);
-                                done();
-                            });
-                        });
-                    });
-                });
-            }, 1000);
-        } else {
-            done();
+        this.timeout(15000);
+        // The S7 server runs on TCP 102 and Linux/macOS require root rights for ports < 1024
+        if (!serverStarted) {
+            console.log('S7 server is not running => skip the test');
+            this.skip();
+            return;
         }
+
+        // The values are the offsets of the DB, which the test server fills with `db1[i] = i`
+        const expectedValues = [
+            [`${adapterShortName}.0.DBs.DB1.10`, 0x0a0b],
+            [`${adapterShortName}.0.DBs.DB1.12`, 0x0c0d],
+            [`${adapterShortName}.0.DBs.DB1.14_0`, false],
+            [`${adapterShortName}.0.DBs.DB1.14_1`, true],
+        ];
+
+        const checkNext = i => {
+            if (i >= expectedValues.length) {
+                done();
+                return;
+            }
+            const [id, value] = expectedValues[i];
+            checkValueOfState(id, value, err => {
+                assert.ok(!err, `${id} must be "${value}": ${err}`);
+                checkNext(i + 1);
+            });
+        };
+
+        checkNext(0);
     });
 
     /**/

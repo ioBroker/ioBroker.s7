@@ -17,7 +17,7 @@ function Server() {
     }.bind(this));
 
     // Create a new Buffer and register it to the server as DB1
-    var db1 = new Buffer(1000);
+    var db1 = Buffer.alloc(1000);
     for (var i = 0; i < db1.length; i++) {
         db1[i] = i;
     }
@@ -39,15 +39,29 @@ function Server() {
     }
     */
 
+    /**
+     * Start the server
+     *
+     * The server listens on the ISO-TSAP port 102. Binding a port below 1024 requires root rights
+     * on Linux and macOS, so the start can fail. In that case `false` is returned and the caller
+     * has to skip all tests, which require a connection.
+     *
+     * @param bind IP address to bind to
+     * @returns true if the server is listening
+     */
     this.start = function (bind) {
         this.s7server.RegisterArea(this.s7server.srvAreaDB, 1, db1);
         //this.s7server.RegisterArea(this.s7server.srvAreaDB, 2, db2);
-        // Start the server
-        this.s7server.StartTo(bind || '127.0.0.1');
+        // Start the server. `StartTo` is blocking without callback and returns false on error
+        this.started = this.s7server.StartTo(bind || '127.0.0.1') !== false;
+        return this.started;
     }.bind(this);
 
     this.stop = function () {
-        this.s7server.Stop();
+        if (this.started) {
+            this.s7server.Stop();
+            this.started = false;
+        }
         this.s7server.UnregisterArea(this.s7server.srvAreaDB, 1);
         //this.s7server.UnregisterArea(this.s7server.srvAreaDB, 2);
     }.bind(this);

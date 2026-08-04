@@ -43,11 +43,19 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     strategy:
+      # Do not cancel the other OSes if one of them fails
+      fail-fast: false
       matrix:
         node-version: [22.x, 24.x]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
+      # The S7 test server listens on the ISO-TSAP port 102, which normally requires root rights.
+      # Without this the read test is skipped. macOS has no such setting, there it stays skipped.
+      - name: Allow binding of the ISO-TSAP port 102
+        if: startsWith(matrix.os, 'ubuntu')
+        run: sudo sysctl -w net.ipv4.ip_unprivileged_port_start=102 || true
+
       - uses: ioBroker/testing-action-adapter@v1.1.2
         with:
           install-command: 'npm i && cd src-admin && npm i -f'
