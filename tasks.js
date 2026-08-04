@@ -10,7 +10,7 @@ const { buildReact, copyFiles, deleteFoldersRecursive, npmInstall, patchHtmlFile
 
 function clean() {
     deleteFoldersRecursive(`${__dirname}/admin`, ['s7.png']);
-    deleteFoldersRecursive(`${__dirname}/build-backend`);
+    deleteFoldersRecursive(`${__dirname}/build`);
 }
 
 function buildBackend() {

@@ -11,6 +11,7 @@
         "outDir": "./build",
         "esModuleInterop": true,
         "resolveJsonModule": true,
+        "rootDir": "./src",
         "module": "Node16",
         "moduleResolution": "node16",
         "sourceMap": true, // required for debug
@@ -23,5 +24,5 @@
         "types": ["node", "@iobroker/types"]
     },
     "include": ["src/**/*.ts", "src/**/*.d.ts"],
-    "exclude": ["build-backend/**", "node_modules/**", "src-admin/**", "admin/**", "test/**"]
+    "exclude": ["build/**", "node_modules/**", "src-admin/**", "admin/**", "test/**"]
 }

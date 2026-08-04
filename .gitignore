@@ -5,7 +5,7 @@ tmp
 admin/i18n/flat.txt
 admin/i18n/*/flat.txt
 iob_npm.done
-/build-backend
+/build
 /src-admin/build
 /src-admin/node_modules
 /src-admin/.eslintcache
