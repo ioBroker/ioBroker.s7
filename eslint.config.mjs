@@ -26,6 +26,8 @@ export default [
             'admin/**/*',
             'docs/**/*',
             'test/**/*',
+            // js-controller scaffold, created by the adapter tests
+            'tmp/**/*',
             'src-admin/**/*',
             'tasks.js',
             '**/*.mjs',

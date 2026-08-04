@@ -53,6 +53,9 @@ jobs:
           install-command: 'npm i && cd src-admin && npm i -f'
           os: ${{ matrix.os }}
           node-version: ${{ matrix.node-version }}
+          # `build-backend` is not committed, but the tests install the packed adapter
+          build: true
+          build-command: 'npm run build:backend'
           screenshots-path: 'tmp/screenshots/**/*.png'
 
   # Deploys the final package to NPM

@@ -72,6 +72,7 @@
     "test:integration": "mocha --exit",
     "build": "node tasks",
     "build:backend": "tsc -p tsconfig.build.json",
+    "prepack": "npm run build:backend",
     "build:gui": "node tasks --1-npm && node tasks --2-build && node tasks --3-copy && node tasks --4-patch",
     "check:ts": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint -c eslint.config.mjs .",
