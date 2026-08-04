@@ -51,14 +51,21 @@ const styles: Record<string, React.CSSProperties> = {
     },
     fileInput: {
         textAlign: 'center',
-        display: 'inline-block',
-        height: 80,
+        // center the text and let the box grow if the translation needs more than one line
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 80,
         width: '100%',
         minWidth: 200,
+        boxSizing: 'border-box',
         border: '2px dashed #777',
         borderRadius: 10,
         marginTop: 12,
-        padding: 4,
+        padding: 8,
+    },
+    fileInputText: {
+        margin: 0,
     },
 };
 interface FileInputProps {
@@ -82,7 +89,7 @@ function FileInput(props: FileInputProps): React.JSX.Element {
 
     return (
         <FormControl
-            style={{ padding: 3, paddingRight: 40, width: '100%' }}
+            style={{ padding: 3, width: '100%' }}
             variant="standard"
         >
             <Typography
@@ -99,11 +106,11 @@ function FileInput(props: FileInputProps): React.JSX.Element {
                 }}
             >
                 <input {...getInputProps()} />
-                {isDragActive ? (
-                    <p>{I18n.t('Drop the file here ...')}</p>
-                ) : (
-                    <p>{I18n.t(`Drag 'n' drop file here, or click to select file`)}</p>
-                )}
+                <p style={styles.fileInputText}>
+                    {isDragActive
+                        ? I18n.t('Drop the file here ...')
+                        : I18n.t(`Drag 'n' drop file here, or click to select file`)}
+                </p>
             </div>
         </FormControl>
     );
@@ -306,7 +313,7 @@ export default class Options extends Component<OptionsProps> {
                 >
                     {I18n.t('Import')}
                 </Typography>
-                <Box style={{ display: 'flex' }}>
+                <Box style={{ display: 'flex', gap: 16 }}>
                     <FileInput
                         onChange={this.loadSymbols}
                         label="Load symbols"

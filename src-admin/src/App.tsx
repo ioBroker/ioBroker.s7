@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
-import { AppBar, Tabs, Tab, Paper, Typography, CssBaseline } from '@mui/material';
+import { AppBar, Tabs, Tab, Paper, Typography, CssBaseline, Box } from '@mui/material';
 
 import {
     I18n,
@@ -34,14 +34,18 @@ import type { S7AdapterConfig } from './types';
 
 const styles: Record<string, any> = {
     root: {},
+    app: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        // the save/close toolbar is positioned absolutely, it must be anchored on this container
+        position: 'relative',
+    },
     tabContent: {
         padding: 10,
-        height: 'calc(100% - 64px - 48px - 20px)',
-        overflow: 'auto',
-    },
-    tabContentIFrame: {
-        padding: 10,
-        height: 'calc(100% - 64px - 48px - 20px - 38px)',
+        // take all the space between the tabs and the save toolbar
+        flex: '1 1 auto',
+        minHeight: 0,
         overflow: 'auto',
     },
     tab: {
@@ -179,11 +183,15 @@ export default class App extends GenericApp<GenericAppProps, AppState> {
                     <div
                         className="App"
                         style={{
+                            ...styles.app,
                             background: this.state.theme.palette.background.default,
                             color: this.state.theme.palette.text.primary,
                         }}
                     >
-                        <AppBar position="static">
+                        <AppBar
+                            position="static"
+                            sx={{ flex: '0 0 auto' }}
+                        >
                             <Tabs
                                 value={this.getSelectedTab()}
                                 onChange={(e, index) => this.selectTab(tabs[index].name, index)}
@@ -211,7 +219,7 @@ export default class App extends GenericApp<GenericAppProps, AppState> {
                                 ))}
                             </Tabs>
                         </AppBar>
-                        <div style={this.isIFrame ? styles.tabContentIFrame : styles.tabContent}>
+                        <div style={styles.tabContent}>
                             {tabs.map((tab, index) => {
                                 const TabComponent = tab.component;
                                 if (this.state.selectedTab) {
@@ -261,6 +269,20 @@ export default class App extends GenericApp<GenericAppProps, AppState> {
                                 );
                             })}
                         </div>
+                        {this.state.bottomButtons ? (
+                            // Spacer for the absolutely positioned save/close toolbar, so the tab
+                            // content can be scrolled completely. `mixins.toolbar` is the same
+                            // height the toolbar itself uses. The 38px offset must use exactly the
+                            // condition of `SaveCloseButtons`, which only shifts the toolbar up in
+                            // the old admin (without `newReact`).
+                            <Box
+                                sx={theme => ({
+                                    flex: '0 0 auto',
+                                    ...theme.mixins.toolbar,
+                                    marginBottom: !this.newReact && this.isIFrame ? '38px' : 0,
+                                })}
+                            />
+                        ) : null}
                         {this.renderError()}
                         {this.renderSaveCloseButtons()}
                     </div>
