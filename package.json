@@ -67,7 +67,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --exit",
+    "test": "mocha --exit",
+    "test:package": "mocha test/testPackageFiles.js --exit",
+    "test:integration": "mocha --exit",
     "build": "node tasks",
     "build:backend": "tsc -p tsconfig.build.json",
     "build:gui": "node tasks --1-npm && node tasks --2-build && node tasks --3-copy && node tasks --4-patch",
