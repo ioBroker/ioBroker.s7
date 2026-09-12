@@ -46,7 +46,7 @@ jobs:
       # Do not cancel the other OSes if one of them fails
       fail-fast: false
       matrix:
-        node-version: [22.x, 24.x]
+        node-version: [22.x, 24.x, 26.x]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
