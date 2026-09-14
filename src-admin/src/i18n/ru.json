@@ -8,7 +8,7 @@
     "Enable polling of data point": "Постоянный опрос переменной в каждом цикле",
     "Export": "Экспорт",
     "Export to CSV": "Экспорт в CSV",
-    "General": "Основное",
+    "General": "Основные",
     "Import": "Ипмортировать",
     "Import DB file": "Ипморт DB файлов",
     "Import from CSV": "Импорт из CSV",
