@@ -7,7 +7,7 @@
     "Are you sure to delete item with address \"%s\"?": "Ви впевнені, що хочете видалити елемент з адресою \"%s\"?",
     "Cancel": "Скасувати",
     "Change all": "Змінити все",
-    "Close": "Закрити",
+    "Close": "Закрыть",
     "Connection type: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic": "Тип підключення: 0x1 - PG, 0x2 - OP, 0x3-0x10 - S7 Basic",
     "Copy to clipboard": "Копіювати в буфер обміну",
     "DBs": "БД",
