@@ -48,7 +48,7 @@
     "@alcalzone/release-script-plugin-license": "^5.2.2",
     "@iobroker/build-tools": "^3.0.1",
     "@iobroker/eslint-config": "^2.3.4",
-    "@iobroker/legacy-testing": "^3.0.0",
+    "@iobroker/legacy-testing": "^3.0.1",
     "@types/node": "^25.2.0",
     "axios": "^1.19.0",
     "nan": "2.28.0",
