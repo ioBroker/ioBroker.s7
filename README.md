@@ -278,6 +278,8 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 ### 0.0.6
 * Bugfix start file
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 The MIT License (MIT)
 
