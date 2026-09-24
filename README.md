@@ -66,7 +66,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.0.2 (2026-09-24)
 * (@GermanBluefox) Updated packages
 * (@GermanBluefox) Because of snap7 no Node 26 support
 

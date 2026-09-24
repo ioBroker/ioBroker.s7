@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "s7",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "news": {
+      "3.0.2": {
+        "en": "Updated packages\nBecause of snap7 no Node 26 support",
+        "de": "Neue Pakete\nWegen Snap7 kein Node 26 Support",
+        "ru": "Обновленные пакеты\nИз-за snap7 нет поддержки Node 26",
+        "pt": "Pacotes novos\nDevido ao snap7 sem suporte ao Node 26",
+        "nl": "Bijgewerkte pakketten\nVanwege snap7 geen ondersteuning voor Node 26",
+        "fr": "Packages mis à jour\nSnap7 ne supporte pas Node 26",
+        "it": "Pacchi nuovi\nGrazie a snap7 non supporta Node 26",
+        "es": "Paquetes nuevos\nPor Snap7, no admite el nodo 26",
+        "pl": "Zaktualizowane pakiety\nZe względu na snap7 brak obsługi Node 26",
+        "uk": "Оновлені пакети\nЧерез snap7 немає підтримки Node 26",
+        "zh-cn": "更新的软件包\n由于 snap7 不支持节点 26"
+      },
       "3.0.0": {
         "en": "IMPORTANT: js-controller 5+ is required to install this version!\nIMPORTANT: Migrated to TypeScript and Vite for GUI",
         "de": "WICHTIG: Für die Installation dieser Version wird js-controller 5+ benötigt!\nWICHTIG: Migration zu TypeScript und Vite für die grafische Benutzeroberfläche.",
