@@ -66,6 +66,9 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Updated packages
+
 ### 3.0.0 (2026-08-04)
 * IMPORTANT: js-controller 5+ is required to install this version!
 * IMPORTANT: Migrated to TypeScript and Vite for GUI
