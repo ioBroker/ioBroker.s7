@@ -66,8 +66,9 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### 3.0.1 (2026-09-24)
+### **WORK IN PROGRESS**
 * (@GermanBluefox) Updated packages
+* (@GermanBluefox) Because of snap7 no Node 26 support
 
 ### 3.0.0 (2026-08-04)
 * IMPORTANT: js-controller 5+ is required to install this version!
