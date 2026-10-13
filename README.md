@@ -66,6 +66,10 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) IMPORTANT: js-controller 6.0.11+ and admin 7.6.17+ are required
+* (@GermanBluefox) Set `nogit` flag as the build directory is not committed
+
 ### 3.0.2 (2026-09-24)
 * (@GermanBluefox) Updated packages
 * (@GermanBluefox) Because of snap7 no Node 26 support
@@ -90,8 +94,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>,
-
+Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>  
 Copyright (c) 2014-2016 smiling_Jack <steffen.schorling@googlemail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

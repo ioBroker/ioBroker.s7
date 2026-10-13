@@ -149,6 +149,7 @@
     "tier": 2,
     "eraseOnUpload": true,
     "compact": true,
+    "nogit": true,
     "plugins": {
       "sentry": {
         "dsn": "https://d7dff297e602417087d181577d34482f@sentry.iobroker.net/113"
@@ -160,12 +161,12 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=5.0.19"
+        "js-controller": ">=6.0.11"
       }
     ],
     "globalDependencies": [
       {
-        "admin": ">=6.17.14"
+        "admin": ">=7.6.17"
       }
     ]
   },
