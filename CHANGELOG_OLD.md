@@ -1,4 +1,7 @@
 # Older changes
+## 1.4.3 (2024-02-17)
+* (Bettman66) Fix REAL number parsing error
+
 ## 1.4.2 (2023-12-04)
 * IMPORTANT: Node.js 16+ is required to run this version!
 * (Apollon77) Update dependencies to make adapter work with Node.js 20+

@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "s7",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "news": {
+      "3.0.3": {
+        "en": "IMPORTANT: js-controller 6.0.11+ and admin 7.6.17+ are required\nSet `nogit` flag as the build directory is not committed",
+        "de": "WICHTIG: js-controller 6.0.11+ und admin 7.6.17+ sind nötig\nFlag `nogit`, da das Build-Verzeichnis nicht aktiviert ist",
+        "ru": "ВАЖНО: требуются js-контроллер 6.0.11+ и admin 7.6.17+\nУстановите флаг `nogit`, так как каталог сборки не зафиксирован",
+        "pt": "IMPORTANTE: requer js-controller 6.0.11+ e admin 7.6.17+\nDefina `nogit`, pois a pasta não está confirmada",
+        "nl": "BELANGRIJK: js-controller 6.0.11+ en admin 7.6.17+ zijn vereist\nStel de vlag 'nogit' in omdat de buildmap niet is vastgelegd",
+        "fr": "IMPORTANT : js-controller 6.0.11+ et admin 7.6.17+ sont requis\nDéfinissez l'indicateur « nogit » car le build n'est pas validé",
+        "it": "IMPORTANTE: servono js-controller 6.0.11+ e admin 7.6.17+\nImposta `nogit` perché la build non è salvata",
+        "es": "IMPORTANTE: se necesitan js-controller 6.0.11+ y admin 7.6.17+\nDefina la marca «nogit» si el directorio de compilación no está",
+        "pl": "WAŻNE: js-controller 6.0.11+ i admin 7.6.17+ są wymagane\nUstaw flagę `nogit`, ponieważ katalog kompilacji nie jest zatwierdzony",
+        "uk": "ВАЖЛИВО: потрібні js-контролер 6.0.11+ та адміністратор 7.6.17+\nВстановіть прапорець `nogit`, оскільки каталог збірки не виконується",
+        "zh-cn": "重要：需要 js-controller 6.0.11+ 和管理员 7.6.17+\n设置 `nogit` 标志，因为编译目录未提交"
+      },
       "3.0.2": {
         "en": "Updated packages\nBecause of snap7 no Node 26 support",
         "de": "Neue Pakete\nWegen Snap7 kein Node 26 Support",
@@ -80,19 +93,6 @@
         "pl": "IMPORTANT: Nodejs 16+ jest zobowiązany do uruchomienia tej wersji!\nW zależności od użytkowania pracy adapterowej Nodejs 20+",
         "uk": "ВАЖЛИВО: Node.js 16+ потрібно запустити цю версію!\nОновлення залежності, щоб зробити роботу адаптера з Node.js 20+",
         "zh-cn": "IMPORTANT:Nodejs 16+必须使用这个版本!\n适应工作的最新依赖性 20+"
-      },
-      "1.3.15": {
-        "en": "Updated GUI packages\nAdded ukrainian translation",
-        "de": "Aktualisierte GUI-Pakete\nHinzugefügt ukrainische Übersetzung",
-        "ru": "Обновленные пакеты GUI\nДобавлен украинский перевод",
-        "pt": "Pacotes de GUI atualizados\nAdicionado tradução ukrainian",
-        "nl": "Update GUI pakketten\nVertaling:",
-        "fr": "Paquets GUI mis à jour\nAjout de la traduction ukrainienne",
-        "it": "Pacchetti GUI aggiornati\nAggiunto ukrainian traduzione",
-        "es": "Paquetes GUI actualizados\nTraducción ucraniana",
-        "pl": "Pakiet GUI\nAddedukrainian translation",
-        "uk": "Оновлені пакети GUI\nДодано переклад українською мовою",
-        "zh-cn": "A. 最新古伊一揽子计划\n增加培训员"
       }
     },
     "titleLang": {

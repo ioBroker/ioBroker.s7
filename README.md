@@ -66,7 +66,7 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.0.3 (2026-10-13)
 * (@GermanBluefox) IMPORTANT: js-controller 6.0.11+ and admin 7.6.17+ are required
 * (@GermanBluefox) Set `nogit` flag as the build directory is not committed
 
@@ -85,9 +85,6 @@ More description could be found [here](https://github.com/ioBroker/ioBroker.s7/b
 ### 1.4.4 (2025-08-16)
 * (Apollon77) Ensures that the adapter works with node.js 22.x and 24.x
 * (bluefox) Updated GUI packages
-
-### 1.4.3 (2024-02-17)
-* (Bettman66) Fix REAL number parsing error
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 
